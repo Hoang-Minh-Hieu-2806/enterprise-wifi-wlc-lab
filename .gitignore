@@ -1,0 +1,44 @@
+# OS-generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+
+# Logs and temporary exports
+*.log
+*.tmp
+*.temp
+~$*
+*.~*
+
+# Sensitive credentials and local secrets
+*credentials*.txt
+*password*.txt
+*.secret
+.env
+.env.local
+secrets/
+private/
+
+# Temporary simulation artifacts
+*.pkttmp
+*.bak.pkt
+packet-tracer/tmp/
+packet-tracer/backup/
+
+# NOTE: Do NOT ignore final deliverables:
+# - *.pkt files in packet-tracer/
+# - documentation in docs/ and report/
+# - test cases in tests/
+# - screenshots and evidence in evidence/
