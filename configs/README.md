@@ -2,8 +2,8 @@
 
 Thư mục lưu bản sao cấu hình thiết bị để đối chiếu và chấm bài (đã che secret). Mỗi thiết bị/nhóm thiết bị có thư mục riêng:
 
-- `router/` — liên VLAN, DHCP relay (nếu có), ACL (Đặng Văn Hoàng phối hợp cùng Huỳnh Như Hoàng; Huỳnh Như Hoàng sở hữu ACL).
-- `switch/` — VLAN, trunk/access chốt theo model thực tế.
+- `router/` — liên VLAN, DHCP relay (nếu có), ACL (Huỳnh Như Hoàng sở hữu; Hoàng Minh Hiếu hỗ trợ khi cần).
+- `switch/` — VLAN, trunk/access chốt theo model thực tế (Huỳnh Như Hoàng sở hữu; phối hợp Đặng Văn Hoàng về uplink WLC/LAP-PT).
 - `wlc-ap/` — WLAN/SSID, WPA2-PSK (làm trước), RADIUS/WPA2-Enterprise (Conditional, thử sau) — Đặng Văn Hoàng sở hữu.
 
 ## Hiện trạng

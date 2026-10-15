@@ -7,7 +7,7 @@ Thư mục kiểm thử của dự án (bản 9.0.1.0858).
 
 ## Hiện trạng
 
-> Tất cả test case ở trạng thái **Not Tested**. Chưa có kết quả thực tế. Huỳnh Như Hoàng sở hữu chạy test Core và giữ evidence; Đặng Văn Hoàng sở hữu phần WLC/AP; Hoàng Minh Hiếu chạy acceptance chọn lọc.
+> Tất cả test case ở trạng thái **Not Tested**. Chưa có kết quả thực tế. Huỳnh Như Hoàng sở hữu chạy test Core và giữ evidence; Đặng Văn Hoàng sở hữu phần WLC/AP; Hoàng Minh Hiếu tham gia kiểm thử và chạy acceptance chọn lọc.
 
 ## Quy định
 

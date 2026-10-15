@@ -1,6 +1,6 @@
 # Report
 
-Thư mục quản lý dàn ý và nội dung báo cáo tổng hợp trong giai đoạn hiện tại. **Chưa cần tạo DOCX/PDF.** Người viết nháp chính: Huỳnh Như Hoàng (kỹ thuật, limitation, kết quả); Hoàng Minh Hiếu duyệt cuối và chuẩn bị dàn ý thuyết trình.
+Thư mục quản lý dàn ý và nội dung báo cáo tổng hợp trong giai đoạn hiện tại. **Chưa cần tạo DOCX/PDF.** Huỳnh Như Hoàng viết nháp kết quả/limitation kỹ thuật; Hoàng Minh Hiếu tổng hợp báo cáo cuối và chuẩn bị dàn ý thuyết trình.
 
 ## Hiện trạng
 

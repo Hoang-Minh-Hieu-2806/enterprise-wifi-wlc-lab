@@ -1,6 +1,6 @@
 # Evidence
 
-Thư mục lưu minh chứng kiểm thử trên bản 9.0.1.0858: ảnh chụp màn hình, kết quả lệnh, export cấu hình đã che secret. Huỳnh Như Hoàng duy trì; Đặng Văn Hoàng bổ sung phần WLC/AP.
+Thư mục lưu minh chứng kiểm thử trên bản 9.0.1.0858: ảnh chụp màn hình, kết quả lệnh, export cấu hình đã che secret. Huỳnh Như Hoàng duy trì; Đặng Văn Hoàng bổ sung phần WLC/AP; Hoàng Minh Hiếu ghi evidence cho phần mình kiểm thử.
 
 ## Hiện trạng
 

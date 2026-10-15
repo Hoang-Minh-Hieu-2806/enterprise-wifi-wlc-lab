@@ -157,11 +157,11 @@ Mọi khẳng định về hiệu quả mã hóa hay kiểm soát truy cập ch�
 
 | Thành viên | Vai trò | Tỉ trọng mục tiêu |
 | --- | --- | --- |
-| Hoàng Minh Hiếu (nhóm trưởng) | Điều phối, kiến trúc, duyệt tài liệu, nghiệm thu | ~25% |
-| Đặng Văn Hoàng | Hạ tầng mạng, WLC/AP, topology | ~37.5% |
-| Huỳnh Như Hoàng | Định tuyến, bảo mật, kiểm thử, báo cáo | ~37.5% |
+| Hoàng Minh Hiếu (nhóm trưởng) | Điều phối, quản lý Git/tiến độ, rà soát thiết kế, hỗ trợ kỹ thuật linh hoạt, tham gia kiểm thử, tổng hợp báo cáo | ~33% |
+| Đặng Văn Hoàng | Topology, WLC/LAP, WLAN, xác thực, evidence vô tuyến | ~33% |
+| Huỳnh Như Hoàng | Định tuyến, VLAN, DHCP, ACL, kiểm thử phân tách, tổng hợp kết quả | ~34% |
 
-Phân công chi tiết xem tại [docs/team-contributions.md](docs/team-contributions.md). Nhóm trưởng giữ khối lượng hands-on nhẹ hơn, không ôm toàn bộ triển khai kỹ thuật hay viết toàn bộ báo cáo.
+Phân công chi tiết xem tại [docs/team-contributions.md](docs/team-contributions.md). Ba thành viên chia khối lượng tương đương; nhóm trưởng vừa điều phối vừa trực tiếp làm kỹ thuật.
 
 ## 11. Tài liệu liên quan
 

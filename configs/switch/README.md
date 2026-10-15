@@ -1,6 +1,6 @@
 # Switch Configs
 
-Lưu bản sao cấu hình của switch Layer 2 (ví dụ `show running-config`, `show vlan brief`). Đặng Văn Hoàng và Huỳnh Như Hoàng phối hợp; chốt mode theo model thực tế.
+Lưu bản sao cấu hình của switch Layer 2 (ví dụ `show running-config`, `show vlan brief`). Người sở hữu: Huỳnh Như Hoàng; phối hợp Đặng Văn Hoàng về uplink WLC/LAP-PT, Hoàng Minh Hiếu hỗ trợ khi cần; chốt mode theo model thực tế.
 
 ## Hiện trạng
 
