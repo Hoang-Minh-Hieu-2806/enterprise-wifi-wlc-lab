@@ -2,56 +2,71 @@
 
 ## 1. Phát biểu vấn đề
 
-Các doanh nghiệp vừa và nhỏ cần mạng Wi-Fi tập trung, dễ quản lý, phân tách được lưu lượng nhân viên và khách, đồng thời kiểm soát truy cập cơ bản giữa các vùng mạng. Tuy nhiên, việc thử nghiệm trực tiếp trên thiết bị thật tốn kém và rủi ro. Dự án này sử dụng **Cisco Packet Tracer 9.x** để mô phỏng một mạng WLAN doanh nghiệp thu nhỏ, giúp sinh viên luyện tập thiết kế, cấu hình và đánh giá bảo mật trong môi trường an toàn.
+Các doanh nghiệp vừa và nhỏ cần mạng Wi-Fi tập trung, dễ quản lý, phân tách được lưu lượng nhân viên và khách, đồng thời kiểm soát truy cập cơ bản giữa các vùng mạng. Tuy nhiên, việc thử nghiệm trực tiếp trên thiết bị thật tốn kém và rủi ro. Dự án này sử dụng **Cisco Packet Tracer 9.0.1.0858** để mô phỏng một mạng WLAN doanh nghiệp thu nhỏ, giúp sinh viên luyện tập thiết kế, cấu hình và đánh giá bảo mật trong môi trường an toàn.
+
+Quan sát thực tế trong Packet Tracer 9.0.1.0858 cho thấy có sẵn WLC (kèm trang cấu hình `Wireless LANs`), LAP-PT (kèm trang `WLC / Primary Controller`) và AP-PT-A (hỗ trợ SSID, WPA-PSK/WPA2-PSK, WEP). Đây mới là phát hiện giao diện, chưa phải bằng chứng các chức năng đã chạy được — chi tiết tại [implementation-notes.md](implementation-notes.md).
 
 ## 2. Phạm vi dự án
 
-**Trong phạm vi:**
+**Trong phạm vi (luồng Core, phải hoàn thành):**
 
-- Thiết kế topology logic gồm router, switch Layer 2, WLC, 2–3 AP, server và wireless client.
-- Phân đoạn VLAN cho staff / guest / management.
-- Triển khai nhiều SSID (dự kiến `STAFF-WIFI`, `GUEST-WIFI`).
-- Áp dụng ít nhất một phương thức xác thực vô tuyến khả thi.
-- Khảo sát tính khả thi của RADIUS + WPA2-Enterprise nếu thiết bị mô phỏng hỗ trợ.
-- Kiểm soát truy cập liên VLAN (dự kiến ACL trên router).
-- Kiểm thử kết nối, kiểm thử bảo mật cơ bản, thu thập minh chứng, viết báo cáo.
+- Thiết kế topology logic gồm router, switch Layer 2, 01 WLC, bắt đầu 01 LAP-PT, Server-PT và ≥ 4 wireless client (2 Staff + 2 Guest).
+- Phân đoạn VLAN cho staff / guest / management (kế hoạch chuẩn tại [ip-vlan-plan.md](ip-vlan-plan.md)).
+- Tạo và phát hai WLAN/SSID (`STAFF-WIFI`, `GUEST-WIFI`), kiểm thử độc lập từng SSID.
+- Triển khai và kiểm thử **WPA2-PSK** trước cho cả hai SSID.
+- Kiểm soát truy cập liên VLAN bằng ACL trên router (explicit deny + permit tối thiểu).
+- Kiểm thử kết nối (IP, gateway), kiểm thử bảo mật cơ bản (cô lập Guest, sai credential bị từ chối), thu thập minh chứng, viết báo cáo.
 
-**Ngoài phạm vi (trừ khi kiểm chứng được tính khả thi):**
+**Có điều kiện (Conditional, thử sau khi luồng Core ổn định):**
 
-- WPA3, EAP cụ thể, roaming liền mạch, phân tích nhiễu RF, đo throughput.
+- WPA2-Enterprise + RADIUS cho Staff, chỉ khi Server-PT và model WLC đã chọn thực sự hỗ trợ. Tính năng này không quyết định trạng thái hoàn thành của toàn bộ đồ án.
+
+**Ngoài phạm vi / chỉ nghiên cứu (Research-only):**
+
+- WPA3, EAP cụ thể (EAP-TLS, PEAP, ...), roaming liền mạch, phân tích nhiễu RF, đo throughput — chỉ làm nền báo cáo.
 - Triển khai thực tế trên thiết bị vật lý.
-- Phát triển phần mềm, API, web app, CI/CD.
+- Phát triển phần mềm, API, web app, CI/CD hay hạ tầng không liên quan.
+
+AP-PT-A được giữ làm dự phòng standalone, chỉ dùng khi chứng minh quản lý tập trung bằng WLC là bất khả thi và phạm vi được sửa đổi rõ ràng.
 
 ## 3. Mục tiêu
 
 Xem chi tiết tại [../README.md](../README.md#1-mục-tiêu-dự-án) và bảng yêu cầu tại [requirements.md](requirements.md).
 
-Tóm tắt: quản lý tập trung bằng WLC, nhiều SSID, phân đoạn VLAN, xác thực vô tuyến, kiểm soát truy cập, kiểm thử và tài liệu hóa đầy đủ.
+Tóm tắt: quản lý tập trung bằng WLC (01 LAP-PT trước), hai SSID, phân đoạn VLAN, WPA2-PSK trước, RADIUS có điều kiện, ACL cô lập Guest, kiểm thử theo nhóm Core/Conditional và tài liệu hóa đầy đủ.
 
 ## 4. Sản phẩm bàn giao dự kiến (Deliverables)
 
 | # | Sản phẩm | Vị trí | Trạng thái hiện tại |
 | --- | --- | --- | --- |
-| 1 | Tài liệu thiết kế (overview, requirements, topology, IP/VLAN, security) | `docs/` | Khung sườn, nội dung là đề xuất |
-| 2 | File mô phỏng Packet Tracer (`.pkt`) | `packet-tracer/` | Chưa có (Pending) |
-| 3 | Bản sao cấu hình thiết bị | `configs/` | Chưa có (Pending) |
-| 4 | Kế hoạch và ca kiểm thử | `docs/testing-plan.md`, `tests/test-cases.md` | Khung sườn, chưa test |
-| 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | Chưa có (Pending) |
-| 6 | Báo cáo tổng hợp | `report/` | Chưa có (Pending) |
+| 1 | Tài liệu thiết kế (overview, requirements, topology, IP/VLAN, security) | `docs/` | In Progress (finalize, chưa nghiệm thu) |
+| 2 | File mô phỏng Packet Tracer (`.pkt`, đúng bản 9.0.1.0858) | `packet-tracer/` | Planned (chưa có) |
+| 3 | Bản sao cấu hình thiết bị (đã che secret) | `configs/` | Planned (chưa có) |
+| 4 | Kế hoạch và ca kiểm thử Core/Conditional | `docs/testing-plan.md`, `tests/test-cases.md` | Planned, toàn bộ `Not Tested` |
+| 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | Planned (chưa có) |
+| 6 | Báo cáo (dàn ý + nội dung trong `report/`, chưa cần DOCX/PDF) | `report/` | Planned (chưa có) |
 
 ## 5. Tiêu chí hoàn thành dự án
 
-1. Có file `.pkt` mở được trên Packet Tracer 9.x, đúng topology đã chốt.
-2. WLC quản lý được AP; các SSID dự kiến phát sóng đúng.
-3. Client nhận đúng IP theo VLAN/SSID dự kiến và ping được gateway tương ứng.
-4. Ít nhất một phương thức xác thực vô tuyến hoạt động và được ghi nhận.
-5. Có kiểm thử phân tách Guest/Staff và kiểm thử ACL (nếu triển khai ACL).
-6. Mọi test case trong [../tests/test-cases.md](../tests/test-cases.md) có kết quả thực tế và minh chứng trong `evidence/`.
-7. Báo cáo tổng hợp trong `report/` mô tả trung thực những gì làm được và những gì chưa kiểm chứng được.
-8. Không có khẳng định nào về WPA3, EAP, roaming, throughput khi chưa có minh chứng.
+Luồng Core (bắt buộc):
+
+1. Có file `.pkt` mở được trên Packet Tracer 9.0.1.0858, đúng topology đã chốt (bắt đầu 01 LAP-PT).
+2. WLC có thể ping/tới được (management reachability); LAP-PT nhận IP hợp lệ và join WLC.
+3. Hai WLAN `STAFF-WIFI`, `GUEST-WIFI` được tạo, phát sóng và client associate được bằng WPA2-PSK.
+4. Client nhận đúng IP theo VLAN/SSID và ping được gateway tương ứng.
+5. Sai credential bị từ chối ở chế độ WPA2-PSK.
+6. Guest không truy cập được Staff và Management sau ACL; Staff chỉ giữ đúng truy cập nội bộ cho phép.
+7. Mọi test Core trong [../tests/test-cases.md](../tests/test-cases.md) có kết quả thực tế và minh chứng trong `evidence/`.
+8. Báo cáo trong `report/` mô tả trung thực điều làm được và điều chưa kiểm chứng.
+
+Luồng Conditional (không bắt buộc để đạt): RADIUS/WPA2-Enterprise cho Staff, ghi `Passed`/`Failed`/`Blocked` kèm evidence; nếu `Blocked` thì luồng Core vẫn được công nhận hoàn thành.
+
+Không có khẳng định nào về WPA3, EAP, roaming, throughput khi chưa có minh chứng.
 
 ## 6. Rủi ro chính
 
-- Model WLC/AP hoặc tính năng RADIUS không khả dụng trong Packet Tracer → cần phương án dự phòng (WPA2-PSK).
-- Giới hạn số lượng AP hoặc tính năng WLC → giảm còn 2 AP, ghi rõ trong [implementation-notes.md](implementation-notes.md).
+- LAP-PT không join được WLC (trường `Primary Controller` mới chỉ được nhìn thấy) → ghi `Blocked`, cân nhắc AP-PT-A standalone kèm sửa scope.
+- WLAN tạo được trong GUI nhưng không phát / không map đúng VLAN → kiểm tra lại model và chế độ cổng, không giả định trunk.
+- Server-PT không hỗ trợ RADIUS → ghi `Blocked` cho TC RADIUS, giữ nguyên kết quả Core.
 - Cấu hình ACL hoặc DHCP không như kỳ vọng → ghi lại workaround, không ngụy tạo kết quả.
+- Chế độ trunk/access cho WLC mgmt, WLAN mapping và AP uplink có thể khác nhau theo model → chốt riêng từng đoạn trước khi cấu hình.

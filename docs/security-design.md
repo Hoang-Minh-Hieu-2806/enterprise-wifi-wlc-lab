@@ -1,65 +1,65 @@
-# Thiết kế bảo mật dự kiến
+# Thiết kế bảo mật (WPA2-PSK trước, RADIUS có điều kiện)
 
-> Tài liệu này trình bày **ý định thiết kế**, không phải kết quả đã kiểm chứng. Không khẳng định cơ chế mã hóa hay kiểm soát truy cập có hiệu quả khi chưa có kết quả kiểm thử tại [testing-plan.md](testing-plan.md) và [../tests/test-cases.md](../tests/test-cases.md).
+> Tài liệu này trình bày **ý định thiết kế**, không phải kết quả đã kiểm chứng. Không khẳng định cơ chế mã hóa hay kiểm soát truy cập có hiệu quả khi chưa có kết quả kiểm thử tại [testing-plan.md](testing-plan.md) và [../tests/test-cases.md](../tests/test-cases.md). Sự tồn tại của các trường WPA2/RADIUS trong GUI Packet Tracer không chứng minh giao thức đã chạy được.
 
 ## 1. Nguyên tắc phân tách
 
 - Mỗi nhóm đối tượng dùng SSID và VLAN riêng:
   - `STAFF-WIFI` → VLAN 10 (`192.168.10.0/24`).
   - `GUEST-WIFI` → VLAN 20 (`192.168.20.0/24`).
-  - Hạ tầng quản trị (WLC, switch, router, AP) → VLAN 99 (`192.168.99.0/24`).
-- Mục tiêu: Guest không truy cập được tài nguyên nội bộ của Staff và hệ thống quản trị; Staff chỉ truy cập trong phạm vi cho phép.
+  - Hạ tầng quản trị (WLC, switch, router, LAP-PT, Server-PT) → VLAN 99 (`192.168.99.0/24`).
+- Mục tiêu: Guest không truy cập được tài nguyên Staff và hệ thống quản trị; Staff chỉ giữ đúng truy cập nội bộ cho phép (TC-10, TC-11, TC-12).
 
-Chi tiết subnet xem tại [ip-vlan-plan.md](ip-vlan-plan.md); topology xem tại [topology.md](topology.md).
+Bảng địa chỉ chuẩn xem tại [ip-vlan-plan.md](ip-vlan-plan.md); topology tại [topology.md](topology.md).
 
-## 2. Xác thực vô tuyến (dự kiến)
+## 2. Thứ tự xác thực vô tuyến (bắt buộc)
 
-- **Ít nhất một phương thức xác thực khả thi** sẽ được triển khai và kiểm thử (yêu cầu REQ-06).
-- **Mạng Staff:** ưu tiên khảo sát WPA2-Enterprise trên nền RADIUS nếu thiết bị Packet Tracer hỗ trợ. Nếu không khả thi, chuyển sang WPA2-PSK và ghi rõ lý do trong [implementation-notes.md](implementation-notes.md).
-- **Mạng Guest:** dự kiến WPA2-PSK. Chỉ dùng Open khi phục vụ mục đích kiểm thử và phải ghi rõ rủi ro không mã hóa.
-- Mật khẩu / shared secret **không** commit lên repository (xem `.gitignore` và quy định tại [../configs/README.md](../configs/README.md)).
+1. **WPA2-PSK trước** cho cả `STAFF-WIFI` và `GUEST-WIFI` (luồng Core: TC-06, TC-07). Đây là phương thức đầu tiên phải triển khai và kiểm thử thành công/thất bại (TC-14 cho PSK là Core).
+2. **WPA2-Enterprise + RADIUS chỉ sau** khi luồng Core (WLC + LAP-PT + WLAN + WPA2-PSK + IP/gateway + VLAN/ACL) đã ổn định, và chỉ cho Staff (Conditional: TC-13).
 
-## 3. RADIUS (nếu được hỗ trợ)
+- Mật khẩu / PSK / shared secret thật **không** commit lên repository (xem `.gitignore` và [../configs/README.md](../configs/README.md)); minh chứng che secret.
+- Mạng Guest dùng WPA2-PSK. Chỉ dùng Open cho mục đích kiểm thử và phải ghi rõ rủi ro không mã hóa.
 
-- Vai trò dự kiến: server RADIUS xác thực người dùng Staff khi kết nối `STAFF-WIFI`.
-- Nội dung cần kiểm chứng:
-  - [ ] Server trong Packet Tracer có hỗ trợ RADIUS không.
-  - [ ] WLC/AP đã chọn có cấu hình được WPA2-Enterprise trỏ về RADIUS không.
-  - [ ] Tài khoản kiểm thử thành công và thất bại được ghi nhận thế nào.
-- Nếu không hỗ trợ, ghi rõ “không khả thi trên thiết bị/mô phỏng đã chọn” và dùng phương án dự phòng. Không ngụy tạo log RADIUS thành công.
+## 3. RADIUS trên Server-PT (Conditional)
 
-## 4. Hạn chế Guest → mạng nội bộ (dự kiến dùng ACL)
+- Vai trò dự kiến (nếu thử): Server-PT xác thực người dùng Staff cho `STAFF-WIFI` qua RADIUS Server Settings (IP + shared secret) đã thấy trong GUI WLC.
+- Điều kiện thử: luồng Core đã `Passed`; Server-PT xác nhận hỗ trợ RADIUS; model WLC đã chọn cấu hình được WPA2-Enterprise trỏ về RADIUS.
+- Nếu không hỗ trợ: ghi `Blocked` kèm lý do tại TC-13 và [implementation-notes.md](implementation-notes.md). Kết quả này **không** làm mất trạng thái hoàn thành của luồng Core.
+- Không ngụy tạo log RADIUS thành công; không coi việc điền được IP/secret vào GUI là bằng chứng xác thực chạy được.
 
-- Ý định: Guest (VLAN 20) chỉ được ra mạng ngoài mô phỏng / Internet, bị chặn khi truy cập VLAN 10 và VLAN 99.
-- Biện pháp dự kiến: ACL trên router (inbound/outbound trên sub-interface tương ứng).
-- Nội dung kiểm chứng: `ping` từ Guest tới Staff/Management phải thất bại sau khi áp ACL; `ping` tới gateway của chính Guest vẫn thành công (xem TC-06, TC-08).
-- Không sao chép câu lệnh ACL mẫu vào đây như “cấu hình đã đúng” — mọi câu lệnh chỉ có giá trị sau khi kiểm thử trên đúng model thiết bị.
+## 4. Cô lập Guest bằng ACL trên router (Core)
+
+- Ý định: Guest (VLAN 20) bị chặn truy cập Staff (VLAN 10) và Management (VLAN 99); Guest vẫn tới được gateway của chính mình (`192.168.20.1`).
+- Biện pháp: ACL trên router với **explicit deny** cho Guest→Staff/Management và **permit tối thiểu** cần thiết (định tuyến, DHCP, gateway). Nội dung ACL chốt theo model router thực tế, không sao chép mẫu chưa kiểm chứng.
+- Kiểm chứng: TC-10 (Guest↛Staff), TC-11 (Guest↛Management) phải `Failed-to-reach` sau ACL; TC-09 (gateway của chính Guest) vẫn `Passed`.
+- Không khẳng định có truy cập Internet trừ khi có đích ISP/Internet được mô phỏng và kiểm thử thực tế.
 
 ## 5. Bảo vệ mạng quản trị (VLAN 99)
 
-- Thiết bị hạ tầng đặt ở VLAN 99 tách biệt khỏi client.
+- Thiết bị hạ tầng đặt ở VLAN 99 tách biệt khỏi client; ưu tiên địa chỉ tĩnh.
 - Hạn chế thiết bị/user được phép truy cập quản trị WLC, switch, router.
-- Ưu tiên địa chỉ tĩnh cho thiết bị hạ tầng; không cấp DHCP quản trị cho client.
-- Mọi truy cập quản trị từ Guest/Staff phải được kiểm thử và chặn (TC-08).
+- Không cấp DHCP quản trị cho client trừ khi cần cho mục đích kiểm thử có ghi rõ.
+- Mọi truy cập quản trị từ Guest/Staff được kiểm thử và chặn (TC-11, TC-12).
+- Nhóm phải chốt và ghi phạm vi truy cập cho phép của Staff vào [implementation-notes.md](implementation-notes.md) (§4) **trước khi chạy TC-12**; TC-12 chỉ `Passed` khi Staff không vượt phạm vi đã chốt đó.
 
 ## 6. So sánh WPA2-PSK và WPA2-Enterprise
 
-| Tiêu chí | WPA2-PSK | WPA2-Enterprise (RADIUS) |
+| Tiêu chí | WPA2-PSK (Core, làm trước) | WPA2-Enterprise + RADIUS (Conditional) |
 | --- | --- | --- |
 | Cơ chế | Một pre-shared key chung cho mọi client của SSID | Mỗi user một tài khoản, xác thực qua RADIUS |
-| Quản lý | Đơn giản, phù hợp quy mô nhỏ / Guest | Phù hợp Staff, thu hồi từng tài khoản, ghi log tập trung |
-| Rủi ro lộ key | Lộ key là phải đổi cho tất cả client | Giảm rủi ro dùng chung key, nhưng phụ thuộc RADIUS khả dụng |
-| Khả thi trong Packet Tracer | Thường khả thi, sẽ kiểm chứng | **Chưa chắc chắn**, cần kiểm chứng model thiết bị |
-| Phù hợp đồ án | Phương án dự phòng chắc chắn cho ít nhất 1 SSID | Mục tiêu khảo sát cho `STAFF-WIFI` nếu khả thi |
+| Quản lý | Đơn giản, phù hợp cả Guest và bước đầu Staff | Phù hợp Staff khi cần thu hồi từng tài khoản, log tập trung |
+| Rủi ro | Lộ key phải đổi cho tất cả client | Giảm rủi ro key chung, nhưng phụ thuộc RADIUS khả dụng |
+| Khả thi trên 9.0.1.0858 | Dự kiến khả thi, **vẫn phải kiểm chứng** (TC-06/TC-07/TC-14) | **Chưa chắc chắn**, thử sau cùng (TC-13) |
+| Vai trò trong đồ án | Bắt buộc, quyết định đạt/không đạt luồng Core | Cộng thêm, `Blocked` được chấp nhận kèm lý do |
 
-## 7. Chủ đề nghiên cứu (chưa khẳng định)
+## 7. Chủ đề Research-only (không tính vào tiêu chí hoàn thành)
 
-Các nội dung sau chỉ là **chủ đề nghiên cứu**, không ghi là đã triển khai:
+Các nội dung sau chỉ làm nền báo cáo, không ghi là đã triển khai:
 
 - WPA3 và các chế độ chuyển tiếp.
-- Phương thức EAP cụ thể (EAP-TLS, PEAP, EAP-FAST, ...).
-- Roaming giữa các AP.
+- Phương thức EAP cụ thể (EAP-TLS, PEAP, ...).
+- Roaming giữa các AP (kể cả khi mở rộng 2–3 AP).
 - Nhiễu RF và tối ưu vùng phủ.
 - Đo throughput / hiệu năng vô tuyến.
 
-Chỉ đưa vào báo cáo khi đã xác minh simulator hỗ trợ và có minh chứng kiểm thử.
+Chỉ đưa vào kết quả khi đã xác minh simulator hỗ trợ và có minh chứng kiểm thử; ngược lại ghi rõ là nghiên cứu.

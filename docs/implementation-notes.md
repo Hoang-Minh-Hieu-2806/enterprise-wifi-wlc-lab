@@ -1,62 +1,65 @@
 # Ghi chú triển khai (Implementation Notes)
 
-> File này ghi lại quyết định cấu hình **đã được kiểm chứng**. Hiện chưa có triển khai — mọi mục để ở trạng thái chờ.
+> File này ghi lại **phát hiện đã quan sát** và **quyết định đã kiểm chứng**. Mọi chức năng hoạt động vẫn ở trạng thái chưa kiểm chứng cho tới khi có minh chứng trong `../evidence/`.
 
-## 1. Phiên bản Packet Tracer
+## 1. Phiên bản Packet Tracer (đã chốt)
 
 | Hạng mục | Nội dung |
 | --- | --- |
-| Phiên bản Packet Tracer sử dụng | _Chưa chốt (Pending)_ — dự kiến 9.x |
-| Người kiểm chứng | _Chưa có_ |
-| Ngày chốt | _Chưa có_ |
+| Phiên bản Packet Tracer sử dụng | 9.0.1.0858 (đã chốt) |
+| Người kiểm chứng GUI | Nhóm đồ án (chi tiết đóng góp tại [team-contributions.md](team-contributions.md)) |
+| Ngày chốt | Giai đoạn finalize tài liệu (ngày kiểm thử thực tế ghi kèm từng evidence) |
 
-Khi chốt phiên bản, ghi rõ số bản đầy đủ (ví dụ `9.x.x`) và hệ điều hành kiểm thử.
+Mọi file `.pkt`, cấu hình và screenshot phải thực hiện trên đúng bản này.
 
-## 2. Model thiết bị (sẽ chốt sau kiểm chứng)
+## 2. Model thiết bị đã quan sát trong Packet Tracer 9.0.1.0858
 
-| Vai trò | Model dự kiến | Trạng thái hỗ trợ |
+| Vai trò | Thiết bị quan sát được | Chi tiết GUI đã thấy (chưa phải bằng chứng chạy được) |
 | --- | --- | --- |
-| Router | _Chưa chốt_ | Pending — cần hỗ trợ sub-interface / trunk và ACL |
-| Switch L2 | _Chưa chốt_ | Pending — cần hỗ trợ VLAN + trunk |
-| WLC | _Chưa chốt_ | Pending — cần hỗ trợ quản lý AP tập trung |
-| AP | _Chưa chốt_ (2–3 thiết bị) | Pending — cần hỗ trợ multi-SSID |
-| Server | _Chưa chốt_ | Pending — cần DHCP; RADIUS là điểm cần kiểm chứng riêng |
-| Wireless client | Laptop/Smartphone PT | Pending |
+| WLC | Wireless LAN Controller | Management IPv4 + mask; Gigabit Ethernet; trang `Wireless LANs` với WLAN Name, SSID, VLAN field; Authentication gồm WPA2-PSK và WPA2; RADIUS Server Settings (IP + shared secret); Encryption Type; central switching / central authentication |
+| AP chính | LAP-PT (`Light Weight Access Point`) | GigabitEthernet0; Dot11Radio0; trang `WLC` với trường `Primary Controller` |
+| AP dự phòng | AP-PT-A | Port 1 wireless: SSID, WPA-PSK, WPA2-PSK, WEP, Encryption Type; Port 0 Ethernet link settings |
+| Palette tham khảo | WLC, 3504, 2504, LAP-PT, 3702i, AP-PT, AP-PT-A, AP-PT-AC, AP-PT-N, Meraki, home router, wireless khác | Khả năng khác nhau, không giả định tương đương |
+| Router | Sẽ chốt model cụ thể khi dựng `.pkt` | Cần subinterface 802.1Q (hoặc thiết kế model hỗ trợ) + ACL |
+| Switch | Sẽ chốt model cụ thể khi dựng `.pkt` | Cần VLAN + trunk/access |
+| Server | Server-PT | DHCP (ưu tiên xác minh trước); RADIUS kiểm tra sau |
+| Client | Laptop/Smartphone PT (≥ 4) | 2 Staff + 2 Guest |
 
-> Không giả định mọi model WLC/AP hay tính năng xác thực đều có trong Packet Tracer 9.x. Chỉ điền model sau khi mở Packet Tracer và xác nhận tồn tại.
+> Quy tắc: AP chính là LAP-PT, bắt đầu 01 AP. AP-PT-A chỉ là fallback standalone khi chứng minh WLC tập trung bất khả thi và scope được sửa đổi.
 
-## 3. Tính năng được hỗ trợ / không được hỗ trợ
+## 3. Ma trận quan sát vs kiểm chứng
 
-| Tính năng | Kết quả kiểm chứng |
-| --- | --- |
-| WLC quản lý tập trung AP | _Chưa kiểm chứng_ |
-| Multi-SSID trên AP | _Chưa kiểm chứng_ |
-| Ánh xạ SSID → VLAN | _Chưa kiểm chứng_ |
-| DHCP theo VLAN | _Chưa kiểm chứng_ |
-| WPA2-PSK | _Chưa kiểm chứng (dự kiến khả thi)_ |
-| RADIUS + WPA2-Enterprise | _Chưa kiểm chứng — cần xác minh_ |
-| ACL trên router | _Chưa kiểm chứng_ |
-| WPA3 / EAP cụ thể / roaming / đo throughput | Chủ đề nghiên cứu, chưa kiểm chứng |
+| Hạng mục | Đã quan sát trong GUI | Đã kiểm chứng hoạt động |
+| --- | --- | --- |
+| Tồn tại WLC + trang WLAN | Có | Chưa (TC-01, TC-04, TC-05) |
+| LAP-PT + `Primary Controller` | Có | Chưa (TC-02, TC-03) |
+| Trường VLAN trên WLAN | Có | Chưa (TC-08, TC-12) |
+| Tùy chọn WPA2-PSK | Có (WLC và AP-PT-A) | Chưa (TC-06, TC-07, TC-14) |
+| Trường WPA2 / RADIUS IP+secret | Có | Chưa (TC-13, Conditional) |
+| Trunk/access cho model đã chọn | Chưa | Chưa |
+| DHCP Server-PT mọi VLAN | Chưa | Chưa (TC-08) |
+| ACL cô lập Guest | Chưa | Chưa (TC-10, TC-11) |
+| WPA3 / EAP / roaming / RF / throughput | Chưa thấy hỗ trợ | Research-only |
 
 ## 4. Quyết định cấu hình
 
-_Chưa có. Khi bắt đầu cấu hình, ghi ngắn gọn: chọn gì, vì sao, khác gì so với [ip-vlan-plan.md](ip-vlan-plan.md) và [topology.md](topology.md)._
+_Chưa có quyết định đã kiểm chứng. Khi triển khai, ghi mỗi dòng theo mẫu:_
 
-Ví dụ cách ghi (chưa áp dụng):
+- `ngày — người làm: chọn model/interface/VLAN ... vì ...; khác đề xuất ở ...; evidence: ...`
 
-- `2026-xx-xx: chọn model ... vì ...; khác đề xuất ở ...`.
+Không ghi lệnh CLI vào đây như "đã chạy thành công" khi chưa test trên đúng model. Mọi lệnh phải đi kèm minh chứng trong `../evidence/` và bản redacted trong `../configs/`.
 
 ## 5. Vấn đề và cách khắc phục (Issues & Workarounds)
 
-_Chưa có. Ghi theo mẫu:_
+_Chưa phát sinh (chưa triển khai). Ghi theo mẫu khi gặp:_
 
-| Ngày | Vấn đề | Cách khắc phục | Trạng thái |
-| --- | --- | --- | --- |
-| — | — | — | — |
+| Ngày | Người ghi | Vấn đề | Cách khắc phục | TC liên quan | Trạng thái |
+| --- | --- | --- | --- | --- | --- |
+| — | — | — | — | — | — |
 
-## 6. Hạn chế đã biết
+## 6. Hạn chế đã biết (chưa kiểm chứng)
 
-- Chưa xác nhận model WLC/AP khả dụng và số AP tối đa ổn định.
-- Chưa xác nhận RADIUS + WPA2-Enterprise có khả thi không.
-- Chưa xác nhận AP có hỗ trợ multi-SSID ánh xạ multi-VLAN không.
-- Không đưa câu lệnh CLI chi tiết vào đây như “đã xác nhận đúng” khi chưa test trên đúng model thiết bị. Mọi lệnh phải đi kèm minh chứng trong `../evidence/`.
+- LAP-PT join WLC, phát WLAN, multi-WLAN đồng thời, map SSID→VLAN: chưa kiểm chứng.
+- WPA2-PSK pass/fail, DHCP mọi VLAN, trunk đúng model, Guest isolation end-to-end: chưa kiểm chứng.
+- RADIUS + WPA2-Enterprise: Conditional, thử sau cùng; `Blocked` được chấp nhận kèm lý do.
+- WPA3 / EAP cụ thể / roaming / RF / throughput: Research-only.
