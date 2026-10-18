@@ -66,7 +66,8 @@ Không có khẳng định nào về WPA3, EAP, roaming, throughput khi chưa c�
 ## 6. Rủi ro chính
 
 - LAP-PT không join được WLC (trường `Primary Controller` mới chỉ được nhìn thấy) → ghi `Blocked`, cân nhắc AP-PT-A standalone kèm sửa scope.
-- WLAN tạo được trong GUI nhưng không phát / không map đúng VLAN → kiểm tra lại model và chế độ cổng, không giả định trunk.
+- WLAN tạo được trong GUI nhưng không phát / không map đúng VLAN → kiểm tra lại model và chế độ cổng.
+- **Packet Tracer không hỗ trợ trunk trên cổng Switch↔WLC** → phân đoạn VLAN bất khả thi; ghi `Blocked`, chuyển AP-PT-A standalone kèm sửa scope rõ ràng (xem [topology.md](topology.md) §3.1).
 - Server-PT không hỗ trợ RADIUS → ghi `Blocked` cho TC RADIUS, giữ nguyên kết quả Core.
-- Cấu hình ACL hoặc DHCP không như kỳ vọng → ghi lại workaround, không ngụy tạo kết quả.
-- Chế độ trunk/access cho WLC mgmt, WLAN mapping và AP uplink có thể khác nhau theo model → chốt riêng từng đoạn trước khi cấu hình.
+- Cấu hình ACL hoặc DHCP không như kỳ vọng → ghi lại workaround, không ngụy tạo kết quả. Riêng thiếu `ip helper-address` là **lỗi cấu hình**, không phải limitation của simulator.
+- Chế độ cổng: Switch↔WLC **bắt buộc trunk**; WLAN mapping và AP uplink chốt riêng theo model trước khi cấu hình.

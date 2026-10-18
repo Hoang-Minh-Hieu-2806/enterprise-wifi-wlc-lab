@@ -29,9 +29,16 @@ Bảng địa chỉ chuẩn xem tại [ip-vlan-plan.md](ip-vlan-plan.md); topolo
 
 ## 4. Cô lập Guest bằng ACL trên router (Core)
 
-- Ý định: Guest (VLAN 20) bị chặn truy cập Staff (VLAN 10) và Management (VLAN 99); Guest vẫn tới được gateway của chính mình (`192.168.20.1`).
-- Biện pháp: ACL trên router với **explicit deny** cho Guest→Staff/Management và **permit tối thiểu** cần thiết (định tuyến, DHCP, gateway). Nội dung ACL chốt theo model router thực tế, không sao chép mẫu chưa kiểm chứng.
-- Kiểm chứng: TC-10 (Guest↛Staff), TC-11 (Guest↛Management) phải `Failed-to-reach` sau ACL; TC-09 (gateway của chính Guest) vẫn `Passed`.
+- Ý định: Guest (VLAN 20) bị chặn truy cập Staff (VLAN 10) và các thiết bị quản trị trong VLAN 99; Guest vẫn tới được gateway của chính mình (`192.168.20.1`).
+- **Ngoại lệ bắt buộc — DHCP:** Server-PT nằm ở VLAN 99 (xem [ip-vlan-plan.md](ip-vlan-plan.md) §2) và phải cấp DHCP cho Guest, nên ACL **phải permit** DHCP từ Guest tới Server-PT:
+
+  ```text
+  permit udp 192.168.20.0 0.0.0.255 host 192.168.99.20 eq 67
+  ```
+
+  Vì ngoại lệ này, phát biểu đúng là "Guest **không tới được các thiết bị quản trị** (WLC, switch, router, LAP-PT)", **không phải** "Guest không tới được VLAN 99". Nếu chặn cả subnet `192.168.99.0/24` thì Guest không nhận được IP ⇒ TC-08 thất bại.
+- Biện pháp: ACL trên router với **explicit deny** cho Guest→Staff và Guest→dải quản trị (trừ DHCP), kèm **permit tối thiểu** cần thiết (định tuyến, DHCP, gateway). Nội dung ACL chốt theo model router thực tế, không sao chép mẫu chưa kiểm chứng.
+- Kiểm chứng: TC-10 (Guest↛Staff), TC-11 (Guest↛thiết bị quản trị) phải `Failed-to-reach` sau ACL; TC-08 (Guest nhận IP qua DHCP) và TC-09 (gateway của chính Guest) vẫn `Passed`.
 - Không khẳng định có truy cập Internet trừ khi có đích ISP/Internet được mô phỏng và kiểm thử thực tế.
 
 ## 5. Bảo vệ mạng quản trị (VLAN 99)

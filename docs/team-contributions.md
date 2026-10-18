@@ -22,8 +22,8 @@
 
 ## 3. Huỳnh Như Hoàng — Định tuyến / VLAN / DHCP / ACL / Kiểm thử / Kết quả (34%)
 
-- Cấu hình VLAN switch, trunk/access và SVI quản trị; phối hợp với Hoàng về cổng uplink WLC/LAP-PT.
-- Cấu hình liên VLAN trên router (router-on-a-stick hoặc thiết kế model hỗ trợ) và DHCP scope/relay trên Server-PT (TC-08, TC-09).
+- Cấu hình VLAN switch, cổng trunk Switch↔WLC và SVI quản trị; phối hợp với Đặng Văn Hoàng về cổng uplink WLC/LAP-PT.
+- Cấu hình liên VLAN trên router (router-on-a-stick hoặc thiết kế model hỗ trợ); DHCP scope trên Server-PT và `ip helper-address` **bắt buộc** trên router cho VLAN 10/20 (TC-08, TC-09).
 - Triển khai ACL chặn Guest→Staff/Management với explicit deny + permit tối thiểu (TC-10, TC-11, TC-12).
 - Chạy kiểm thử IP, gateway, cô lập liên VLAN, sai credential (TC-08→TC-12, TC-14) và hỗ trợ TC-13 nếu tới RADIUS.
 - Thu thập evidence, duy trì kết quả test ở [../tests/test-cases.md](../tests/test-cases.md).
@@ -31,7 +31,7 @@
 
 ## 4. Luật phối hợp
 
-- Hiếu điều phối nhưng cũng làm kỹ thuật trực tiếp; khi Hiếu nhận mảng nào thì ghi rõ vào bảng đóng góp để tránh chồng chéo với Hoàng/Như Hoàng.
+- Hiếu điều phối nhưng cũng làm kỹ thuật trực tiếp; khi Hiếu nhận mảng nào thì ghi rõ vào bảng đóng góp để tránh chồng chéo với Đặng Văn Hoàng / Huỳnh Như Hoàng.
 - Mọi đổi VLAN, IP, interface, SSID phải thống nhất trước khi sửa file `.pkt` hay tài liệu chuẩn ([ip-vlan-plan.md](ip-vlan-plan.md)).
 - Không sửa cùng một file kỹ thuật đồng thời nếu chưa phối hợp.
 - Secret/PSK kiểm thử không commit; screenshot che thông tin nhạy cảm.
@@ -39,7 +39,7 @@
 
 ### Quy tắc cân bằng công việc và rà soát chéo
 
-- Khi Hiếu nhận thêm một hạng mục kỹ thuật trong tuần, nhóm chủ động phân bổ lại công việc review, kiểm thử hoặc thu thập bằng chứng tương ứng cho Hoàng hoặc Như Hoàng để tránh tập trung quá nhiều trách nhiệm vào trưởng nhóm.
+- Khi Hiếu nhận thêm một hạng mục kỹ thuật trong tuần, nhóm chủ động phân bổ lại công việc review, kiểm thử hoặc thu thập bằng chứng tương ứng cho Đặng Văn Hoàng hoặc Huỳnh Như Hoàng để tránh tập trung quá nhiều trách nhiệm vào trưởng nhóm.
 - Mọi thay đổi về người phụ trách, người phối hợp và đóng góp thực tế phải được cập nhật trong bảng phân công (§5).
 - Việc phân bổ lại không làm thay đổi tỷ lệ đóng góp dự kiến 33% – 33% – 34%; tỷ lệ chỉ được xem xét lại khi có căn cứ rõ ràng về mức độ đóng góp thực tế.
 

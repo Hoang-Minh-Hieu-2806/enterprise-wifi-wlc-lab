@@ -29,17 +29,35 @@
 
 > Các địa chỉ `.10`, `.20`, `.2` chỉ là **ví dụ minh họa**. Không dùng làm bằng chứng cấu hình thành công. Interface WLC (Gigabit Ethernet), WLAN VLAN mapping và AP uplink có thể yêu cầu thiết kế cổng khác nhau — chốt độc lập theo model.
 
-## 3. Dải DHCP trên Server-PT (sẽ cấu hình sau)
+## 3. Dải DHCP trên Server-PT và DHCP relay
 
 - VLAN 10: dải động trong `192.168.10.0/24`, loại trừ gateway và địa chỉ tĩnh.
 - VLAN 20: dải động trong `192.168.20.0/24`, loại trừ gateway.
 - VLAN 99: ưu tiên địa chỉ tĩnh cho thiết bị hạ tầng; chỉ bật DHCP nếu cần cho mục đích kiểm thử (ví dụ cấp IP cho LAP).
 - Ưu tiên xác minh DHCP trước; RADIUS là mục Conditional, kiểm tra sau khi luồng Core ổn định.
 
+### 3.1 DHCP relay — BẮT BUỘC, không phải tùy chọn
+
+Server-PT nằm ở VLAN 99 (§2) nhưng phải cấp IP cho client ở VLAN 10 và VLAN 20. Đây là ba subnet khác nhau, nên router **bắt buộc** phải chuyển tiếp DHCP từ hai subinterface client tới server:
+
+```text
+interface <subinterface VLAN 10>
+ ip helper-address 192.168.99.20
+
+interface <subinterface VLAN 20>
+ ip helper-address 192.168.99.20
+```
+
+- Tên interface và subinterface cụ thể chốt theo model router thực tế (xem [topology.md](topology.md)).
+- `192.168.99.20` là địa chỉ Server-PT theo §2. Nếu địa chỉ server thay đổi, phải cập nhật cả hai `ip helper-address`.
+- VLAN 99 không cần relay vì client và server cùng subnet.
+- **Thiếu relay ⇒ client Staff/Guest không nhận được IP ⇒ TC-08 thất bại, kéo theo TC-09, TC-10, TC-11, TC-12 và TC-14 không kiểm thử được.**
+
 ## 4. Những điểm cần chốt trước khi cấu hình (cả 3 thành viên thống nhất)
 
 - [ ] Model router/switch cụ thể và thiết kế liên VLAN (subinterface 802.1Q hay phương án model hỗ trợ).
 - [ ] VLAN đặt Server-PT và địa chỉ IP cuối cùng của server.
+- [ ] Địa chỉ đưa vào `ip helper-address` (§3.1) khớp địa chỉ Server-PT cuối cùng.
 - [ ] LAP nhận IP quản trị bằng DHCP hay tĩnh.
 - [ ] Dải DHCP loại trừ cụ thể cho từng VLAN.
-- [ ] Chế độ cổng cho 3 đoạn độc lập: Switch↔WLC, Switch↔LAP-PT, Switch↔Server-PT.
+- [ ] Chế độ cổng từng đoạn: Switch↔WLC (**trunk bắt buộc**, xem [topology.md](topology.md) §3), Switch↔LAP-PT, Switch↔Server-PT (access VLAN 99).

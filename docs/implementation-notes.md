@@ -20,12 +20,14 @@ Mọi file `.pkt`, cấu hình và screenshot phải thực hiện trên đúng 
 | AP chính | LAP-PT (`Light Weight Access Point`) | GigabitEthernet0; Dot11Radio0; trang `WLC` với trường `Primary Controller` |
 | AP dự phòng | AP-PT-A | Port 1 wireless: SSID, WPA-PSK, WPA2-PSK, WEP, Encryption Type; Port 0 Ethernet link settings |
 | Palette tham khảo | WLC, 3504, 2504, LAP-PT, 3702i, AP-PT, AP-PT-A, AP-PT-AC, AP-PT-N, Meraki, home router, wireless khác | Khả năng khác nhau, không giả định tương đương |
-| Router | Sẽ chốt model cụ thể khi dựng `.pkt` | Cần subinterface 802.1Q (hoặc thiết kế model hỗ trợ) + ACL |
-| Switch | Sẽ chốt model cụ thể khi dựng `.pkt` | Cần VLAN + trunk/access |
+| Router | Sẽ chốt model cụ thể khi dựng `.pkt` | Cần subinterface 802.1Q (hoặc thiết kế model hỗ trợ) + `ip helper-address` cho DHCP relay + ACL |
+| Switch | Sẽ chốt model cụ thể khi dựng `.pkt` | Cần VLAN + **trunk cho cổng WLC**; các cổng còn lại chốt theo model |
 | Server | Server-PT | DHCP (ưu tiên xác minh trước); RADIUS kiểm tra sau |
 | Client | Laptop/Smartphone PT (≥ 4) | 2 Staff + 2 Guest |
 
 > Quy tắc: AP chính là LAP-PT, bắt đầu 01 AP. AP-PT-A chỉ là fallback standalone khi chứng minh WLC tập trung bất khả thi và scope được sửa đổi.
+
+> **Cảnh báo tên cổng:** phải đối chiếu tên cổng trực tiếp trong GUI của đúng bản 9.0.1.0858 trước khi đấu cáp. Không suy tên cổng từ tài liệu tham khảo bên ngoài — ví dụ có nguồn ghi LAP-PT chỉ có một cổng tên `Port 0`, trong khi GUI ghi `GigabitEthernet0`. Cắm sai tên cổng có thể làm link không lên mà không báo lỗi rõ ràng.
 
 ## 3. Ma trận quan sát vs kiểm chứng
 

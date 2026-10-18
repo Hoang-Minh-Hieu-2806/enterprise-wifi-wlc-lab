@@ -4,12 +4,13 @@ Lưu bản sao cấu hình của switch Layer 2 (ví dụ `show running-config`,
 
 ## Hiện trạng
 
-> Chưa có cấu hình (Planned). Không giả định trunk cho mọi cổng.
+> Chưa có cấu hình (Planned). Cổng Switch↔WLC **bắt buộc trunk**; các cổng còn lại không giả định trunk.
 
 ## Nội dung dự kiến
 
 - VLAN 10 (STAFF), 20 (GUEST), 99 (MANAGEMENT).
-- Cổng tới router, WLC, LAP-PT, Server-PT: trunk hay access **chốt độc lập từng đoạn** theo model (xem [../../docs/topology.md](../../docs/topology.md)).
+- Cổng tới WLC: **trunk** mang VLAN 99 untagged/native + VLAN 10, 20 tagged (lý do tại [../../docs/topology.md](../../docs/topology.md) §3.1).
+- Cổng tới router, LAP-PT, Server-PT: trunk hay access **chốt độc lập từng đoạn** theo model.
 - Bảng VLAN cuối cùng phải khớp [../../docs/ip-vlan-plan.md](../../docs/ip-vlan-plan.md) (kiểm chứng ở TC-12).
 
 ## Quy định

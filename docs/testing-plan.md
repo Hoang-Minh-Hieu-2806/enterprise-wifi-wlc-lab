@@ -19,13 +19,14 @@
 | TC-05 | Core | REQ-05 | WLAN `GUEST-WIFI` được tạo và phát sóng |
 | TC-06 | Core | REQ-06 | Staff associate bằng WPA2-PSK |
 | TC-07 | Core | REQ-06 | Guest associate bằng WPA2-PSK |
-| TC-08 | Core | REQ-07, REQ-08 | Client nhận IP đúng subnet (DHCP Server-PT) |
+| TC-08 | Core | REQ-07, REQ-08 | Client nhận IP đúng subnet (DHCP Server-PT qua `ip helper-address`) |
 | TC-09 | Core | REQ-09 | Client tới được gateway tương ứng |
 | TC-10 | Core | REQ-11 | Guest không tới được Staff |
-| TC-11 | Core | REQ-11 | Guest không tới được Management |
+| TC-11 | Core | REQ-11 | Guest không tới được thiết bị quản trị (DHCP là ngoại lệ có chủ đích) |
 | TC-12 | Core | REQ-07, REQ-11 | VLAN tồn tại đúng + Staff chỉ giữ truy cập cho phép + ACL hiển thị |
 | TC-13 | Conditional | REQ-12 | RADIUS/WPA2-Enterprise cho Staff (thử sau cùng) |
 | TC-14 | Core + Conditional | REQ-10 | Sai credential bị từ chối (PSK là Core; RADIUS là Conditional) |
+| TC-01→TC-14 | Core + Conditional | REQ-13 | Bằng chứng: mọi TC Core có `Actual result` thực tế + file tồn tại trong `../evidence/`; báo cáo trung thực tại `../report/` |
 
 ## 3. Điều kiện chung và thứ tự chạy
 

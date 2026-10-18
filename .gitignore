@@ -37,6 +37,10 @@ private/
 packet-tracer/tmp/
 packet-tracer/backup/
 
+# Local tooling (developer machine only, not a project deliverable)
+# Note: *.log is already ignored above.
+packet-tracer/start-pt-bridge.ps1
+
 # NOTE: Do NOT ignore final deliverables:
 # - *.pkt files in packet-tracer/
 # - documentation in docs/ and report/

@@ -23,7 +23,7 @@
 | Hạng mục | Nội dung |
 | --- | --- |
 | Môi trường mô phỏng | Cisco Packet Tracer 9.0.1.0858 (đã chốt) |
-| Thiết bị mạng (dự kiến) | Router (subinterface 802.1Q + ACL), Switch Layer 2 (VLAN), WLC, LAP-PT (AP chính), Server-PT (DHCP, kiểm tra thêm RADIUS), Wireless Clients (≥ 4: 2 Staff + 2 Guest) |
+| Thiết bị mạng (dự kiến) | Router (subinterface 802.1Q, DHCP relay, ACL), Switch Layer 2 (VLAN, trunk tới WLC), WLC, LAP-PT (AP chính), Server-PT (DHCP, kiểm tra thêm RADIUS), Wireless Clients (≥ 4: 2 Staff + 2 Guest) |
 | Thiết bị dự phòng | AP-PT-A ở chế độ standalone, chỉ dùng khi chứng minh quản lý tập trung bằng WLC là bất khả thi và phạm vi dự án được sửa đổi rõ ràng |
 | Dịch vụ mạng | DHCP trên Server-PT (ưu tiên xác minh trước); RADIUS là mục Conditional, thử sau |
 | Ngôn ngữ tài liệu | Tiếng Việt (báo cáo, tài liệu, test case, hướng dẫn nhóm) |
@@ -33,14 +33,14 @@ Phiên bản Packet Tracer, model thiết bị quan sát được và các chứ
 
 ## 3. Thành phần mạng dự kiến
 
-- 01 Router (định tuyến liên VLAN, DHCP relay nếu cần, ACL).
-- 01 Switch Layer 2 (VLAN; chế độ trunk/access chốt theo model thực tế, không giả định trước).
+- 01 Router (định tuyến liên VLAN, DHCP relay **bắt buộc** cho VLAN 10/20 vì Server-PT ở VLAN 99, ACL).
+- 01 Switch Layer 2 (VLAN; cổng Switch↔WLC **bắt buộc trunk** để mang VLAN 99+10+20, các cổng còn lại chốt theo model thực tế).
 - 01 WLC quản lý tập trung AP và WLAN/SSID (giao diện `Wireless LANs` đã được nhìn thấy trong GUI, chưa kiểm chứng tạo WLAN thành công).
 - 01 LAP-PT ở giai đoạn đầu (mở rộng lên 2–3 AP sau khi AP đầu join thành công); AP-PT-A chỉ là dự phòng standalone.
 - 01 Server-PT cung cấp DHCP; khả năng RADIUS sẽ kiểm tra riêng.
 - Ít nhất 4 wireless client: 2 Staff + 2 Guest.
 
-Xem chi tiết tại [docs/topology.md](docs/topology.md). Chế độ cổng (trunk/access), ánh xạ WLAN→VLAN và cơ chế join AP→WLC đều chưa được kiểm chứng và không được giả định trước.
+Xem chi tiết tại [docs/topology.md](docs/topology.md). Ánh xạ WLAN→VLAN và cơ chế join AP→WLC chưa được kiểm chứng. Cổng Switch↔WLC **bắt buộc trunk** (nếu Packet Tracer không hỗ trợ thì phải sửa scope, xem `docs/topology.md` §3); các đoạn còn lại chốt theo model thực tế.
 
 ## 4. Phân tách SSID và VLAN (đề xuất)
 
@@ -144,7 +144,7 @@ Nhãn `Passed` chỉ được dùng khi có minh chứng hỗ trợ. Một tính
 - [ ] Ánh xạ mỗi SSID tới đúng VLAN (trường VLAN trong GUI mới chỉ được nhìn thấy).
 - [ ] WPA2-PSK: client associate thành công/thất bại.
 - [ ] WPA2-Enterprise/RADIUS vận hành (Conditional, thử sau cùng).
-- [ ] Trunk/access cho đúng model WLC/AP đã chọn (không giả định cùng một thiết kế trunk).
+- [ ] Trunk/access cho đúng model WLC/AP đã chọn (Switch↔WLC **bắt buộc trunk**; đoạn AP/Switch còn lại không giả định cùng thiết kế).
 - [ ] Guest isolation end-to-end sau ACL.
 - [ ] DHCP cho mọi VLAN client.
 - [ ] WLC management reachability và LAP nhận IP hợp lệ.

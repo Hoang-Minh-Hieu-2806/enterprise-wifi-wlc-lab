@@ -132,15 +132,15 @@
 | **Evidence filename** | `evidence/tc-10-guest-to-staff.png` (dự kiến, chưa có) |
 | **Status** | Not Tested |
 
-## TC-11 — Guest không tới được Management (Core)
+## TC-11 — Guest không tới được thiết bị quản trị (Core)
 
 | Hạng mục | Nội dung |
 | --- | --- |
 | **Loại** | Core |
 | **Requirement** | REQ-11 |
-| **Preconditions** | TC-08 đạt; ACL đã áp; địa chỉ quản trị chốt theo [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) |
-| **Procedure** | 1. Từ Guest `ping` tới địa chỉ quản trị (ví dụ WLC `192.168.99.10`). 2. Chạy `show access-lists` / `show running-config` trên router. |
-| **Expected result** | Guest không tới được VLAN 99; ACL hiển thị khớp [../docs/security-design.md](../docs/security-design.md) |
+| **Preconditions** | TC-08 đạt (Guest đã nhận IP qua DHCP — chứng minh ngoại lệ DHCP đang hiệu lực); ACL đã áp; địa chỉ quản trị chốt theo [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) |
+| **Procedure** | 1. Từ Guest `ping` tới địa chỉ quản trị (ví dụ WLC `192.168.99.10`) → phải thất bại. 2. Từ Guest `ping` tới switch/router trong VLAN 99 → phải thất bại. 3. Xác nhận Guest **vẫn nhận được IP** từ Server-PT `192.168.99.20` (`ipconfig`, đối chiếu TC-08). 4. Chạy `show access-lists` / `show running-config` trên router. |
+| **Expected result** | Guest không tới được **thiết bị quản trị** (WLC, switch, router, LAP-PT), nhưng **vẫn nhận được IP** từ Server-PT qua DHCP; ACL hiển thị khớp [../docs/security-design.md](../docs/security-design.md). Guest **vẫn tới được** `192.168.99.20` cho DHCP — đây là ngoại lệ có chủ đích, không phải lỗi |
 | **Actual result** | _Not Tested_ |
 | **Evidence filename** | `evidence/tc-11-guest-to-mgmt.png` (dự kiến, chưa có) |
 | **Status** | Not Tested |
