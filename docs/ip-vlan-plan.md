@@ -22,12 +22,12 @@
 | Router sub-interface / gateway VLAN 10 | 10 | 192.168.10.1 | Gateway Staff — **đã cấu hình** (`Gi0/0.10`) |
 | Router sub-interface / gateway VLAN 20 | 20 | 192.168.20.1 | Gateway Guest — **đã cấu hình** (`Gi0/0.20`) |
 | Router interface / gateway VLAN 99 | 99 | 192.168.99.1 | Gateway Management — **đã cấu hình** trên `Gi0/0` (VLAN 99 native, không tạo subinterface) |
-| WLC management | 99 | 192.168.99.10 (đề xuất) | **Chưa cấu hình** — điền Management IPv4 qua GUI, chốt sau TC-01 |
+| WLC management | 99 | 192.168.99.10 | **đã cấu hình** trên interface `Vlan1` (không phải interface ảo `management`); gateway `192.168.99.1`; TC-01 `Passed` |
 | Switch (SVI quản trị) | 99 | 192.168.99.2 | **đã cấu hình** (`interface Vlan99`) + `ip default-gateway 192.168.99.1` |
 | Server-PT (DHCP; RADIUS kiểm tra sau) | 99 | 192.168.99.20 | **đã cấu hình** tĩnh; 2 pool DHCP đã tạo |
 | LAP-PT-1 (AP đầu tiên) | 99 (quản trị) | DHCP hoặc tĩnh trong 192.168.99.0/24 | **Chưa triển khai** — tùy cơ chế join WLC (TC-02) |
 
-> Địa chỉ trong khung có dây P1 (`192.168.10.1`, `192.168.20.1`, `192.168.99.1`, `.2`, `.20`) **đã được cấu hình** và đối chiếu tại `../configs/`. Địa chỉ WLC `.10` vẫn là **đề xuất**, chờ TC-01.
+> Toàn bộ địa chỉ hạ tầng trong §2 (kể cả WLC `.10`) **đã được cấu hình** và kiểm chứng: TC-01 `Passed` ngày 2026-10-18, ping `192.168.99.20 → 192.168.99.10` đạt `0% loss`. Bản cấu hình IOS đối chiếu tại `../configs/`; cấu hình WLC không có file CLI nên ghi lại tại [../configs/wlc-ap/README.md](../configs/wlc-ap/README.md).
 >
 > File này vẫn là nguồn chuẩn: muốn đổi địa chỉ thì sửa ở đây trước, rồi mới cập nhật `../configs/` và file `.pkt`.
 
@@ -64,4 +64,4 @@ interface <subinterface VLAN 20>
 - [x] Địa chỉ đưa vào `ip helper-address` (§3.1) khớp địa chỉ Server-PT cuối cùng — `192.168.99.20`.
 - [ ] LAP nhận IP quản trị bằng DHCP hay tĩnh.
 - [x] Dải DHCP loại trừ cụ thể cho từng VLAN — chưa cần loại trừ vì dải động bắt đầu ở `.100`; **còn phải rà soát pool `serverPool` mặc định của PT**.
-- [x] Chế độ cổng từng đoạn — Switch↔WLC **trunk** (`Fa0/1`, native VLAN 99 + tagged 10,20), Switch↔Server-PT **access VLAN 99** (`Fa0/2`), Switch↔Router **trunk** (`Gi0/1`). **Còn lại: Switch↔LAP-PT.**
+- [x] Chế độ cổng từng đoạn — Switch↔WLC **trunk** (`Fa0/1`, native VLAN 99 + tagged 10,20), Switch↔Server-PT **access VLAN 99** (`Fa0/2`), Switch↔Router **trunk** (`Gi0/1`). Phía WLC (`GigabitEthernet1`) cũng phải là **trunk** nhưng giữ **native VLAN 1** — frame untagged của `Vlan1` rơi vào VLAN 99 của switch (đã kiểm chứng TC-01). **Còn lại: Switch↔LAP-PT.**

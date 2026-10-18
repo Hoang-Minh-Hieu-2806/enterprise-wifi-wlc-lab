@@ -4,9 +4,11 @@ Thư mục lưu minh chứng kiểm thử trên bản 9.0.1.0858: ảnh chụp m
 
 ## Hiện trạng
 
-> **Đã có minh chứng bring-up P1:** [`p1-wired-skeleton-topology.png`](p1-wired-skeleton-topology.png) — ảnh canvas Packet Tracer chụp ngày 2026-10-18, thể hiện 4 thiết bị (`WLC1` WLC-3504, `R1` 2911, `SW1` 2960-24TT, `SRV1` Server-PT) và 3 liên kết đều up.
+> **Đã có minh chứng bring-up P1:** [`p1-wired-skeleton-topology.png`](p1-wired-skeleton-topology.png) — ảnh canvas Packet Tracer chụp ngày 2026-10-18, thể hiện 4 thiết bị (`WLC1` WLC-3504, `R1` 2911, `SW1` 2960-24TT, `SRV1` Server-PT) và 3 liên kết đều up. Đây **không phải kết quả test case** — tên file cố ý không theo mã TC.
 >
-> Đây **không phải kết quả test case** — tên file cố ý không theo mã TC. Mọi test case vẫn đang ở trạng thái `Not Tested`. Không tạo screenshot giả.
+> **Đã có minh chứng test case:** [`tc-01-wlc-reachability.png`](tc-01-wlc-reachability.png) — cửa sổ Command Prompt của `SRV1` ngày 2026-10-18, thấy rõ chuỗi `ping 192.168.99.10` đi từ `100% loss` (khi uplink WLC còn là access VLAN 1) → `25% loss` (ARP lần đầu) → **`0% loss`** sau khi sửa. TC-01 `Passed`.
+>
+> Các test case còn lại vẫn `Not Tested`. Không tạo screenshot giả.
 
 ## Quy định
 

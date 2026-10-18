@@ -40,10 +40,10 @@ Tóm tắt: quản lý tập trung bằng WLC (01 LAP-PT trước), hai SSID, ph
 | # | Sản phẩm | Vị trí | Trạng thái hiện tại |
 | --- | --- | --- | --- |
 | 1 | Tài liệu thiết kế (overview, requirements, topology, IP/VLAN, security) | `docs/` | In Progress (finalize, chưa nghiệm thu) |
-| 2 | File mô phỏng Packet Tracer (`.pkt`, đúng bản 9.0.1.0858) | `packet-tracer/` | In Progress — `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1, chưa có AP/client |
-| 3 | Bản sao cấu hình thiết bị (đã che secret) | `configs/` | In Progress — `router/` + `switch/` đã có bản khung P1, `wlc-ap/` chưa |
-| 4 | Kế hoạch và ca kiểm thử Core/Conditional | `docs/testing-plan.md`, `tests/test-cases.md` | Planned, toàn bộ `Not Tested` |
-| 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | In Progress — có minh chứng bring-up P1, chưa có minh chứng test case |
+| 2 | File mô phỏng Packet Tracer (`.pkt`, đúng bản 9.0.1.0858) | `packet-tracer/` | In Progress — `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1 + WLC đã cấu hình quản trị; chưa có AP/client |
+| 3 | Bản sao cấu hình thiết bị (đã che secret) | `configs/` | In Progress — `router/` + `switch/` có bản khung P1; `wlc-ap/` ghi cấu hình hạ tầng WLC (chưa có WLAN/SSID) |
+| 4 | Kế hoạch và ca kiểm thử Core/Conditional | `docs/testing-plan.md`, `tests/test-cases.md` | In Progress — **TC-01 `Passed`**; TC-02→TC-14 `Not Tested` |
+| 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | In Progress — có minh chứng bring-up P1 + **TC-01 `Passed`** |
 | 6 | Báo cáo (dàn ý + nội dung trong `report/`, chưa cần DOCX/PDF) | `report/` | In Progress — `midterm-report.md` đã soạn |
 
 ## 5. Tiêu chí hoàn thành dự án

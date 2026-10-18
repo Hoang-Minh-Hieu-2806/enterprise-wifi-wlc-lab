@@ -8,7 +8,7 @@ Lưu bản sao cấu hình của router (ví dụ `show running-config`, `show a
 >
 > Đã kiểm chứng trong khung P1: `Gi0/0` = `192.168.99.1/24` (VLAN 99 native), `Gi0/0.10`/`Gi0/0.20` dot1Q với `ip helper-address 192.168.99.20`.
 >
-> **Chưa có:** ACL, và chưa test case nào `Passed`. Minh chứng bring-up P1 tại [../../evidence/p1-wired-skeleton-topology.png](../../evidence/p1-wired-skeleton-topology.png).
+> **Chưa có:** ACL. **TC-01 đã `Passed`** — minh chứng [../../evidence/tc-01-wlc-reachability.png](../../evidence/tc-01-wlc-reachability.png). Minh chứng bring-up P1 tại [../../evidence/p1-wired-skeleton-topology.png](../../evidence/p1-wired-skeleton-topology.png).
 
 ## Nội dung dự kiến (theo [../../docs/ip-vlan-plan.md](../../docs/ip-vlan-plan.md))
 

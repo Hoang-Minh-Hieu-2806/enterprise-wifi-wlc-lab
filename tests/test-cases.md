@@ -1,6 +1,6 @@
 # Danh sách ca kiểm thử (Test Cases)
 
-> Toàn bộ test case ở trạng thái **Not Tested**. Cột `Actual result` để trống cho tới khi có kiểm thử thật trên Packet Tracer 9.0.1.0858. Kế hoạch tổng thể và phân loại Core/Conditional xem tại [../docs/testing-plan.md](../docs/testing-plan.md). RADIUS (TC-13) là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
+> Cột `Actual result` để trống cho tới khi có kiểm thử thật trên Packet Tracer 9.0.1.0858. Hiện **TC-01 đã `Passed`**; các test case còn lại vẫn **Not Tested**. Kế hoạch tổng thể và phân loại Core/Conditional xem tại [../docs/testing-plan.md](../docs/testing-plan.md). RADIUS (TC-13) là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
 
 ## TC-01 — WLC management reachability (Core)
 
@@ -11,9 +11,9 @@
 | **Preconditions** | File `.pkt` mở được trên 9.0.1.0858; WLC đã đấu nối có dây và đặt Management IPv4 theo [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) |
 | **Procedure** | 1. Từ một thiết bị cùng/thông được VLAN 99 `ping` tới Management IPv4 của WLC (ví dụ `192.168.99.10`). 2. Ghi model WLC và địa chỉ đã dùng. |
 | **Expected result** | Ping tới WLC thành công (reply) |
-| **Actual result** | _Not Tested_ |
-| **Evidence filename** | `evidence/tc-01-wlc-reachability.png` (dự kiến, chưa có) |
-| **Status** | Not Tested |
+| **Actual result** | **Ping thành công.** Model `WLC-3504` (device type 41), Management IPv4 `192.168.99.10/24`, gateway `192.168.99.1`, đặt trên interface `Vlan1` (không phải interface `management` — `management` là interface ảo type 48, không nối vào cổng vật lý). Nguồn ping: `SRV1` (`192.168.99.20`). Lần 1: `Sent = 4, Received = 3, Lost = 1 (25% loss)` do ARP chưa ấm; lần 2: `Sent = 4, Received = 4, Lost = 0 (0% loss)`. Để thông được, phải chuyển uplink `WLC1 GigabitEthernet1` từ access VLAN 1 (mặc định) sang **trunk** và giữ native VLAN 1 phía WLC, trong khi `SW1 Fa0/1` native VLAN 99: frame untagged của WLC rơi vào VLAN 99 của switch nên Management IPv4 nằm đúng VLAN 99 theo thiết kế. Xem [../docs/implementation-notes.md](../docs/implementation-notes.md) §5. |
+| **Evidence filename** | `evidence/tc-01-wlc-reachability.png` |
+| **Status** | Passed |
 
 ## TC-02 — LAP-PT nhận IP quản trị hợp lệ (Core)
 

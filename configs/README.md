@@ -8,9 +8,9 @@ Thư mục lưu bản sao cấu hình thiết bị để đối chiếu và ch�
 
 ## Hiện trạng
 
-> **Đã có cấu hình khung có dây (P1).** `router/router-r1-running-config.txt` và `switch/switch-sw1-running-config.txt`, xuất ngày 2026-10-18. `wlc-ap/` vẫn chưa có vì phần WLAN/SSID/WPA2 phải thao tác tay trên GUI và chưa làm.
+> **Đã có cấu hình khung có dây (P1).** `router/router-r1-running-config.txt` và `switch/switch-sw1-running-config.txt`, xuất ngày 2026-10-18. `wlc-ap/README.md` đã ghi cấu hình **hạ tầng** WLC (Management IPv4 trên `Vlan1` + switchport uplink); WLAN/SSID/WPA2 vẫn chưa làm vì phải thao tác trên GUI.
 >
-> Chưa test case nào `Passed`: cấu hình này thuộc bước dựng khung, chưa có client vô tuyến. Minh chứng bring-up tại [../evidence/p1-wired-skeleton-topology.png](../evidence/p1-wired-skeleton-topology.png).
+> **TC-01 `Passed`** (2026-10-18): ping tới Management IPv4 của WLC đạt `0% loss`. Minh chứng: [../evidence/tc-01-wlc-reachability.png](../evidence/tc-01-wlc-reachability.png). Bring-up khung: [../evidence/p1-wired-skeleton-topology.png](../evidence/p1-wired-skeleton-topology.png).
 
 ## Quy định khi bổ sung
 

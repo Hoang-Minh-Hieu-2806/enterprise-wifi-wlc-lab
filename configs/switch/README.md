@@ -8,7 +8,7 @@ Lưu bản sao cấu hình của switch Layer 2 (ví dụ `show running-config`,
 >
 > Đã kiểm chứng trong khung P1: VLAN 10 (STAFF), 20 (GUEST), 99 (MANAGEMENT) active; `Fa0/1` trunk (→ WLC), `Gi0/1` trunk (→ router) native VLAN 99 + allowed 10,20,99; `Fa0/2` access VLAN 99 (→ Server-PT); SVI `Vlan99` = `192.168.99.2/24`. Model là **dot1q-only** nên không dùng `switchport trunk encapsulation dot1q`.
 >
-> **Chưa có:** cổng tới LAP-PT, và chưa test case nào `Passed`. Minh chứng bring-up P1 tại [../../evidence/p1-wired-skeleton-topology.png](../../evidence/p1-wired-skeleton-topology.png).
+> **Chưa có:** cổng tới LAP-PT. **TC-01 đã `Passed`** — minh chứng [../../evidence/tc-01-wlc-reachability.png](../../evidence/tc-01-wlc-reachability.png); lưu ý phía WLC giữ trunk native VLAN 1 (xem [../wlc-ap/README.md](../wlc-ap/README.md)). Minh chứng bring-up P1 tại [../../evidence/p1-wired-skeleton-topology.png](../../evidence/p1-wired-skeleton-topology.png).
 
 ## Nội dung dự kiến
 

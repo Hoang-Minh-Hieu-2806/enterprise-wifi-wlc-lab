@@ -1,6 +1,6 @@
 # Kế hoạch kiểm thử (Core / Conditional / Research-only)
 
-> Toàn bộ test case ở trạng thái **Not Tested**. Cột kết quả thực tế (`Actual result`) để trống cho tới khi có kiểm thử thật. Chi tiết từng bước xem tại [../tests/test-cases.md](../tests/test-cases.md).
+> Cột kết quả thực tế (`Actual result`) để trống cho tới khi có kiểm thử thật. Hiện **TC-01 đã `Passed`** (2026-10-18); các test case còn lại vẫn **Not Tested**. Chi tiết từng bước xem tại [../tests/test-cases.md](../tests/test-cases.md).
 
 ## 1. Phân loại test
 
@@ -58,3 +58,9 @@ Ngoài minh chứng theo mã TC, `../evidence/` hiện có một ảnh chụp t�
 - `p1-wired-skeleton-topology.png` — ảnh canvas Packet Tracer (2026-10-18) thể hiện 4 thiết bị của khung có dây và 3 liên kết đều up.
 
 File này **không** đại diện cho test case nào và **không** được dùng để chuyển bất kỳ TC nào sang `Passed`. Cấu hình tương ứng lưu tại `../configs/`.
+
+## 7. Kết quả kiểm thử đã chạy
+
+| Test ID | Ngày | Kết quả | Minh chứng | Ghi chú |
+| --- | --- | --- | --- | --- |
+| TC-01 | 2026-10-18 | `Passed` | `../evidence/tc-01-wlc-reachability.png` | `WLC-3504`, Management IPv4 `192.168.99.10/24` trên `Vlan1`; ping từ `SRV1` `192.168.99.20`: 4/4, `0% loss`. Phải chuyển uplink WLC sang trunk và giữ native VLAN 1 phía WLC — chi tiết tại [implementation-notes.md](implementation-notes.md) §5 |
