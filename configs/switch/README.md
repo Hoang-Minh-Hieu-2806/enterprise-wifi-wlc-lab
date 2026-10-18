@@ -4,7 +4,11 @@ Lưu bản sao cấu hình của switch Layer 2 (ví dụ `show running-config`,
 
 ## Hiện trạng
 
-> Chưa có cấu hình (Planned). Cổng Switch↔WLC **bắt buộc trunk**; các cổng còn lại không giả định trunk.
+> **Đã có cấu hình khung có dây.** `switch-sw1-running-config.txt` — model `2960-24TT`, xuất ngày 2026-10-18 gồm `show running-config` và `show vlan brief` trên bản 9.0.1.0858.
+>
+> Đã kiểm chứng trong khung P1: VLAN 10 (STAFF), 20 (GUEST), 99 (MANAGEMENT) active; `Fa0/1` trunk (→ WLC), `Gi0/1` trunk (→ router) native VLAN 99 + allowed 10,20,99; `Fa0/2` access VLAN 99 (→ Server-PT); SVI `Vlan99` = `192.168.99.2/24`. Model là **dot1q-only** nên không dùng `switchport trunk encapsulation dot1q`.
+>
+> **Chưa có:** cổng tới LAP-PT, và chưa test case nào `Passed`. Minh chứng bring-up P1 tại [../../evidence/p1-wired-skeleton-topology.png](../../evidence/p1-wired-skeleton-topology.png).
 
 ## Nội dung dự kiến
 

@@ -41,6 +41,14 @@ packet-tracer/backup/
 # Note: *.log is already ignored above.
 packet-tracer/start-pt-bridge.ps1
 
+# Scratch .pkt on the developer machine: the committed deliverable is
+# packet-tracer/enterprise-wifi-wlc-lab-v1.pkt, not these drafts.
+packet-tracer/test.pkt
+
+# Third-party Packet Tracer script-module binary (downloaded separately,
+# not redistributed in this repository).
+packet-tracer/V5.2.pts
+
 # NOTE: Do NOT ignore final deliverables:
 # - *.pkt files in packet-tracer/
 # - documentation in docs/ and report/

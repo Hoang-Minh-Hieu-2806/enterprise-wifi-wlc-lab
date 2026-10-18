@@ -4,7 +4,11 @@ Lưu bản sao cấu hình của router (ví dụ `show running-config`, `show a
 
 ## Hiện trạng
 
-> Chưa có cấu hình (Planned). Không giả định trunk/access hay ACL đã hoạt động.
+> **Đã có cấu hình khung có dây.** `router-r1-running-config.txt` — model `2911`, xuất ngày 2026-10-18 từ `show running-config` trên bản 9.0.1.0858.
+>
+> Đã kiểm chứng trong khung P1: `Gi0/0` = `192.168.99.1/24` (VLAN 99 native), `Gi0/0.10`/`Gi0/0.20` dot1Q với `ip helper-address 192.168.99.20`.
+>
+> **Chưa có:** ACL, và chưa test case nào `Passed`. Minh chứng bring-up P1 tại [../../evidence/p1-wired-skeleton-topology.png](../../evidence/p1-wired-skeleton-topology.png).
 
 ## Nội dung dự kiến (theo [../../docs/ip-vlan-plan.md](../../docs/ip-vlan-plan.md))
 

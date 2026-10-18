@@ -1,21 +1,21 @@
 # Topology logic (mức triển khai được)
 
-> Topology dưới đây là **thiết kế dự kiến, chưa kiểm chứng hoạt động**. Sơ đồ thể hiện quan hệ logic đủ rõ để triển khai trong Packet Tracer 9.0.1.0858. Ánh xạ WLAN→VLAN và cơ chế join AP→WLC phải được xác định theo đúng model đã chọn (xem [implementation-notes.md](implementation-notes.md)). Riêng cổng Switch↔WLC **bắt buộc trunk** để mang VLAN 99 + 10 + 20 (lý do tại §3); hai đoạn còn lại không giả định dùng chung thiết kế đó.
+> Topology dưới đây là **thiết kế đã chốt model, chưa kiểm chứng hoạt động vô tuyến**. Model thiết bị đã chốt và khung có dây đã dựng trong Packet Tracer 9.0.1.0858 (xem [implementation-notes.md](implementation-notes.md) §1–§2). Ánh xạ WLAN→VLAN và cơ chế join AP→WLC vẫn phải được kiểm chứng trên đúng model đã chốt. Riêng cổng Switch↔WLC **bắt buộc trunk** để mang VLAN 99 + 10 + 20 (lý do tại §3).
 
-## 1. Thành phần và model đã quan sát
+## 1. Thành phần và model đã chốt
 
-| Thiết bị | Số lượng triển khai | Vai trò | Tình trạng xác minh |
-| --- | --- | --- | --- |
-| Router | 01 | Định tuyến liên VLAN (subinterface 802.1Q hoặc thiết kế được model hỗ trợ), **DHCP relay bắt buộc** (§3), ACL cô lập Guest | Model cụ thể + ACL chưa kiểm chứng |
-| Switch Layer 2 | 01 | VLAN 10, 20, 99; cổng Switch↔WLC trunk, các cổng còn lại chốt theo model | VLAN/trunk chưa kiểm chứng |
-| WLC | 01 | Quản lý tập trung LAP và WLAN/SSID; GUI `Wireless LANs` đã thấy | Thấy GUI, chưa kiểm chứng tạo WLAN |
-| LAP-PT (Lightweight AP) | 01 ở giai đoạn đầu | AP chính, join về WLC qua `Primary Controller`; phát cả hai SSID nếu model cho phép | Thấy trang `WLC`, chưa kiểm chứng join |
-| AP mở rộng | +1–2 sau | Chỉ thêm sau khi AP đầu join thành công và client kết nối được | Planned |
-| AP-PT-A | Dự phòng | Standalone, chỉ dùng khi chứng minh WLC tập trung bất khả thi + sửa scope | Chưa dùng |
-| Server-PT | 01 | DHCP (ưu tiên xác minh trước); kiểm tra thêm khả năng RADIUS | Chưa kiểm chứng |
-| Wireless clients | ≥ 4 | 2 Staff + 2 Guest để kiểm thử phân tách và gateway độc lập | Planned |
+| Thiết bị | Model đã chốt | Số lượng triển khai | Vai trò | Tình trạng xác minh |
+| --- | --- | --- | --- | --- |
+| Router | `2911` | 01 | Định tuyến liên VLAN (subinterface 802.1Q), **DHCP relay bắt buộc** (§3), ACL cô lập Guest | Model đã chốt; subinterface + relay đã dựng; **ACL chưa kiểm chứng** |
+| Switch Layer 2 | `2960-24TT` | 01 | VLAN 10, 20, 99; cổng Switch↔WLC trunk, các cổng còn lại chốt theo model | Model đã chốt; VLAN/trunk đã dựng và đọc lại được |
+| WLC | `WLC-3504` | 01 | Quản lý tập trung LAP và WLAN/SSID; GUI `Wireless LANs` đã thấy | Model đã chốt; **chưa kiểm chứng tạo WLAN** |
+| LAP-PT (Lightweight AP) | `LAP-PT` | 01 ở giai đoạn đầu | AP chính, join về WLC qua `Primary Controller`; phát cả hai SSID nếu model cho phép | Thấy trang `WLC`, **chưa kiểm chứng join** |
+| AP mở rộng | cùng `LAP-PT` | +1–2 sau | Chỉ thêm sau khi AP đầu join thành công và client kết nối được | Planned |
+| AP-PT-A | `AP-PT-A` | Dự phòng | Standalone, chỉ dùng khi chứng minh WLC tập trung bất khả thi + sửa scope | Chưa dùng |
+| Server-PT | `Server-PT` | 01 | DHCP (đã tạo pool); kiểm tra thêm khả năng RADIUS | DHCP server chạy; **chưa có client để kiểm chứng cấp phát** |
+| Wireless clients | Chưa chốt | ≥ 4 | 2 Staff + 2 Guest để kiểm thử phân tách và gateway độc lập | Planned |
 
-Các model khác trong palette (3504, 2504, 3702i, AP-PT, AP-PT-AC, AP-PT-N, Meraki, home router, ...) có khả năng khác nhau — không giả định tương đương. Model cuối cùng chốt tại [implementation-notes.md](implementation-notes.md).
+Các model khác trong palette có khả năng khác nhau — không giả định tương đương. Model cuối cùng đã chốt tại [implementation-notes.md](implementation-notes.md) §2.
 
 ## 2. Sơ đồ logic (Mermaid)
 
@@ -59,11 +59,11 @@ flowchart TB
 
 | Kết nối | Ý nghĩa logic | Quyết định chốt khi triển khai |
 | --- | --- | --- |
-| Router ↔ Switch | Liên VLAN, gateway `.1` mỗi VLAN | Subinterface 802.1Q hay thiết kế khác tùy model router; ghi model + interface thực tế |
-| Switch ↔ WLC | Quản trị WLC (VLAN 99) + mang lưu lượng VLAN 10/20 của client | **Trunk bắt buộc** (VLAN 99 untagged/native + VLAN 10, 20 tagged) — lý do tại §3.1 |
-| Switch ↔ LAP-PT | Uplink AP (quản trị VLAN 99 + tải SSID/VLAN nếu hỗ trợ) | Trunk hay access tùy model LAP-PT; xác minh multi-SSID→multi-VLAN |
-| Switch ↔ Server-PT | Server tới đúng VLAN phục vụ DHCP (và RADIUS nếu thử) | Access VLAN 99 (theo [ip-vlan-plan.md](ip-vlan-plan.md) §2) |
-| LAP-PT ↔ Client | Vô tuyến, SSID ánh xạ tới VLAN | `STAFF-WIFI` → 10, `GUEST-WIFI` → 20; xác thực WPA2-PSK trước |
+| Router ↔ Switch | Liên VLAN, gateway `.1` mỗi VLAN | **Đã chốt:** router-on-a-stick trên `2911` — `Gi0/0` = `192.168.99.1/24` (VLAN 99 native) + `Gi0/0.10` (dot1Q 10) + `Gi0/0.20` (dot1Q 20) |
+| Switch ↔ WLC | Quản trị WLC (VLAN 99) + mang lưu lượng VLAN 10/20 của client | **Trunk bắt buộc** (VLAN 99 untagged/native + VLAN 10, 20 tagged) — lý do tại §3.1. **Đã dựng trên `FastEthernet0/1`**; còn phải chứng minh mang được lưu lượng client |
+| Switch ↔ LAP-PT | Uplink AP (quản trị VLAN 99 + tải SSID/VLAN nếu hỗ trợ) | Trunk hay access tùy model LAP-PT; xác minh multi-SSID→multi-VLAN. **Chưa chốt** — phải đọc tên cổng thật trước |
+| Switch ↔ Server-PT | Server tới đúng VLAN phục vụ DHCP (và RADIUS nếu thử) | **Đã chốt:** access VLAN 99 trên `FastEthernet0/2` (theo [ip-vlan-plan.md](ip-vlan-plan.md) §2) |
+| LAP-PT ↔ Client | Vô tuyến, SSID ánh xạ tới VLAN | `STAFF-WIFI` → 10, `GUEST-WIFI` → 20; xác thực WPA2-PSK trước. **Chưa kiểm chứng** |
 
 Chi tiết subnet và gateway chuẩn xem tại [ip-vlan-plan.md](ip-vlan-plan.md) (authoritative).
 
@@ -81,8 +81,8 @@ Server-PT ở VLAN 99 nhưng cấp DHCP cho VLAN 10 và VLAN 20 ⇒ router phả
 
 ## 4. Thứ tự bring-up (bắt buộc)
 
-1. Dựng có dây: Router–Switch–Server-PT–WLC; cấu hình trunk cho cổng Switch↔WLC (§3.1) và kiểm tra WLC management reachability (TC-01).
-2. Cấu hình DHCP scope trên Server-PT + `ip helper-address` trên router (§3.2). Chưa cần client, nhưng phải xong trước TC-08.
+1. **(xong phần có dây)** Dựng có dây: Router `2911` – Switch `2960-24TT` – Server-PT – WLC `WLC-3504`; cấu hình trunk cho cổng Switch↔WLC (§3.1). **Còn lại:** đặt IP quản trị cho WLC (thao tác tay trên GUI) rồi kiểm tra WLC management reachability (TC-01).
+2. **(xong cấu hình)** Cấu hình DHCP scope trên Server-PT + `ip helper-address` trên router (§3.2). Chưa cần client, nhưng phải xong trước TC-08.
 3. Nối 01 LAP-PT, kiểm tra LAP nhận IP (TC-02) rồi join WLC (TC-03). Dừng lại nếu join thất bại — ghi `Blocked`, chưa thêm AP.
 4. Tạo WLAN Staff trước (TC-04), rồi Guest (TC-05); associate + WPA2-PSK từng SSID (TC-06/TC-07).
 5. Kiểm tra IP/gateway (TC-08/TC-09), rồi ACL cô lập (TC-10/TC-11), cuối cùng đối chiếu VLAN + hiển thị ACL (TC-12).
@@ -91,10 +91,12 @@ Server-PT ở VLAN 99 nhưng cấp DHCP cho VLAN 10 và VLAN 20 ⇒ router phả
 
 ## 5. Lưu ý kiểm chứng
 
-- [ ] Model router/switch/WLC/Server-PT cụ thể và interface thực dùng.
+- [x] Model router/switch/WLC/Server-PT cụ thể và interface thực dùng.
 - [ ] Kiểm chứng **trunk trên cổng Switch↔WLC** mang đủ VLAN 99 + 10 + 20 (nếu không → nhánh dự phòng §3.1).
-- [ ] Đã cấu hình `ip helper-address` cho VLAN 10/20 trỏ về Server-PT (§3.2).
+      Trunk đã cấu hình và VLAN đã đọc lại được, nhưng **chưa** chứng minh mang được lưu lượng client thật.
+- [x] Đã cấu hình `ip helper-address` cho VLAN 10/20 trỏ về Server-PT (§3.2).
 - [ ] Chế độ cổng thực tế cho từng đoạn còn lại (ghi lại, không suy từ đoạn khác).
+      Đã chốt: `Gi0/0`→`Gi0/1` (router, trunk), `Fa0/1` (WLC, trunk), `Fa0/2` (server, access VLAN 99). **Còn lại: đoạn Switch↔LAP-PT.**
 - [ ] LAP-PT join WLC bằng `Primary Controller` như thế nào.
 - [ ] AP có hỗ trợ 2 SSID đồng thời và map đúng VLAN không.
 - [ ] Server-PT có đồng thời DHCP + RADIUS không.

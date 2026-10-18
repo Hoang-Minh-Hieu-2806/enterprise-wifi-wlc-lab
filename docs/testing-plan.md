@@ -50,3 +50,11 @@
 - TC-13 (RADIUS): `Passed` là cộng thêm; `Failed`/`Blocked` kèm lý do và evidence được chấp nhận mà không ảnh hưởng Core.
 - TC-10/TC-11: Guest→Staff/Management phải không tới được sau ACL; TC-09 (gateway của chính Guest) vẫn thông.
 - Mọi `Failed`/`Blocked` phải có nguyên nhân và hướng xử lý, không giấu lỗi.
+
+## 6. Minh chứng bring-up P1 (không phải kết quả test case)
+
+Ngoài minh chứng theo mã TC, `../evidence/` hiện có một ảnh chụp từ giai đoạn dựng khung:
+
+- `p1-wired-skeleton-topology.png` — ảnh canvas Packet Tracer (2026-10-18) thể hiện 4 thiết bị của khung có dây và 3 liên kết đều up.
+
+File này **không** đại diện cho test case nào và **không** được dùng để chuyển bất kỳ TC nào sang `Passed`. Cấu hình tương ứng lưu tại `../configs/`.

@@ -1,6 +1,6 @@
 # Yêu cầu dự án (Requirements)
 
-> Trạng thái dùng các nhãn `Planned` / `In Progress` / `Not Tested` / `Passed` / `Failed` / `Blocked`. Hiện mọi yêu cầu là `Planned`, mọi test là `Not Tested`. Chỉ dùng `Passed` khi có minh chứng. RADIUS là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
+> Trạng thái dùng các nhãn `Planned` / `In Progress` / `Not Tested` / `Passed` / `Failed` / `Blocked`. Hiện phần lớn yêu cầu là `Planned`; **REQ-07 đang `In Progress`** vì hạ tầng VLAN đã dựng và kiểm chứng ở khung có dây P1, nhưng chưa có client để chứng minh phân đoạn thật. **Mọi test vẫn là `Not Tested`.** Chỉ dùng `Passed` khi có minh chứng. RADIUS là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
 
 ## Bảng yêu cầu
 
@@ -12,7 +12,7 @@
 | REQ-04 | WLAN `STAFF-WIFI` được tạo và phát sóng | Core | Cao | TC-04: quét SSID từ client + screenshot | Planned |
 | REQ-05 | WLAN `GUEST-WIFI` được tạo và phát sóng | Core | Cao | TC-05: quét SSID từ client + screenshot | Planned |
 | REQ-06 | Client Staff/Guest associate được bằng WPA2-PSK đã cấu hình | Core | Cao | TC-06, TC-07 + screenshot | Planned |
-| REQ-07 | Phân đoạn VLAN cho Staff (10), Guest (20), Management (99) | Core | Cao | TC-08 (IP đúng subnet) + TC-12 (VLAN) + screenshot | Planned |
+| REQ-07 | Phân đoạn VLAN cho Staff (10), Guest (20), Management (99) | Core | Cao | TC-08 (IP đúng subnet) + TC-12 (VLAN) + screenshot | In Progress — VLAN 10/20/99 đã cấu hình và đọc lại được trên `2960-24TT` (khung có dây P1); chưa có client để chứng minh phân đoạn thật |
 | REQ-08 | Client nhận đúng IP theo subnet của SSID/VLAN tương ứng (DHCP trên Server-PT) | Core | Cao | TC-08: `ipconfig` + screenshot | Planned |
 | REQ-09 | Kết nối tới gateway tương ứng của từng VLAN | Core | Cao | TC-09: `ping` gateway + screenshot | Planned |
 | REQ-10 | Credential sai bị từ chối ở chế độ đã cấu hình (WPA2-PSK bắt buộc; RADIUS là Conditional) | Core + Conditional | Cao | TC-14 + screenshot | Planned |

@@ -12,22 +12,23 @@
 
 Mọi file `.pkt`, cấu hình và screenshot phải thực hiện trên đúng bản này.
 
-## 2. Model thiết bị đã quan sát trong Packet Tracer 9.0.1.0858
+## 2. Model thiết bị đã chốt và cổng thật trong Packet Tracer 9.0.1.0858
 
-| Vai trò | Thiết bị quan sát được | Chi tiết GUI đã thấy (chưa phải bằng chứng chạy được) |
-| --- | --- | --- |
-| WLC | Wireless LAN Controller | Management IPv4 + mask; Gigabit Ethernet; trang `Wireless LANs` với WLAN Name, SSID, VLAN field; Authentication gồm WPA2-PSK và WPA2; RADIUS Server Settings (IP + shared secret); Encryption Type; central switching / central authentication |
-| AP chính | LAP-PT (`Light Weight Access Point`) | GigabitEthernet0; Dot11Radio0; trang `WLC` với trường `Primary Controller` |
-| AP dự phòng | AP-PT-A | Port 1 wireless: SSID, WPA-PSK, WPA2-PSK, WEP, Encryption Type; Port 0 Ethernet link settings |
-| Palette tham khảo | WLC, 3504, 2504, LAP-PT, 3702i, AP-PT, AP-PT-A, AP-PT-AC, AP-PT-N, Meraki, home router, wireless khác | Khả năng khác nhau, không giả định tương đương |
-| Router | Sẽ chốt model cụ thể khi dựng `.pkt` | Cần subinterface 802.1Q (hoặc thiết kế model hỗ trợ) + `ip helper-address` cho DHCP relay + ACL |
-| Switch | Sẽ chốt model cụ thể khi dựng `.pkt` | Cần VLAN + **trunk cho cổng WLC**; các cổng còn lại chốt theo model |
-| Server | Server-PT | DHCP (ưu tiên xác minh trước); RADIUS kiểm tra sau |
-| Client | Laptop/Smartphone PT (≥ 4) | 2 Staff + 2 Guest |
+Model dưới đây **đã chốt** bằng cách đặt thiết bị thật vào bản 9.0.1.0858 và đọc danh sách cổng **trực tiếp từ mô phỏng** — không suy từ tài liệu bên ngoài.
+
+| Vai trò | Model đã chốt | Cổng thật đọc được từ mô phỏng | Ghi chú đã quan sát |
+| --- | --- | --- | --- |
+| WLC | `WLC-3504` | `Vlan1`, `GigabitEthernet1`–`GigabitEthernet8`, `management`, `virtual` | Danh mục tham khảo chỉ ghi 4 cổng GigE, **thực tế có 8**. `management` mặc định `192.168.1.1`. GUI có `Wireless LANs` (WLAN Name, SSID, VLAN), Authentication WPA2-PSK và WPA2, RADIUS Server Settings (IP + shared secret), central switching / central authentication |
+| Router | `2911` | `Vlan1`, `GigabitEthernet0/0`–`GigabitEthernet0/2` | Đã dùng `GigabitEthernet0/0` + subinterface 802.1Q; `ip helper-address` cấu hình và chạy được |
+| Switch Layer 2 | `2960-24TT` | `Vlan1`, `FastEthernet0/1`–`FastEthernet0/24`, `GigabitEthernet0/1`, `GigabitEthernet0/2` (27 cổng) | Model **dot1q-only**: KHÔNG dùng `switchport trunk encapsulation dot1q`. Trunk + access VLAN chạy được |
+| Server | `Server-PT` | `FastEthernet0` | Services > DHCP tạo được nhiều pool và bật Service On |
+| AP chính | `LAP-PT` (`Light Weight Access Point`) | `GigabitEthernet0`, `Dot11Radio0`; trang `WLC` với `Primary Controller` | **Chưa** đọc lại cổng trực tiếp từ mô phỏng — xem cảnh báo bên dưới |
+| AP dự phòng | `AP-PT-A` standalone | `Port 0` Ethernet, Port 1 wireless (SSID, WPA-PSK, WPA2-PSK, WEP, Encryption Type) | Chỉ dùng khi chứng minh WLC tập trung bất khả thi và scope được sửa đổi |
+| Client | Chưa chốt | — | 2 Staff + 2 Guest (≥ 4) |
 
 > Quy tắc: AP chính là LAP-PT, bắt đầu 01 AP. AP-PT-A chỉ là fallback standalone khi chứng minh WLC tập trung bất khả thi và scope được sửa đổi.
 
-> **Cảnh báo tên cổng:** phải đối chiếu tên cổng trực tiếp trong GUI của đúng bản 9.0.1.0858 trước khi đấu cáp. Không suy tên cổng từ tài liệu tham khảo bên ngoài — ví dụ có nguồn ghi LAP-PT chỉ có một cổng tên `Port 0`, trong khi GUI ghi `GigabitEthernet0`. Cắm sai tên cổng có thể làm link không lên mà không báo lỗi rõ ràng.
+> **Cảnh báo tên cổng (chưa giải quyết):** danh mục thiết bị của công cụ MCP ghi cổng của `LAP-PT` là `Port 0` (FastEthernet), trong khi GUI ghi `GigabitEthernet0`. Phải đọc tên cổng trực tiếp từ mô phỏng ngay trước khi đấu cáp LAP-PT. Cắm sai tên cổng có thể làm link không lên mà không báo lỗi rõ ràng.
 
 ## 3. Ma trận quan sát vs kiểm chứng
 
@@ -38,30 +39,55 @@ Mọi file `.pkt`, cấu hình và screenshot phải thực hiện trên đúng 
 | Trường VLAN trên WLAN | Có | Chưa (TC-08, TC-12) |
 | Tùy chọn WPA2-PSK | Có (WLC và AP-PT-A) | Chưa (TC-06, TC-07, TC-14) |
 | Trường WPA2 / RADIUS IP+secret | Có | Chưa (TC-13, Conditional) |
-| Trunk/access cho model đã chọn | Chưa | Chưa |
-| DHCP Server-PT mọi VLAN | Chưa | Chưa (TC-08) |
+| Trunk/access cho model đã chốt | Có | **Có** (khung có dây) — trunk `FastEthernet0/1` và `GigabitEthernet0/1` native VLAN 99 + tagged 10,20; access `FastEthernet0/2` VLAN 99 |
+| VLAN 10/20/99 trên switch | Có | **Có** (khung có dây) — đọc lại từ VlanManager của switch |
+| Liên VLAN trên router | Có | **Có** (khung có dây) — `Gi0/0.10`/`Gi0/0.20` + `ip helper-address 192.168.99.20` |
+| DHCP Server-PT mọi VLAN | Có | Chưa — 2 pool đã tạo và Service On, nhưng **chưa có client** để kiểm chứng cấp phát (TC-08) |
 | ACL cô lập Guest | Chưa | Chưa (TC-10, TC-11) |
 | WPA3 / EAP / roaming / RF / throughput | Chưa thấy hỗ trợ | Research-only |
 
+> Các mục `Có` ở cột kiểm chứng mới chỉ thuộc **khung có dây P1**, chưa có client vô tuyến nên **chưa test case nào được chuyển sang `Passed`**. Bản cấu hình đối chiếu lưu tại `../configs/`.
+
 ## 4. Quyết định cấu hình
 
-_Chưa có quyết định đã kiểm chứng. Khi triển khai, ghi mỗi dòng theo mẫu:_
+- `2026-10-18 — Hoàng Minh Hiếu: chốt Router 2911, Switch 2960-24TT, WLC-3504, Server-PT sau khi đặt thử vào đúng bản 9.0.1.0858 và đọc danh sách cổng thật từ mô phỏng; khác đề xuất ban đầu ở chỗ WLC-3504 có 8 cổng GigE chứ không phải 4; config: ../configs/`
+- `2026-10-18 — Hoàng Minh Hiếu: router-on-a-stick trên 2911 — Gi0/0 = 192.168.99.1/24 (VLAN 99 native) + Gi0/0.10 (dot1Q 10) + Gi0/0.20 (dot1Q 20) kèm ip helper-address 192.168.99.20 trên cả hai subinterface; khác đề xuất ở chỗ KHÔNG tạo subinterface riêng cho VLAN 99 vì VLAN 99 đi untagged trên cổng vật lý; config: ../configs/router/`
+- `2026-10-18 — Hoàng Minh Hiếu: 2960-24TT là dot1q-only nên KHÔNG cấu hình switchport trunk encapsulation dot1q; trunk Fa0/1 (WLC) và Gi0/1 (router) đặt native VLAN 99 + allowed 10,20,99; Fa0/2 là access VLAN 99 cho Server-PT; SVI Vlan99 = 192.168.99.2 + ip default-gateway 192.168.99.1; config: ../configs/switch/`
+- `2026-10-18 — Hoàng Minh Hiếu: Server-PT dùng địa chỉ tĩnh 192.168.99.20/24 (gw .1) và 2 pool DHCP STAFF (192.168.10.100–199) + GUEST (192.168.20.100–199), Service On; config: ../configs/`
 
-- `ngày — người làm: chọn model/interface/VLAN ... vì ...; khác đề xuất ở ...; evidence: ...`
+Khi bổ sung quyết định mới, ghi theo mẫu: `ngày — người làm: chọn model/interface/VLAN ... vì ...; khác đề xuất ở ...; config/evidence: ...`
 
 Không ghi lệnh CLI vào đây như "đã chạy thành công" khi chưa test trên đúng model. Mọi lệnh phải đi kèm minh chứng trong `../evidence/` và bản redacted trong `../configs/`.
 
 ## 5. Vấn đề và cách khắc phục (Issues & Workarounds)
 
-_Chưa phát sinh (chưa triển khai). Ghi theo mẫu khi gặp:_
-
 | Ngày | Người ghi | Vấn đề | Cách khắc phục | TC liên quan | Trạng thái |
 | --- | --- | --- | --- | --- | --- |
-| — | — | — | — | — | — |
+| 2026-10-18 | Hoàng Minh Hiếu | Cầu nối điều khiển báo DOWN, không đặt được thiết bị vào PT | Mở `Extensions` → `MCP BUILDER` trong Packet Tracer để extension nối vào cầu ở cổng 54321 | — | Đã xử lý |
+| 2026-10-18 | Hoàng Minh Hiếu | Danh mục công cụ ghi `WLC-3504` có 4 cổng GigE, mô phỏng thực tế có 8 | Luôn đọc danh sách cổng **trực tiếp từ mô phỏng** trước khi đấu cáp, không suy từ danh mục | TC-01, TC-12 | Đã xử lý |
+| 2026-10-18 | Hoàng Minh Hiếu | Công cụ đặt thiết bị không có mã loại riêng cho WLC | Đặt WLC bằng mã loại mặc định; thiết bị vào đúng là `WLC-3504` | — | Đã xử lý |
+| 2026-10-18 | Hoàng Minh Hiếu | Tên cổng `LAP-PT` khác nhau giữa danh mục (`Port 0`) và GUI (`GigabitEthernet0`) | **Chưa giải quyết** — phải đọc cổng trực tiếp từ mô phỏng ngay trước khi đấu cáp LAP-PT | TC-02, TC-03 | Đang mở |
+| 2026-10-18 | Hoàng Minh Hiếu | Danh sách thiết bị có thêm một thiết bị không nằm trong topology (`Power Distribution Device0`) | Không hiện trên canvas nên không ảnh hưởng sơ đồ; theo dõi, xoá nếu gây nhiễu khi kiểm tra | — | Đang theo dõi |
+| 2026-10-18 | Hoàng Minh Hiếu | Công cụ kiểm tra kết nối chỉ hỗ trợ host và thiết bị IOS, không hỗ trợ LAP/WLC | TC-02 phải kiểm bằng cách khác (ping từ LAP không tự động hoá được), hoặc ghi `Blocked` kèm lý do | TC-02 | Đang mở |
 
-## 6. Hạn chế đã biết (chưa kiểm chứng)
+## 6. Hạn chế đã biết
 
-- LAP-PT join WLC, phát WLAN, multi-WLAN đồng thời, map SSID→VLAN: chưa kiểm chứng.
-- WPA2-PSK pass/fail, DHCP mọi VLAN, trunk đúng model, Guest isolation end-to-end: chưa kiểm chứng.
+- LAP-PT join WLC, phát WLAN, multi-WLAN đồng thời, map SSID→VLAN: **chưa kiểm chứng**.
+- WPA2-PSK pass/fail, DHCP cấp phát cho client, Guest isolation end-to-end: **chưa kiểm chứng**.
+- Trunk trên model đã chốt: **đã dựng được** trong khung có dây, nhưng chưa chứng minh mang được lưu lượng client (còn thiếu AP + client).
 - RADIUS + WPA2-Enterprise: Conditional, thử sau cùng; `Blocked` được chấp nhận kèm lý do.
 - WPA3 / EAP cụ thể / roaming / RF / throughput: Research-only.
+- **Ranh giới tự động hoá:** tạo WLAN/SSID/WPA2 trên WLC, đặt `Primary Controller` cho LAP-PT và kiểm tra AP join **chỉ thực hiện được qua GUI** — công cụ hiện tại không có lệnh cho các bước này. Nhóm thao tác tay và chụp minh chứng.
+
+## 7. Công cụ hỗ trợ (MCP) và cách ghi nhận
+
+Nhóm dùng công cụ `packet-tracer-mcp` làm **công cụ tăng tốc** cho các bước dựng topology, cấu hình IOS và thu thập kết quả — không thay thế việc kiểm chứng thủ công.
+
+| Hạng mục | Nội dung |
+| --- | --- |
+| Nguồn | GitHub `Mats2208/MCP-Packet-Tracer`, cài từ mã nguồn mới nhất (bản phát hành trên PyPI thiếu một số lệnh cần dùng) |
+| Phần chạy trong PT | Extension `V5.2.pts` cài thủ công qua `Extensions` → `Scripting` → `Configure PT Script Modules`, sau đó mở `Extensions` → `MCP BUILDER` |
+| Việc công cụ làm được | Đặt thiết bị, đấu cáp, cấu hình IOS, đọc VLAN/cổng thật, cấu hình service của Server-PT, ping thật, lưu `.pkt`, chụp ảnh canvas |
+| Việc phải làm tay | Tạo WLAN/SSID/WPA2 trên WLC, đặt `Primary Controller` cho LAP-PT, kiểm tra AP join |
+
+Quy định: kết quả do công cụ tạo ra vẫn phải **đối chiếu lại bằng `show`/đọc trạng thái thật** trước khi ghi vào tài liệu. Không ghi `Passed` chỉ vì công cụ báo thành công.

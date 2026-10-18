@@ -1,0 +1,105 @@
+! ============================================================
+! Thiet bi: R1
+! Model: 2911
+! Phien ban Packet Tracer: Cisco Packet Tracer 9.0.1.0858
+! Interface thuc dung: GigabitEthernet0/0 (VLAN 99 native, 192.168.99.1/24); GigabitEthernet0/0.10 (dot1Q 10, 192.168.10.1/24); GigabitEthernet0/0.20 (dot1Q 20, 192.168.20.1/24)
+! Ngay xuat: 2026-10-18
+! Nguoi thuc hien: Hoang Minh Hieu (nhom truong, ho tro ky thuat)
+! Trang thai: khung co day P1 - CHUA co client vo tuyen, chua test case nao Passed
+! Secret: khong co enable secret / password / PSK trong file nay
+! ============================================================
+
+! --- show running-config ---
+Building configuration...
+
+Current configuration : 933 bytes
+!
+version 15.1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname R1
+!
+!
+!
+!
+!
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+!
+!
+!
+license udi pid CISCO2911/K9 sn FTX1524SX1K-
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ ip address 192.168.99.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.0
+ ip helper-address 192.168.99.20
+!
+interface GigabitEthernet0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.1 255.255.255.0
+ ip helper-address 192.168.99.20
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/2
+ no ip address
+ duplex auto
+ speed auto
+!
+interface Vlan1
+ no ip address
+!
+ip classless
+!
+ip flow-export version 9
+!
+!
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end

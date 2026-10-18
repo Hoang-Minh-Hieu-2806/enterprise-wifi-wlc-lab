@@ -23,7 +23,7 @@
 | Hạng mục | Nội dung |
 | --- | --- |
 | Môi trường mô phỏng | Cisco Packet Tracer 9.0.1.0858 (đã chốt) |
-| Thiết bị mạng (dự kiến) | Router (subinterface 802.1Q, DHCP relay, ACL), Switch Layer 2 (VLAN, trunk tới WLC), WLC, LAP-PT (AP chính), Server-PT (DHCP, kiểm tra thêm RADIUS), Wireless Clients (≥ 4: 2 Staff + 2 Guest) |
+| Thiết bị mạng (đã chốt model) | Router `2911` (subinterface 802.1Q, DHCP relay, ACL), Switch Layer 2 `2960-24TT` (VLAN, trunk tới WLC), WLC `WLC-3504`, LAP-PT (AP chính), Server-PT (DHCP, kiểm tra thêm RADIUS), Wireless Clients (≥ 4: 2 Staff + 2 Guest) |
 | Thiết bị dự phòng | AP-PT-A ở chế độ standalone, chỉ dùng khi chứng minh quản lý tập trung bằng WLC là bất khả thi và phạm vi dự án được sửa đổi rõ ràng |
 | Dịch vụ mạng | DHCP trên Server-PT (ưu tiên xác minh trước); RADIUS là mục Conditional, thử sau |
 | Ngôn ngữ tài liệu | Tiếng Việt (báo cáo, tài liệu, test case, hướng dẫn nhóm) |
@@ -80,34 +80,39 @@ enterprise-wifi-wlc-lab/
 │   ├── implementation-notes.md
 │   └── team-contributions.md
 ├── packet-tracer/
-│   └── README.md
+│   ├── README.md
+│   └── enterprise-wifi-wlc-lab-v1.pkt
 ├── configs/
 │   ├── README.md
 │   ├── router/
-│   │   └── README.md
+│   │   ├── README.md
+│   │   └── router-r1-running-config.txt
 │   ├── switch/
-│   │   └── README.md
+│   │   ├── README.md
+│   │   └── switch-sw1-running-config.txt
 │   └── wlc-ap/
 │       └── README.md
 ├── tests/
 │   ├── README.md
 │   └── test-cases.md
 ├── evidence/
-│   └── README.md
+│   ├── README.md
+│   └── p1-wired-skeleton-topology.png
 └── report/
-    └── README.md
+    ├── README.md
+    └── midterm-report.md
 ```
 
 - `docs/` — tài liệu thiết kế, kế hoạch và ghi chú triển khai (tiếng Việt).
-- `packet-tracer/` — file mô phỏng `.pkt` (sẽ bổ sung sau, hiện chưa có).
-- `configs/` — bản sao cấu hình thiết bị đã che secret (sẽ bổ sung sau khi cấu hình được kiểm chứng).
+- `packet-tracer/` — file mô phỏng `.pkt`; `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1.
+- `configs/` — bản sao cấu hình thiết bị đã che secret; `router/` và `switch/` đã có bản khung P1, `wlc-ap/` chưa.
 - `tests/` — kế hoạch và ca kiểm thử (Core / Conditional / Research-only).
-- `evidence/` — ảnh chụp màn hình, kết quả kiểm thử (sẽ bổ sung sau).
+- `evidence/` — ảnh chụp màn hình, kết quả kiểm thử; hiện có minh chứng bring-up P1 (chưa phải kết quả test case).
 - `report/` — dàn ý và nội dung báo cáo trong giai đoạn hiện tại (chưa cần DOCX/PDF).
 
-## 7. Cách mở dự án Packet Tracer (khi đã có file `.pkt`)
+## 7. Cách mở dự án Packet Tracer
 
-> Hiện tại **chưa có file `.pkt`** trong repository. Các bước dưới đây chỉ dùng khi file đã được commit.
+> File `.pkt` đã có: `packet-tracer/enterprise-wifi-wlc-lab-v1.pkt` — khung có dây P1, **chưa có AP và client vô tuyến**.
 
 1. Cài đặt đúng Cisco Packet Tracer **9.0.1.0858** (bản đã chốt, xem tại [docs/implementation-notes.md](docs/implementation-notes.md)).
 2. Clone repository:
@@ -123,18 +128,25 @@ Quy định đặt file `.pkt` xem tại [packet-tracer/README.md](packet-tracer
 
 ## 8. Trạng thái dự án hiện tại
 
-Repository hiện ở giai đoạn **tài liệu sẵn sàng triển khai (implementation-ready)**: thiết kế đã chốt ở mức đề xuất, GUI thiết bị đã quan sát một phần, nhưng chưa có cấu hình hay kết quả kiểm thử nào.
+Repository hiện ở giai đoạn **đã dựng khung có dây (P1)**: model thiết bị đã chốt, khung Router–Switch–Server-PT–WLC đã dựng và cấu hình xong, nhưng **chưa có phần vô tuyến (LAP-PT, WLAN, client) và chưa có kết quả kiểm thử nào**.
 
 | Nhóm trạng thái | Ý nghĩa | Trạng thái hiện tại |
 | --- | --- | --- |
-| Planned | Đã đề xuất trong tài liệu, chưa cấu hình | Xem [docs/requirements.md](docs/requirements.md) — toàn bộ yêu cầu |
-| In Progress | Đang thực hiện | Tài liệu finalize (đợt hiện tại) |
+| Planned | Đã đề xuất trong tài liệu, chưa cấu hình | Phần vô tuyến: LAP-PT, WLAN/SSID, WPA2, ACL |
+| In Progress | Đang thực hiện | Khung có dây P1 đã xong; chờ LAP-PT và client vô tuyến |
 | Not Tested | Chưa kiểm thử, chưa có minh chứng | Toàn bộ test case trong [tests/test-cases.md](tests/test-cases.md) |
 | Passed / Failed / Blocked | Chỉ dùng khi có evidence thực tế | **Chưa có case nào** |
 
 Nhãn `Passed` chỉ được dùng khi có minh chứng hỗ trợ. Một tính năng Conditional (RADIUS) chưa được hỗ trợ **không** làm mất trạng thái hoàn thành của luồng Core.
 
 ## 9. Hạn chế đã biết và nội dung cần kiểm chứng
+
+Đã kiểm chứng trong **khung có dây P1**:
+
+- [x] Model Router `2911`, Switch `2960-24TT`, WLC `WLC-3504`, Server-PT — chốt bằng cách đặt thật vào bản 9.0.1.0858.
+- [x] VLAN 10/20/99 trên switch; trunk `Fa0/1` (WLC) và `Gi0/1` (router) native VLAN 99 + tagged 10,20; access `Fa0/2` VLAN 99.
+- [x] Liên VLAN trên router (`Gi0/0.10`, `Gi0/0.20`) kèm `ip helper-address 192.168.99.20`.
+- [x] Server-PT tĩnh `192.168.99.20` + 2 pool DHCP (STAFF, GUEST), Service On.
 
 Đã quan sát trong GUI nhưng **chưa kiểm chứng hoạt động**:
 
@@ -144,9 +156,9 @@ Nhãn `Passed` chỉ được dùng khi có minh chứng hỗ trợ. Một tính
 - [ ] Ánh xạ mỗi SSID tới đúng VLAN (trường VLAN trong GUI mới chỉ được nhìn thấy).
 - [ ] WPA2-PSK: client associate thành công/thất bại.
 - [ ] WPA2-Enterprise/RADIUS vận hành (Conditional, thử sau cùng).
-- [ ] Trunk/access cho đúng model WLC/AP đã chọn (Switch↔WLC **bắt buộc trunk**; đoạn AP/Switch còn lại không giả định cùng thiết kế).
+- [ ] Trunk Switch↔WLC mang được **lưu lượng client** (đã cấu hình và đọc lại được VLAN, nhưng chưa có AP/client để chứng minh).
 - [ ] Guest isolation end-to-end sau ACL.
-- [ ] DHCP cho mọi VLAN client.
+- [ ] DHCP cấp phát thật cho client mọi VLAN (pool đã tạo, chưa có client).
 - [ ] WLC management reachability và LAP nhận IP hợp lệ.
 
 Chủ đề Research-only (WPA3, EAP-TLS/PEAP, roaming, nhiễu RF, đo throughput): **chưa khẳng định**, chỉ làm nền báo cáo.

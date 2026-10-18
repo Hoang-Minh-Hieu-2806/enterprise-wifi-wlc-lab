@@ -8,7 +8,9 @@ Thư mục lưu bản sao cấu hình thiết bị để đối chiếu và ch�
 
 ## Hiện trạng
 
-> **Chưa có cấu hình** — chỉ có README định hướng. Không ghi lệnh chưa kiểm chứng thành cấu hình đã chạy.
+> **Đã có cấu hình khung có dây (P1).** `router/router-r1-running-config.txt` và `switch/switch-sw1-running-config.txt`, xuất ngày 2026-10-18. `wlc-ap/` vẫn chưa có vì phần WLAN/SSID/WPA2 phải thao tác tay trên GUI và chưa làm.
+>
+> Chưa test case nào `Passed`: cấu hình này thuộc bước dựng khung, chưa có client vô tuyến. Minh chứng bring-up tại [../evidence/p1-wired-skeleton-topology.png](../evidence/p1-wired-skeleton-topology.png).
 
 ## Quy định khi bổ sung
 

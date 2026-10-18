@@ -4,7 +4,9 @@ Thư mục chứa file mô phỏng Cisco Packet Tracer (`.pkt`) của dự án, 
 
 ## Hiện trạng
 
-> **Chưa có file `.pkt`** — thư mục hiện chỉ có README này. Không tạo file `.pkt` giả.
+> **Đã có `enterprise-wifi-wlc-lab-v1.pkt`** (ngày 2026-10-18) — khung có dây P1 gồm Router `2911` (`R1`), Switch `2960-24TT` (`SW1`), Server-PT (`SRV1`) và WLC `WLC-3504` (`WLC1`), đã cấu hình VLAN 10/20/99, trunk Switch↔WLC và DHCP relay. Ảnh canvas kèm tại [../evidence/p1-wired-skeleton-topology.png](../evidence/p1-wired-skeleton-topology.png).
+>
+> **Chưa có AP và client vô tuyến**, chưa test case nào `Passed`. Các bản `test.pkt` trên máy là bản nháp, đã chặn trong `.gitignore`.
 
 ## Quy định khi bổ sung file `.pkt`
 

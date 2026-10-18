@@ -47,8 +47,8 @@
 
 | Thành viên | Công việc đã làm | Minh chứng / commit | Ghi chú |
 | --- | --- | --- | --- |
-| Hoàng Minh Hiếu | — | — | Planned (điều phối + hỗ trợ linh hoạt + tổng hợp báo cáo) |
-| Đặng Văn Hoàng | — | — | Planned (topology + WLC/AP + auth) |
-| Huỳnh Như Hoàng | — | — | Planned (routing + VLAN + DHCP + ACL + test) |
+| Hoàng Minh Hiếu | 2026-10-18: chốt model (`2911`, `2960-24TT`, `WLC-3504`, `LAP-PT`, `Server-PT`) bằng cách đặt thật vào PT 9.0.1.0858; dựng khung có dây P1 (VLAN 10/20/99, trunk Switch↔WLC, router-on-a-stick + DHCP relay, 2 pool DHCP); đọc lại cổng thật, phát hiện `WLC-3504` có 8 cổng GigE; cập nhật ghi chú triển khai và hạn chế | `packet-tracer/enterprise-wifi-wlc-lab-v1.pkt`, `configs/router/router-r1-running-config.txt`, `configs/switch/switch-sw1-running-config.txt`, `evidence/p1-wired-skeleton-topology.png` | Nhận mảng kỹ thuật theo luật §4 để lấp chỗ nghẽn (khung có dây chưa ai làm). **Chưa test case nào `Passed`** — đây là dựng khung, không phải kết quả test |
+| Đặng Văn Hoàng | — | — | Planned (topology + WLC/AP + auth). **Ưu tiên hiện tại:** LAP-PT join WLC + WLAN/SSID/WPA2 — đây là đường găng sau khi khung có dây xong |
+| Huỳnh Như Hoàng | — | — | Planned (routing + VLAN + DHCP + ACL + test). **Phân bổ lại theo §4:** rà soát chéo cấu hình khung P1 (`router/`, `switch/`) và xác nhận độc lập bằng `show running-config` / `show vlan brief` trên máy mình trước khi mở TC-08 |
 
 > Chỉ điền khi có công việc thật kèm minh chứng. Không ghi `Passed` khi chưa có evidence.
