@@ -4,7 +4,9 @@
 
 Các doanh nghiệp vừa và nhỏ cần mạng Wi-Fi tập trung, dễ quản lý, phân tách được lưu lượng nhân viên và khách, đồng thời kiểm soát truy cập cơ bản giữa các vùng mạng. Tuy nhiên, việc thử nghiệm trực tiếp trên thiết bị thật tốn kém và rủi ro. Dự án này sử dụng **Cisco Packet Tracer 9.0.1.0858** để mô phỏng một mạng WLAN doanh nghiệp thu nhỏ, giúp sinh viên luyện tập thiết kế, cấu hình và đánh giá bảo mật trong môi trường an toàn.
 
-Quan sát thực tế trong Packet Tracer 9.0.1.0858 cho thấy có sẵn WLC (kèm trang cấu hình `Wireless LANs`), LAP-PT (kèm trang `WLC / Primary Controller`) và AP-PT-A (hỗ trợ SSID, WPA-PSK/WPA2-PSK, WEP). Đây mới là phát hiện giao diện, chưa phải bằng chứng các chức năng đã chạy được — chi tiết tại [implementation-notes.md](implementation-notes.md).
+Quan sát thực tế trong Packet Tracer 9.0.1.0858 cho thấy `WLC-PT` có trang cấu hình `Wireless LANs` (SSID, trường VLAN, WPA2-PSK, WPA2 + RADIUS) và `LAP-PT` làm AP chính. Đây mới là **phát hiện giao diện, chưa phải bằng chứng các chức năng đã chạy được** — chi tiết tại [implementation-notes.md](implementation-notes.md).
+
+> **Lưu ý sau audit 2026-10-18:** controller ban đầu chọn là `WLC-3504`, nhưng kiểm chứng lại cho thấy model này **không có giao diện cấu hình vô tuyến** trong bản 9.0.1.0858; các trường WLAN/SSID/VLAN/WPA2 từng được ghi nhận thuộc về `WLC-PT`. Nhóm đã đổi controller sang `WLC-PT` — xem [device-selection-decision.md](device-selection-decision.md).
 
 ## 2. Phạm vi dự án
 
@@ -27,7 +29,7 @@ Quan sát thực tế trong Packet Tracer 9.0.1.0858 cho thấy có sẵn WLC (k
 - Triển khai thực tế trên thiết bị vật lý.
 - Phát triển phần mềm, API, web app, CI/CD hay hạ tầng không liên quan.
 
-AP-PT-A được giữ làm dự phòng standalone, chỉ dùng khi chứng minh quản lý tập trung bằng WLC là bất khả thi và phạm vi được sửa đổi rõ ràng.
+AP standalone được giữ làm dự phòng, chỉ dùng khi chứng minh quản lý tập trung bằng WLC là bất khả thi và phạm vi được sửa đổi rõ ràng. Lưu ý AP standalone trong Packet Tracer **không có trường VLAN**, nên không thể thay WLC trong luồng chính (xem [device-selection-decision.md](device-selection-decision.md) §2).
 
 ## 3. Mục tiêu
 
@@ -40,10 +42,10 @@ Tóm tắt: quản lý tập trung bằng WLC (01 LAP-PT trước), hai SSID, ph
 | # | Sản phẩm | Vị trí | Trạng thái hiện tại |
 | --- | --- | --- | --- |
 | 1 | Tài liệu thiết kế (overview, requirements, topology, IP/VLAN, security) | `docs/` | In Progress (finalize, chưa nghiệm thu) |
-| 2 | File mô phỏng Packet Tracer (`.pkt`, đúng bản 9.0.1.0858) | `packet-tracer/` | In Progress — `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1 + WLC đã cấu hình quản trị; chưa có AP/client |
-| 3 | Bản sao cấu hình thiết bị (đã che secret) | `configs/` | In Progress — `router/` + `switch/` có bản khung P1; `wlc-ap/` ghi cấu hình hạ tầng WLC (chưa có WLAN/SSID) |
-| 4 | Kế hoạch và ca kiểm thử Core/Conditional | `docs/testing-plan.md`, `tests/test-cases.md` | In Progress — **TC-01 `Passed`**; TC-02→TC-14 `Not Tested` |
-| 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | In Progress — có minh chứng bring-up P1 + **TC-01 `Passed`** |
+| 2 | File mô phỏng Packet Tracer (`.pkt`, đúng bản 9.0.1.0858) | `packet-tracer/` | In Progress — `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1 + `WLC-3504` (model cũ) + LAP-PT; **cần thay controller bằng `WLC-PT`**; chưa có client |
+| 3 | Bản sao cấu hình thiết bị (đã che secret) | `configs/` | In Progress — `router/` + `switch/` có bản khung P1; `wlc-ap/` ghi cấu hình hạ tầng `WLC-3504` (sẽ cập nhật cho `WLC-PT` sau khi chạy lại TC-01) |
+| 4 | Kế hoạch và ca kiểm thử Core/Conditional | `docs/testing-plan.md`, `tests/test-cases.md` | In Progress — **TC-01 và TC-02 `Passed`**; TC-03→TC-14 `Not Tested`. **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy) |
+| 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | In Progress — minh chứng bring-up P1 + TC-01, TC-02 + **minh chứng audit lựa chọn thiết bị** |
 | 6 | Báo cáo (dàn ý + nội dung trong `report/`, chưa cần DOCX/PDF) | `report/` | In Progress — `midterm-report.md` đã soạn |
 
 ## 5. Tiêu chí hoàn thành dự án
@@ -65,9 +67,9 @@ Không có khẳng định nào về WPA3, EAP, roaming, throughput khi chưa c�
 
 ## 6. Rủi ro chính
 
-- LAP-PT không join được WLC (trường `Primary Controller` mới chỉ được nhìn thấy) → ghi `Blocked`, cân nhắc AP-PT-A standalone kèm sửa scope.
-- WLAN tạo được trong GUI nhưng không phát / không map đúng VLAN → kiểm tra lại model và chế độ cổng.
-- **Packet Tracer không hỗ trợ trunk trên cổng Switch↔WLC** → phân đoạn VLAN bất khả thi; ghi `Blocked`, chuyển AP-PT-A standalone kèm sửa scope rõ ràng (xem [topology.md](topology.md) §3.1).
+- **Cổng chặn — LAP-PT join WLC:** chưa tìm thấy trường `Primary Controller` trên `LAP-PT`, và `WLC-PT` không có trang danh sách AP ⇒ cơ chế join chưa rõ. Nếu TC-03 không đạt: ghi `Blocked`, dừng trước TC-04, cân nhắc AP standalone kèm sửa scope.
+- **`WLC-PT` không có tuỳ chọn VLAN/trunk trên `GigabitEthernet0`** ⇒ chế độ cổng Switch↔WLC chưa chốt được; phải kiểm chứng central switching thực tế (TC-03/TC-08). Nếu không mang được VLAN 10/20 ⇒ phân đoạn VLAN bất khả thi; ghi `Blocked`, chuyển AP standalone kèm sửa scope rõ ràng (xem [topology.md](topology.md) §3.1).
+- WLAN tạo được trong GUI nhưng không phát / không map đúng VLAN → kiểm tra lại cơ chế join và chế độ cổng.
 - Server-PT không hỗ trợ RADIUS → ghi `Blocked` cho TC RADIUS, giữ nguyên kết quả Core.
 - Cấu hình ACL hoặc DHCP không như kỳ vọng → ghi lại workaround, không ngụy tạo kết quả. Riêng thiếu `ip helper-address` là **lỗi cấu hình**, không phải limitation của simulator.
-- Chế độ cổng: Switch↔WLC **bắt buộc trunk**; WLAN mapping và AP uplink chốt riêng theo model trước khi cấu hình.
+- **Chênh lệch model nếu đổi Packet Tracer phiên bản khác 9.0.1.0858** → toàn bộ quan sát giao diện và danh sách cổng phải kiểm chứng lại; đặc biệt `WLC-3504` và `WLC-PT` dùng chung device type 41 nên dễ nhầm.

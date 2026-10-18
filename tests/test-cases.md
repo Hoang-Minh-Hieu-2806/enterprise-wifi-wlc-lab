@@ -1,6 +1,8 @@
 # Danh sách ca kiểm thử (Test Cases)
 
-> Cột `Actual result` để trống cho tới khi có kiểm thử thật trên Packet Tracer 9.0.1.0858. Hiện **TC-01 đã `Passed`**; các test case còn lại vẫn **Not Tested**. Kế hoạch tổng thể và phân loại Core/Conditional xem tại [../docs/testing-plan.md](../docs/testing-plan.md). RADIUS (TC-13) là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
+> Cột `Actual result` để trống cho tới khi có kiểm thử thật trên Packet Tracer 9.0.1.0858. Hiện **TC-01 và TC-02 đã `Passed`**; các test case còn lại vẫn **Not Tested**. Kế hoạch tổng thể và phân loại Core/Conditional xem tại [../docs/testing-plan.md](../docs/testing-plan.md). RADIUS (TC-13) là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
+>
+> **Lưu ý sau audit lựa chọn thiết bị (2026-10-18):** quyết định đổi controller từ `WLC-3504` sang **`WLC-PT`**. **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy) — Management IPv4 `192.168.99.10/24`, gw `192.168.99.1`, đặt trên cổng GUI hiển thị là `Management` (API/mô phỏng đặt tên `Vlan1`), **đặt được bằng API, không cần raw JS**. **TC-03** vẫn phải kiểm chứng cơ chế join thực tế (chưa tìm thấy trường `Primary Controller` trên `LAP-PT`). **`.pkt` deliverable hiện vẫn còn `WLC-3504`** — việc thay thế trong file gốc đang chờ. Xem [../docs/device-selection-decision.md](../docs/device-selection-decision.md). `Expected result` **không** sửa theo kết quả thực tế.
 
 ## TC-01 — WLC management reachability (Core)
 
@@ -11,9 +13,9 @@
 | **Preconditions** | File `.pkt` mở được trên 9.0.1.0858; WLC đã đấu nối có dây và đặt Management IPv4 theo [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) |
 | **Procedure** | 1. Từ một thiết bị cùng/thông được VLAN 99 `ping` tới Management IPv4 của WLC (ví dụ `192.168.99.10`). 2. Ghi model WLC và địa chỉ đã dùng. |
 | **Expected result** | Ping tới WLC thành công (reply) |
-| **Actual result** | **Ping thành công.** Model `WLC-3504` (device type 41), Management IPv4 `192.168.99.10/24`, gateway `192.168.99.1`, đặt trên interface `Vlan1` (không phải interface `management` — `management` là interface ảo type 48, không nối vào cổng vật lý). Nguồn ping: `SRV1` (`192.168.99.20`). Lần 1: `Sent = 4, Received = 3, Lost = 1 (25% loss)` do ARP chưa ấm; lần 2: `Sent = 4, Received = 4, Lost = 0 (0% loss)`. Để thông được, phải chuyển uplink `WLC1 GigabitEthernet1` từ access VLAN 1 (mặc định) sang **trunk** và giữ native VLAN 1 phía WLC, trong khi `SW1 Fa0/1` native VLAN 99: frame untagged của WLC rơi vào VLAN 99 của switch nên Management IPv4 nằm đúng VLAN 99 theo thiết kế. Xem [../docs/implementation-notes.md](../docs/implementation-notes.md) §5. |
-| **Evidence filename** | `evidence/tc-01-wlc-reachability.png` |
-| **Status** | Passed |
+| **Actual result** | **Đã chạy lại trên `WLC-PT` — Passed.** Model `WLC-PT` (device type 41), cổng thật đọc từ mô phỏng: **`Vlan1`** (mang IP quản trị; GUI hiển thị tên `Management`) + **`GigabitEthernet0`** (uplink). Management IPv4 `192.168.99.10/24`, gateway `192.168.99.1`, đặt bằng API đặt IP (`pt_host_ip_config`) — **không cần raw JS**. Uplink `WLC-PT GigabitEthernet0` → `SW1 FastEthernet0/4` **trunk** native VLAN 99, allowed 10,20,99 (frame untagged của `Vlan1` rơi vào native 99 của switch). Nguồn ping: `SRV1` (`192.168.99.20`) `Sent = 4, Received = 4, Lost = 0 (0% loss)`; `R1` (`192.168.99.1`) `Success rate is 100 percent (5/5)`. Bản `WLC-3504` cũ giữ kết quả `Passed` làm lịch sử P1. **Lưu ý model:** khác `WLC-3504`, `WLC-PT` **không có** cổng API tên `management` riêng; GUI gọi cổng quản trị là `Management`, API gọi là `Vlan1`. Xem [../docs/device-selection-decision.md](../docs/device-selection-decision.md) và [../docs/implementation-notes.md](../docs/implementation-notes.md) §5. |
+| **Evidence filename** | `evidence/tc-01-wlc-pt-reachability-canvas.png` (chạy lại trên `WLC-PT`); `evidence/tc-01-wlc-reachability.png` (bản `WLC-3504`, lịch sử) |
+| **Status** | Passed (chạy lại trên `WLC-PT`, bản test copy) |
 
 ## TC-02 — LAP-PT nhận IP quản trị hợp lệ (Core)
 
@@ -24,9 +26,9 @@
 | **Preconditions** | TC-01 đạt hoặc hạ tầng VLAN 99 thông; 01 LAP-PT đã nối dây tới switch |
 | **Procedure** | 1. Kiểm tra địa chỉ IP của LAP-PT-1 (DHCP hoặc tĩnh trong `192.168.99.0/24`). 2. Ghi model LAP-PT và cách cấp IP. |
 | **Expected result** | LAP-PT có IP hợp lệ thuộc `192.168.99.0/24` và ping được gateway `192.168.99.1` |
-| **Actual result** | _Not Tested_ |
-| **Evidence filename** | `evidence/tc-02-lap-ip.png` (dự kiến, chưa có) |
-| **Status** | Not Tested |
+| **Actual result** | **LAP có IP hợp lệ và ping được gateway.** Model `LAP-PT` (tên `LAP1`), cổng uplink thật là `GigabitEthernet0` (catalog ghi `Port 0` — sai), đấu vào `SW1 FastEthernet0/3` (access VLAN 99). IP đặt **tĩnh** `192.168.99.30/24`, gateway `192.168.99.1`, DNS `192.168.99.20`. Phải đặt qua API: GUI của LAP **không có trường IP** (tab Config chỉ có radio DHCP/Static cho Gateway/DNS). PT giữ cổng AP ở trạng thái **down** cho tới khi có cấu hình IP — `setDhcpClientFlag(true)` không làm cổng lên, đặt IP tĩnh thì cổng lên `up/up` (đèn link sáng; `SW1 Fa0/3` chuyển từ `line protocol down (disabled)` sang `up (connected)`). Kiểm chứng: Simple PDU `LAP1 → R1` (ICMP) = **Successful** trong PDU List Window (R1 = gateway `192.168.99.1`); ping ngược `R1 → 192.168.99.30` = `Success rate is 100 percent (5/5)`; `show ip arp` trên R1 có `192.168.99.30 → 0001.968E.6B01` (đúng MAC `GigabitEthernet0` của LAP); MAC table `SW1` có MAC đó ở VLAN 99 trên `Fa0/3`. Lưu ý: LAP-PT **không có CLI/console** (`getCommandLine()` trả null) nên không ping bằng lệnh `ping` được — đã dùng Simple PDU của PT (`ipc.appWindow().getUserCreatedPDU().addSimplePdu()`). Xem [../docs/implementation-notes.md](../docs/implementation-notes.md) §5. |
+| **Evidence filename** | `evidence/tc-02-lap-ip.png`, `evidence/tc-02-lap-ping-gateway.png`, `evidence/tc-02-lap-arp-r1.png` |
+| **Status** | Passed |
 
 ## TC-03 — LAP-PT join WLC (Core)
 
@@ -34,8 +36,8 @@
 | --- | --- |
 | **Loại** | Core |
 | **Requirement** | REQ-03 |
-| **Preconditions** | TC-02 đạt; trường `Primary Controller` trên LAP-PT đã trỏ về WLC |
-| **Procedure** | 1. Mở GUI/CLI WLC, kiểm tra danh sách AP đã join. 2. Ghi model LAP-PT và trạng thái join. Chỉ thêm AP thứ 2 sau khi TC này và TC-06 đã `Passed` (điều kiện mở rộng AP tại [../docs/testing-plan.md](../docs/testing-plan.md)). |
+| **Preconditions** | TC-02 đạt; controller đã đổi sang `WLC-PT` và TC-01 đã chạy lại; LAP-PT đã đăng ký về controller theo cơ chế join của model (audit chưa tìm thấy trường `Primary Controller` trong tab Config của `LAP-PT`) |
+| **Procedure** | 1. Mở GUI/CLI controller, kiểm tra danh sách AP đã join. 2. Ghi model LAP-PT, controller và trạng thái join. Chỉ thêm AP thứ 2 sau khi TC này và TC-06 đã `Passed` (điều kiện mở rộng AP tại [../docs/testing-plan.md](../docs/testing-plan.md)). |
 | **Expected result** | LAP-PT-1 hiển thị Registered/Joined trên WLC |
 | **Actual result** | _Not Tested_ |
 | **Evidence filename** | `evidence/tc-03-lap-join.png` (dự kiến, chưa có) |

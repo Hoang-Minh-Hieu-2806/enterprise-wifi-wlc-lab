@@ -6,7 +6,7 @@ Thư mục quản lý dàn ý và nội dung báo cáo tổng hợp trong giai �
 
 > **Đã có báo cáo giữa kỳ:** [midterm-report.md](midterm-report.md) — theo đúng 4 mục yêu cầu của buổi báo cáo giữa kỳ (tóm tắt ý tưởng + công việc dự định, tính năng chính, mô hình triển khai, kịch bản demo). Nội dung là **ý tưởng và dự định**, chưa có kết quả kiểm thử.
 >
-> **Chưa có báo cáo cuối kỳ** — hiện đã dựng xong khung có dây P1 (model đã chốt, cấu hình đã kiểm chứng), nhưng **toàn bộ test vẫn `Not Tested`**.
+> **Chưa có báo cáo cuối kỳ** — hiện đã dựng xong khung có dây P1 (model đã chốt, cấu hình đã kiểm chứng) và **TC-01/TC-02 đã `Passed`**; các test case vô tuyến còn lại vẫn `Not Tested`. **TC-01 đã chạy lại trên `WLC-PT`** (bản test copy).
 
 ## Dàn ý báo cáo cuối kỳ (dự kiến)
 

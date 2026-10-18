@@ -7,7 +7,7 @@ Thư mục kiểm thử của dự án (bản 9.0.1.0858).
 
 ## Hiện trạng
 
-> **TC-01 đã `Passed`** (2026-10-18, minh chứng `../evidence/tc-01-wlc-reachability.png`); các test case còn lại ở trạng thái **Not Tested**. Huỳnh Như Hoàng sở hữu chạy test Core và giữ evidence; Đặng Văn Hoàng sở hữu phần WLC/AP; Hoàng Minh Hiếu tham gia kiểm thử và chạy acceptance chọn lọc.
+> **TC-01 đã `Passed`** (2026-10-18; chạy lại trên `WLC-PT`, minh chứng `../evidence/tc-01-wlc-pt-reachability-canvas.png`; bản `WLC-3504` cũ: `../evidence/tc-01-wlc-reachability.png`); các test case còn lại ở trạng thái **Not Tested**. Huỳnh Như Hoàng sở hữu chạy test Core và giữ evidence; Đặng Văn Hoàng sở hữu phần WLC/AP; Hoàng Minh Hiếu tham gia kiểm thử và chạy acceptance chọn lọc.
 
 ## Quy định
 

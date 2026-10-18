@@ -22,10 +22,11 @@ Bảng địa chỉ chuẩn xem tại [ip-vlan-plan.md](ip-vlan-plan.md); topolo
 
 ## 3. RADIUS trên Server-PT (Conditional)
 
-- Vai trò dự kiến (nếu thử): Server-PT xác thực người dùng Staff cho `STAFF-WIFI` qua RADIUS Server Settings (IP + shared secret) đã thấy trong GUI WLC.
-- Điều kiện thử: luồng Core đã `Passed`; Server-PT xác nhận hỗ trợ RADIUS; model WLC đã chọn cấu hình được WPA2-Enterprise trỏ về RADIUS.
+- Vai trò dự kiến (nếu thử): Server-PT xác thực người dùng Staff cho `STAFF-WIFI` qua RADIUS Server Settings (IP + shared secret) — **đã quan sát thấy** trong trang `Wireless LANs` của `WLC-PT` (minh chứng `../evidence/audit-wlc-pt-wireless-lans.png`), cùng lựa chọn Authentication `WPA2` và `WPA` (Enterprise).
+- `IpcAPI` của bản 9.0.1.0858 có `EapolWirelessServerProcess` / `EapolWirelessServerMainProcess` (xử lý EAPOL) ⇒ hướng WPA2-Enterprise hợp lý về mặt mô phỏng.
+- Điều kiện thử: luồng Core đã `Passed`; Server-PT xác nhận hỗ trợ RADIUS; đã tạo được WLAN trên `WLC-PT` (TC-04/TC-05).
 - Nếu không hỗ trợ: ghi `Blocked` kèm lý do tại TC-13 và [implementation-notes.md](implementation-notes.md). Kết quả này **không** làm mất trạng thái hoàn thành của luồng Core.
-- Không ngụy tạo log RADIUS thành công; không coi việc điền được IP/secret vào GUI là bằng chứng xác thực chạy được.
+- Không ngụy tạo log RADIUS thành công; **không coi việc quan sát thấy trường IP/secret trong GUI là bằng chứng xác thực chạy được**.
 
 ## 4. Cô lập Guest bằng ACL trên router (Core)
 
@@ -56,17 +57,18 @@ Bảng địa chỉ chuẩn xem tại [ip-vlan-plan.md](ip-vlan-plan.md); topolo
 | Cơ chế | Một pre-shared key chung cho mọi client của SSID | Mỗi user một tài khoản, xác thực qua RADIUS |
 | Quản lý | Đơn giản, phù hợp cả Guest và bước đầu Staff | Phù hợp Staff khi cần thu hồi từng tài khoản, log tập trung |
 | Rủi ro | Lộ key phải đổi cho tất cả client | Giảm rủi ro key chung, nhưng phụ thuộc RADIUS khả dụng |
-| Khả thi trên 9.0.1.0858 | Dự kiến khả thi, **vẫn phải kiểm chứng** (TC-06/TC-07/TC-14) | **Chưa chắc chắn**, thử sau cùng (TC-13) |
+| Khả thi trên 9.0.1.0858 | **Đã quan sát** tuỳ chọn WPA2-PSK trên `WLC-PT`, **vẫn phải kiểm chứng** (TC-06/TC-07/TC-14) | **Đã quan sát** tuỳ chọn WPA/WPA2 + RADIUS IP & shared secret, **vẫn phải kiểm chứng** (TC-13) |
 | Vai trò trong đồ án | Bắt buộc, quyết định đạt/không đạt luồng Core | Cộng thêm, `Blocked` được chấp nhận kèm lý do |
 
 ## 7. Chủ đề Research-only (không tính vào tiêu chí hoàn thành)
 
 Các nội dung sau chỉ làm nền báo cáo, không ghi là đã triển khai:
 
-- WPA3 và các chế độ chuyển tiếp.
-- Phương thức EAP cụ thể (EAP-TLS, PEAP, ...).
+- **WPA3 và các chế độ chuyển tiếp** — `WirelessAuthenType` trong `IpcAPI` của bản 9.0.1.0858 chỉ có WEP, WPA1-PSK/EAP, WPA2-PSK/EAP, Open; **không có WPA3/SAE** ⇒ không thể triển khai trên phiên bản đã chốt.
+- Phương thức EAP cụ thể (EAP-TLS, PEAP, ...) — mô phỏng có xử lý EAPOL nhưng chưa kiểm chứng được một EAP cụ thể nào.
 - Roaming giữa các AP (kể cả khi mở rộng 2–3 AP).
 - Nhiễu RF và tối ưu vùng phủ.
 - Đo throughput / hiệu năng vô tuyến.
+- Chuẩn 802.11ac / 802.11ax — không có tham chiếu trong tài liệu `IpcAPI` của bản này.
 
-Chỉ đưa vào kết quả khi đã xác minh simulator hỗ trợ và có minh chứng kiểm thử; ngược lại ghi rõ là nghiên cứu.
+Chỉ đưa vào kết quả khi đã xác minh simulator hỗ trợ và có minh chứng kiểm thử; ngược lại ghi rõ là nghiên cứu. Chi tiết khả năng của từng model: [device-selection-decision.md](device-selection-decision.md) §3.
