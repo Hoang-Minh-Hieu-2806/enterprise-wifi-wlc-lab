@@ -6,7 +6,7 @@ Thư mục quản lý dàn ý và nội dung báo cáo tổng hợp trong giai �
 
 > **Đã có báo cáo giữa kỳ:** [midterm-report.md](midterm-report.md) — theo đúng 4 mục yêu cầu của buổi báo cáo giữa kỳ (tóm tắt ý tưởng + công việc dự định, tính năng chính, mô hình triển khai, kịch bản demo). Nội dung là **ý tưởng và dự định**, chưa có kết quả kiểm thử.
 >
-> **Chưa có báo cáo cuối kỳ** — hiện đã dựng xong khung có dây P1 (model đã chốt, cấu hình đã kiểm chứng) và **TC-01/TC-02/TC-03/TC-04/TC-05/TC-06 đã `Passed`** (TC-03: LAP-PT join `WLC-PT`, `Status: Online`, 2026-10-19; TC-04: WLAN `STAFF-WIFI` tạo + phát sóng, 2026-10-19; TC-05: WLAN `GUEST-WIFI` tạo độc lập + phát sóng đồng thời, 2026-10-19; TC-06: hai Staff client associate vào `STAFF-WIFI` bằng WPA2-PSK, 2026-10-19); các test case còn lại (TC-07 → TC-14) vẫn `Not Tested`. **TC-01 đã chạy lại trên `WLC-PT`** (bản test copy).
+> **Chưa có báo cáo cuối kỳ** — hiện đã dựng xong khung có dây P1 (model đã chốt, cấu hình đã kiểm chứng) và **TC-01/TC-02/TC-03/TC-04/TC-05/TC-06/TC-07 đã `Passed`** (TC-03: LAP-PT join `WLC-PT`, `Status: Online`, 2026-10-19; TC-04: WLAN `STAFF-WIFI` tạo + phát sóng, 2026-10-19; TC-05: WLAN `GUEST-WIFI` tạo độc lập + phát sóng đồng thời, 2026-10-19; TC-06: hai Staff client associate vào `STAFF-WIFI` bằng WPA2-PSK, 2026-10-19; TC-07: hai Guest client associate vào `GUEST-WIFI` bằng WPA2-PSK, 2026-10-19); các test case còn lại (TC-08 → TC-14) vẫn `Not Tested`. **TC-01 đã chạy lại trên `WLC-PT`** (bản test copy).
 
 ## Dàn ý báo cáo cuối kỳ (dự kiến)
 

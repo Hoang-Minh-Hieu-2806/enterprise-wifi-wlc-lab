@@ -67,7 +67,7 @@ Minh chứng: [../../evidence/tc-02-lap-ip.png](../../evidence/tc-02-lap-ip.png)
 
 1. **(xong)** Thay controller `WLC-3504` → `WLC-PT`; đặt Management IPv4 `192.168.99.10/24` trên cổng GUI `Management` (API `Vlan1`) bằng API; nối `WLC2 Gi0` → `SW1 Fa0/4` (trunk native 99, allowed 10,20,99); **TC-01 chạy lại `Passed`**. **Đã thay `WLC-3504` bằng `WLC-PT` trong `.pkt` deliverable** (2026-10-19).
 2. **(xong)** LAP-PT join `WLC-PT` (TC-03) — **`Passed` 2026-10-19**: `LAP1` `Status: Online` trong `AP Groups`; PT auto-discovery. Minh chứng: [../../evidence/tc-03-lap-wlc-join.png](../../evidence/tc-03-lap-wlc-join.png).
-3. **(xong)** Hai WLAN với **WPA2-PSK** — **TC-04 `Passed` 2026-10-19** (`STAFF-WIFI` → VLAN 10, quét thấy từ `STAFF1`) và **TC-05 `Passed` 2026-10-19** (`GUEST-WIFI` → VLAN 20, quét đồng thời hai SSID từ `GUEST1`); **còn** associate client vào từng SSID (TC-06/TC-07) và map VLAN cho client (TC-08).
+3. **(xong)** Hai WLAN với **WPA2-PSK** — **TC-04 `Passed` 2026-10-19** (`STAFF-WIFI` → VLAN 10, quét thấy từ `STAFF1`) và **TC-05 `Passed` 2026-10-19** (`GUEST-WIFI` → VLAN 20, quét đồng thời hai SSID từ `GUEST1`); **associate Staff/Guest đã `Passed`** (TC-06 + TC-07, 2026-10-19); **còn** map VLAN cho client (TC-08).
 4. RADIUS/WPA2-Enterprise (TC-13, Conditional) chỉ sau khi Core ổn định và khi được hỗ trợ.
 
 AP standalone chỉ là dự phòng, không thuộc luồng chính (không có trường VLAN nên không thay WLC).

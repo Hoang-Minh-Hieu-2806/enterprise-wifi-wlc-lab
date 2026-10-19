@@ -22,12 +22,14 @@ Thư mục lưu minh chứng kiểm thử trên bản 9.0.1.0858: ảnh chụp m
 > **Minh chứng audit lựa chọn thiết bị (2026-10-18) — cảnh báo: các file dưới đây được viện dẫn trong [../docs/device-selection-decision.md](../docs/device-selection-decision.md) nhưng hiện KHÔNG có trong repo; cần chụp bổ sung:**
 > `audit-wlc-3504-config-menu.png` (model cũ **không** có trang WLAN) · `audit-wlc-pt-wireless-lans.png` (trang `Wireless LANs` có SSID + VLAN + WPA2) · `audit-wlc-pt-management-ip.png` (địa chỉ quản trị trên cổng GUI `Management` / API port `Vlan1`) · `audit-lap-pt-radio.png` (radio của LAP không có trường xác thực) · `audit-ap-pt-port1-security.png` (AP standalone có SSID/xác thực nhưng không có trường VLAN).
 >
-> **TC-01, TC-02, TC-03, TC-04, TC-05 và TC-06 đã `Passed`** kèm minh chứng ở trên. Các test case còn lại (TC-07 → TC-14) vẫn `Not Tested`. Không tạo screenshot giả.
+> [`tc-07-guest1-associate-live.png`](tc-07-guest1-associate-live.png), [`tc-07-guest2-associate-live.png`](tc-07-guest2-associate-live.png) — minh chứng TC-07 `Passed` (2026-10-19, **phiên WIP TC-07**; file deliverable `.pkt` không đổi): ảnh chụp thật từng client trên trang live `Wireless Network Status` của `PC Wireless` — `GUEST1` và `GUEST2` đều hiển thị `Wireless Network Name: GUEST-WIFI`, `Security: WPA2-Personal`, `MAC Address 0001.968E.6B02` (BSSID radio `LAP1`), `Standard Channel: 1 - 2.412GHz`, `Adapter is Active` và adapter `WPC300N`; IPv4 APIPA `169.254.215.157` / `169.254.146.42` (chưa có DHCP trên WLAN — DHCP/subnet là phạm vi TC-08). **PSK không xuất hiện** trên trang này và không được ghi ở bất kỳ đâu. Hai client đã associated sẵn trong phiên WIP chuẩn bị; lần chạy này không nhập lại PSK. `GUEST2` chỉ có trong phiên WIP, chưa lưu vào `.pkt` deliverable. **Không kết luận** DHCP/gateway/map VLAN/Guest isolation.
+>
+> **TC-01, TC-02, TC-03, TC-04, TC-05, TC-06 và TC-07 đã `Passed`** kèm minh chứng ở trên. Các test case còn lại (TC-08 → TC-14) vẫn `Not Tested`. Không tạo screenshot giả.
 
 ## Quy định
 
 1. Tên file tiếng Anh, gắn với test ID:
-   `tc-01-wlc-reachability.png`, `tc-02-lap-ip.png`, `tc-03-lap-wlc-join.png`, `tc-04-staff-wlan.png`, `tc-05-guest-wlan.png`, `tc-06-staff-associate.png`, `tc-07-guest-associate.png`, `tc-08-staff-ipconfig.png` / `tc-08-guest-ipconfig.png`, `tc-09-ping-gateway.png`, `tc-10-guest-to-staff.png`, `tc-11-guest-to-mgmt.png`, `tc-12-show-vlan.png`, `tc-13-radius.png` (chỉ khi thử RADIUS), `tc-14-invalid-psk.png` / `tc-14-invalid-radius.png`.
+   `tc-01-wlc-reachability.png`, `tc-02-lap-ip.png`, `tc-03-lap-wlc-join.png`, `tc-04-staff-wlan.png`, `tc-05-guest-wlan.png`, `tc-06-staff-associate.png`, `tc-07-guest1-associate-live.png` / `tc-07-guest2-associate-live.png`, `tc-08-staff-ipconfig.png` / `tc-08-guest-ipconfig.png`, `tc-09-ping-gateway.png`, `tc-10-guest-to-staff.png`, `tc-11-guest-to-mgmt.png`, `tc-12-show-vlan.png`, `tc-13-radius.png` (chỉ khi thử RADIUS), `tc-14-invalid-psk.png` / `tc-14-invalid-radius.png`.
 2. Ảnh đọc được: thấy rõ lệnh, kết quả, SSID/IP liên quan; che PSK/password/tài khoản thật.
 3. Chỉ commit minh chứng của lần test thật trên đúng topology và đúng bản 9.0.1.0858.
 4. Không dùng ảnh minh họa ngoài đồ án, không chỉnh sửa kết quả.

@@ -65,7 +65,7 @@ flowchart TB
 | Switch ↔ WLC | Quản trị WLC (VLAN 99) + mang lưu lượng VLAN 10/20 của client | **Management đã chốt trên `WLC-PT`** — `SW1 Fa0/4` trunk native VLAN 99, allowed 10,20,99; `WLC-PT Gi0` uplink (GUI không có tuỳ chọn trunk/VLAN); frame untagged của `Vlan1` rơi vào native 99 ⇒ management ping được (TC-01 `Passed`). **Lưu lượng client VLAN 10/20 chưa chốt** — cần TC-08 |
 | Switch ↔ LAP-PT | Uplink AP (quản trị VLAN 99 + tải SSID/VLAN nếu hỗ trợ) | **Đã chốt: access VLAN 99 trên `FastEthernet0/3`.** LAP-PT chỉ có `GigabitEthernet0` (Ethernet) + `Dot11Radio0`; không thấy cổng trunk/phụ. IP quản trị đã thông (TC-02 `Passed`); multi-SSID→multi-VLAN còn phải kiểm chứng khi có client |
 | Switch ↔ Server-PT | Server tới đúng VLAN phục vụ DHCP (và RADIUS nếu thử) | **Đã chốt:** access VLAN 99 trên `FastEthernet0/2` (theo [ip-vlan-plan.md](ip-vlan-plan.md) §2) |
-| LAP-PT ↔ Client | Vô tuyến, SSID ánh xạ tới VLAN | `STAFF-WIFI` → 10: trường VLAN = 10 và **SSID đã phát sóng — quét thấy từ `STAFF1`** (TC-04 `Passed`, 2026-10-19); `GUEST-WIFI` → 20: **SSID đã phát sóng đồng thời — quét thấy cả hai từ `GUEST1`** (TC-05 `Passed`); **associate + map VLAN cho client chưa kiểm chứng** (TC-06/TC-07/TC-08) |
+| LAP-PT ↔ Client | Vô tuyến, SSID ánh xạ tới VLAN | `STAFF-WIFI` → 10: trường VLAN = 10 và **SSID đã phát sóng — quét thấy từ `STAFF1`** (TC-04 `Passed`, 2026-10-19); `GUEST-WIFI` → 20: **SSID đã phát sóng đồng thời — quét thấy cả hai từ `GUEST1`** (TC-05 `Passed`); **associate Staff/Guest bằng WPA2-PSK đã kiểm chứng** (TC-06 + TC-07 `Passed`); **map VLAN cho client chưa kiểm chứng** (TC-08) |
 
 Chi tiết subnet và gateway chuẩn xem tại [ip-vlan-plan.md](ip-vlan-plan.md) (authoritative).
 
@@ -92,7 +92,7 @@ Server-PT ở VLAN 99 nhưng cấp DHCP cho VLAN 10 và VLAN 20 ⇒ router phả
 3. **(xong cấu hình)** Cấu hình DHCP scope trên Server-PT + `ip helper-address` trên router (§3.2). Chưa cần client, nhưng phải xong trước TC-08.
 4. **(xong một phần)** Nối 01 LAP-PT, kiểm tra LAP nhận IP — **TC-02 `Passed`** ngày 2026-10-18 (`192.168.99.30` tĩnh trên `GigabitEthernet0`, `SW1 Fa0/3` access VLAN 99).
 5. **(xong)** LAP-PT join `WLC-PT` (TC-03) — **`Passed` ngày 2026-10-19**: `LAP1` `Status: Online` trong `AP Groups` (nhóm `default-group`), cơ chế **auto-discovery** của PT (không có trường `Primary Controller`; `CAPWAP.PRIMARY_AC = 0.0.0.0` không đọc là bằng chứng). Minh chứng: `../evidence/tc-03-lap-wlc-join.png`. **Lưu ý:** `LAP-PT` **không lưu IP tĩnh vào `.pkt`** — mở lại file phải đặt lại `192.168.99.30/24` thì AP mới rejoin.
-6. **(xong)** Tạo WLAN Staff + Guest (TC-04, TC-05) — **`Passed` 2026-10-19**: `STAFF-WIFI` (WLAN ID 1, VLAN 10) quét thấy từ `STAFF1` (TC-04); `GUEST-WIFI` (WLAN ID 2, VLAN 20) tạo độc lập, phát sóng **đồng thời**, quét thấy cả hai SSID từ `GUEST1` (TC-05). **Còn** associate + WPA2-PSK từng SSID (TC-06/TC-07).
+6. **(xong)** Tạo WLAN Staff + Guest (TC-04, TC-05) — **`Passed` 2026-10-19**: `STAFF-WIFI` (WLAN ID 1, VLAN 10) quét thấy từ `STAFF1` (TC-04); `GUEST-WIFI` (WLAN ID 2, VLAN 20) tạo độc lập, phát sóng **đồng thời**, quét thấy cả hai SSID từ `GUEST1` (TC-05). **Associate Staff/Guest bằng WPA2-PSK đã `Passed`** (TC-06 + TC-07); **còn** map SSID→VLAN cho client (TC-08).
 7. Kiểm tra IP/gateway (TC-08/TC-09), rồi ACL cô lập (TC-10/TC-11), cuối cùng đối chiếu VLAN + hiển thị ACL (TC-12).
 8. Chỉ sau khi Core ổn định mới thử RADIUS (TC-13, Conditional).
 9. Chỉ thêm LAP thứ 2–3 sau khi AP đầu và client chạy ổn định.

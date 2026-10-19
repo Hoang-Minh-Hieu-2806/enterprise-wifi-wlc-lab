@@ -1,12 +1,14 @@
 # Danh sách ca kiểm thử (Test Cases)
 
-> Cột `Actual result` để trống cho tới khi có kiểm thử thật trên Packet Tracer 9.0.1.0858. Hiện **TC-01, TC-02, TC-03, TC-04, TC-05 và TC-06 đã `Passed`**; các test case còn lại vẫn **Not Tested**. Kế hoạch tổng thể và phân loại Core/Conditional xem tại [../docs/testing-plan.md](../docs/testing-plan.md). RADIUS (TC-13) là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
+> Cột `Actual result` để trống cho tới khi có kiểm thử thật trên Packet Tracer 9.0.1.0858. Hiện **TC-01, TC-02, TC-03, TC-04, TC-05, TC-06 và TC-07 đã `Passed`**; các test case còn lại vẫn **Not Tested**. Kế hoạch tổng thể và phân loại Core/Conditional xem tại [../docs/testing-plan.md](../docs/testing-plan.md). RADIUS (TC-13) là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
 >
 > **Lưu ý sau audit lựa chọn thiết bị (2026-10-18):** quyết định đổi controller từ `WLC-3504` sang **`WLC-PT`**. **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy) — Management IPv4 `192.168.99.10/24`, gw `192.168.99.1`, đặt trên cổng GUI hiển thị là `Management` (API/mô phỏng đặt tên `Vlan1`), **đặt được bằng API, không cần raw JS**. **TC-03 đã kiểm chứng và `Passed`**: `WLC2 → Config → AP Groups` hiển thị `LAP1` (`0001.968E.6B01`) `Status: Online` trong nhóm `default-group`; `CAPWAP.PRIMARY_AC` của cả `LAP-PT` và `WLC-PT` là `0.0.0.0` (PT dùng auto-discovery, không có trường đặt IP controller trong GUI). **`.pkt` deliverable đã được thay sang `WLC-PT` (2026-10-19)** — hết chờ. Xem [../docs/device-selection-decision.md](../docs/device-selection-decision.md). `Expected result` **không** sửa theo kết quả thực tế.
 >
 > **Cập nhật 2026-10-19 — TC-04 `Passed`:** WLAN `STAFF-WIFI` (WLAN ID `1`, VLAN `10`, WPA2-PSK/AES) đã tạo trên `WLC2` và **phát sóng được xác nhận bằng quét thật từ client `STAFF1`**; chưa associate (TC-06) và chưa kiểm chứng map VLAN (TC-08). Minh chứng: `../evidence/tc-04-staff-wlan.png`, `../evidence/tc-04-wlc-staff-wlan-config.png` (PSK đã che).
 >
 > **Cập nhật 2026-10-19 — TC-06 `Passed`:** cả hai Staff client `STAFF1` và `STAFF2` (client thứ hai được bổ sung vào deliverable vì Procedure yêu cầu 2 client) đã **associate thật** vào `STAFF-WIFI` bằng WPA2-PSK qua GUI `PC Wireless`. Minh chứng chính: `../evidence/tc-06-staff-associate.png` — **một ảnh chụp màn hình thật**, hai cửa sổ `STAFF1`/`STAFF2` đặt cạnh nhau, cùng mở trang live `Wireless Network Status`: cả hai hiển thị `Wireless Network Name: STAFF-WIFI`, `Security: WPA2-Personal`, BSSID `0001.968E.6B02`, channel `1 - 2.412GHz` (PSK không xuất hiện trên trang này). Đối chứng trước khi nối của `STAFF2`: `../evidence/tc-06-staff2-noassoc-control.png` (`no association with access point`). IPv4 của client hiện là APIPA `169.254.x.x` — DHCP/map VLAN đúng subnet là phạm vi TC-08, **chưa kết luận**.
+>
+> **Cập nhật 2026-10-19 — TC-07 `Passed`:** cả hai Guest client `GUEST1` + `GUEST2` **đang associate** vào `GUEST-WIFI` (`Security: WPA2-Personal`, BSSID `0001.968E.6B02` = radio `LAP1`), xác nhận trên trang live `Wireless Network Status` của `PC Wireless`; PSK không hiển thị. IPv4 vẫn APIPA — DHCP/gateway/map VLAN/Guest isolation **chưa kết luận**. Minh chứng: `../evidence/tc-07-guest1-associate-live.png`, `../evidence/tc-07-guest2-associate-live.png`.
 
 ## TC-01 — WLC management reachability (Core)
 
@@ -95,9 +97,9 @@
 | **Preconditions** | TC-05 đạt; `GUEST-WIFI` dùng WPA2-PSK |
 | **Procedure** | 1. Kết nối Guest client 1 và 2 vào `GUEST-WIFI` bằng PSK đúng (che secret khi chụp). 2. Ghi trạng thái association. |
 | **Expected result** | Cả hai Guest client associate thành công |
-| **Actual result** | _Not Tested_ |
-| **Evidence filename** | `evidence/tc-07-guest-associate.png` (dự kiến, chưa có) |
-| **Status** | Not Tested |
+| **Actual result** | **Passed** — kiểm chứng 2026-10-19 trên **phiên WIP TC-07 đã chuẩn bị** (có thêm `GUEST2`; **không lưu/không ghi đè** file deliverable `packet-tracer/enterprise-wifi-wlc-lab-v1.pkt`). **Adapter:** cả hai `Laptop-PT` dùng adapter `WPC300N` (`Model No: WPC300N`), cổng `Wireless0` `power/up`, trạng thái `Adapter is Active`. **Association quan sát trực tiếp** trên trang live `Wireless Network Status` (`PC Wireless`): `GUEST1` — SSID `GUEST-WIFI`, `Security: WPA2-Personal`, `MAC Address 0001.968E.6B02` (BSSID `Dot11Radio0` của `LAP1`, AP do `WLC2` quản lý), channel `1 - 2.412GHz`, IPv4 APIPA `169.254.215.157`; `GUEST2` — cùng SSID/security/BSSID/channel, IPv4 APIPA `169.254.146.42`. Hai client đã ở trạng thái associated khi phiên WIP được khôi phục; lần chạy này **không nhập lại PSK** và **không hiển thị PSK** trong log/ảnh — với WPA2-Personal, association thành công chứng minh PSK khớp cấu hình `GUEST-WIFI` (WPA2-PSK/AES, đã kiểm chứng ở TC-05). **Minh chứng:** `evidence/tc-07-guest1-associate-live.png`, `evidence/tc-07-guest2-associate-live.png` (ảnh chụp thật, không chỉnh sửa). **Ngoài phạm vi TC-07, chưa kết luận:** DHCP (IPv4 vẫn APIPA `169.254.x.x`), gateway/connectivity, map SSID→VLAN 20, Guest isolation/ACL. **Giới hạn:** `GUEST2` chỉ có trong phiên WIP, chưa được lưu vào `.pkt` deliverable; không có minh chứng bắt tay WPA2 4-way ở mức gói tin. |
+| **Evidence filename** | `evidence/tc-07-guest1-associate-live.png` (GUEST1 — SSID/security/BSSID/adapter), `evidence/tc-07-guest2-associate-live.png` (GUEST2 — SSID/security/BSSID/adapter) |
+| **Status** | Passed (2026-10-19; cả hai Guest client associate thật vào `GUEST-WIFI` bằng WPA2-PSK; DHCP/gateway/map VLAN/Guest isolation để TC-08/TC-09/TC-10/TC-11) |
 
 ## TC-08 — Client nhận IP đúng subnet (Core)
 
