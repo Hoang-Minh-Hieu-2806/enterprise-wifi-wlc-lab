@@ -17,10 +17,12 @@ Thư mục lưu minh chứng kiểm thử trên bản 9.0.1.0858: ảnh chụp m
 >
 > [`tc-05-guest-wlan.png`](tc-05-guest-wlan.png), [`tc-05-wlc-guest-wlan-config.png`](tc-05-wlc-guest-wlan-config.png) — minh chứng TC-05 `Passed` (2026-10-19, `.pkt` deliverable): ảnh `PC Wireless` trên client `GUEST1` quét thấy **đồng thời hai SSID** `STAFF-WIFI` và `GUEST-WIFI` (channel 1, 63%, `WPA2-PSK`) và trang `Wireless LANs` của `WLC2` với WLAN `GUEST-WIFI` (WLAN ID 2, VLAN 20, WPA2-PSK/AES) — **vùng `PSK Pass Phrase` đã che**. Chưa associate (TC-06/TC-07), chưa kiểm chứng map VLAN cho client (TC-08).
 >
+> [`tc-06-staff-associate.png`](tc-06-staff-associate.png), [`tc-06-staff2-noassoc-control.png`](tc-06-staff2-noassoc-control.png) — minh chứng TC-06 `Passed` (2026-10-19, `.pkt` deliverable, nay đã thêm client `STAFF2`): ảnh chính là **một ảnh chụp màn hình thật** với hai cửa sổ `STAFF1` + `STAFF2` đặt cạnh nhau, cùng mở trang live `Wireless Network Status` của `PC Wireless` — cả hai hiển thị `Wireless Network Name: STAFF-WIFI`, `Mac Address 0001.968E.6B02` (BSSID radio `LAP1`), `Security: WPA2-Personal`, `Standard Channel: 1 - 2.412GHz`; IPv4 APIPA khác nhau `169.254.50.223` / `169.254.58.5` (chưa có DHCP trên WLAN — DHCP/subnet là phạm vi TC-08). **PSK không xuất hiện** trên trang này. Ảnh đối chứng chụp `STAFF2` **trước khi nối**: `no association with access point` / `Adapter is Inactive`. Lưu ý: trang `Link Information` của applet là minh họa **tĩnh** (giống hệt trước/sau khi nối) — không dùng làm bằng chứng; thay vào đó là trang live `Wireless Network Status`.
+>
 > **Minh chứng audit lựa chọn thiết bị (2026-10-18) — cảnh báo: các file dưới đây được viện dẫn trong [../docs/device-selection-decision.md](../docs/device-selection-decision.md) nhưng hiện KHÔNG có trong repo; cần chụp bổ sung:**
 > `audit-wlc-3504-config-menu.png` (model cũ **không** có trang WLAN) · `audit-wlc-pt-wireless-lans.png` (trang `Wireless LANs` có SSID + VLAN + WPA2) · `audit-wlc-pt-management-ip.png` (địa chỉ quản trị trên cổng GUI `Management` / API port `Vlan1`) · `audit-lap-pt-radio.png` (radio của LAP không có trường xác thực) · `audit-ap-pt-port1-security.png` (AP standalone có SSID/xác thực nhưng không có trường VLAN).
 >
-> **TC-01, TC-02, TC-03, TC-04 và TC-05 đã `Passed`** kèm minh chứng ở trên. Các test case còn lại (TC-06 → TC-14) vẫn `Not Tested`. Không tạo screenshot giả.
+> **TC-01, TC-02, TC-03, TC-04, TC-05 và TC-06 đã `Passed`** kèm minh chứng ở trên. Các test case còn lại (TC-07 → TC-14) vẫn `Not Tested`. Không tạo screenshot giả.
 
 ## Quy định
 
