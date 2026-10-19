@@ -24,7 +24,7 @@ Bảng địa chỉ chuẩn xem tại [ip-vlan-plan.md](ip-vlan-plan.md); topolo
 
 - Vai trò dự kiến (nếu thử): Server-PT xác thực người dùng Staff cho `STAFF-WIFI` qua RADIUS Server Settings (IP + shared secret) — **đã quan sát thấy** trong trang `Wireless LANs` của `WLC-PT` (minh chứng `../evidence/audit-wlc-pt-wireless-lans.png`), cùng lựa chọn Authentication `WPA2` và `WPA` (Enterprise).
 - `IpcAPI` của bản 9.0.1.0858 có `EapolWirelessServerProcess` / `EapolWirelessServerMainProcess` (xử lý EAPOL) ⇒ hướng WPA2-Enterprise hợp lý về mặt mô phỏng.
-- Điều kiện thử: luồng Core đã `Passed`; Server-PT xác nhận hỗ trợ RADIUS; đã tạo được WLAN trên `WLC-PT` (TC-04 `Passed` 2026-10-19; TC-05 chưa).
+- Điều kiện thử: luồng Core đã `Passed`; Server-PT xác nhận hỗ trợ RADIUS; đã tạo được WLAN trên `WLC-PT` (TC-04 + TC-05 `Passed` 2026-10-19).
 - Nếu không hỗ trợ: ghi `Blocked` kèm lý do tại TC-13 và [implementation-notes.md](implementation-notes.md). Kết quả này **không** làm mất trạng thái hoàn thành của luồng Core.
 - Không ngụy tạo log RADIUS thành công; **không coi việc quan sát thấy trường IP/secret trong GUI là bằng chứng xác thực chạy được**.
 

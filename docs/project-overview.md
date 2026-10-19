@@ -42,10 +42,10 @@ Tóm tắt: quản lý tập trung bằng WLC (01 LAP-PT trước), hai SSID, ph
 | # | Sản phẩm | Vị trí | Trạng thái hiện tại |
 | --- | --- | --- | --- |
 | 1 | Tài liệu thiết kế (overview, requirements, topology, IP/VLAN, security) | `docs/` | In Progress (finalize, chưa nghiệm thu) |
-| 2 | File mô phỏng Packet Tracer (`.pkt`, đúng bản 9.0.1.0858) | `packet-tracer/` | In Progress — `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1 + `WLC-PT` (đã thay `WLC-3504`) + LAP-PT + WLAN `STAFF-WIFI` + client pilot `STAFF1` |
+| 2 | File mô phỏng Packet Tracer (`.pkt`, đúng bản 9.0.1.0858) | `packet-tracer/` | In Progress — `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1 + `WLC-PT` (đã thay `WLC-3504`) + LAP-PT + hai WLAN `STAFF-WIFI`/`GUEST-WIFI` + client pilot `STAFF1`, `GUEST1` |
 | 3 | Bản sao cấu hình thiết bị (đã che secret) | `configs/` | In Progress — `router/` + `switch/` có bản khung P1; `wlc-ap/` ghi cấu hình hạ tầng `WLC-PT` (đã cập nhật sau khi chạy lại TC-01) |
-| 4 | Kế hoạch và ca kiểm thử Core/Conditional | `docs/testing-plan.md`, `tests/test-cases.md` | In Progress — **TC-01, TC-02, TC-03 và TC-04 `Passed`**; TC-05→TC-14 `Not Tested`. **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy); **TC-03 xác nhận `LAP-PT` join `WLC-PT` (`Status: Online`)**; **TC-04 xác nhận `STAFF-WIFI` tạo + phát sóng (quét thấy từ `STAFF1`)** |
-| 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | In Progress — minh chứng bring-up P1 + TC-01, TC-02, TC-03, TC-04 + **minh chứng audit lựa chọn thiết bị (một số file `audit-*.png` chưa có, cần chụp bổ sung)** |
+| 4 | Kế hoạch và ca kiểm thử Core/Conditional | `docs/testing-plan.md`, `tests/test-cases.md` | In Progress — **TC-01, TC-02, TC-03, TC-04 và TC-05 `Passed`**; TC-06→TC-14 `Not Tested`. **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy); **TC-03 xác nhận `LAP-PT` join `WLC-PT` (`Status: Online`)**; **TC-04 xác nhận `STAFF-WIFI` tạo + phát sóng (quét thấy từ `STAFF1`)**; **TC-05 xác nhận `GUEST-WIFI` tạo độc lập + phát sóng đồng thời (quét thấy cả hai SSID từ `GUEST1`)** |
+| 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | In Progress — minh chứng bring-up P1 + TC-01, TC-02, TC-03, TC-04, TC-05 + **minh chứng audit lựa chọn thiết bị (một số file `audit-*.png` chưa có, cần chụp bổ sung)** |
 | 6 | Báo cáo (dàn ý + nội dung trong `report/`, chưa cần DOCX/PDF) | `report/` | In Progress — `midterm-report.md` đã soạn |
 
 ## 5. Tiêu chí hoàn thành dự án

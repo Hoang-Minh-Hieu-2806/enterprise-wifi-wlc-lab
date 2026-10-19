@@ -15,10 +15,12 @@ Thư mục lưu minh chứng kiểm thử trên bản 9.0.1.0858: ảnh chụp m
 >
 > [`tc-04-staff-wlan.png`](tc-04-staff-wlan.png), [`tc-04-wlc-staff-wlan-config.png`](tc-04-wlc-staff-wlan-config.png) — minh chứng TC-04 `Passed` (2026-10-19, `.pkt` deliverable): ảnh `PC Wireless` trên client `STAFF1` quét thấy SSID `STAFF-WIFI` (channel 1, 59%, `WPA2-PSK`) và trang `Wireless LANs` của `WLC2` với WLAN `STAFF-WIFI` (WLAN ID 1, VLAN 10, WPA2-PSK/AES) — **vùng passphrase đã che**. Chưa associate (TC-06), chưa kiểm chứng map VLAN cho client (TC-08).
 >
+> [`tc-05-guest-wlan.png`](tc-05-guest-wlan.png), [`tc-05-wlc-guest-wlan-config.png`](tc-05-wlc-guest-wlan-config.png) — minh chứng TC-05 `Passed` (2026-10-19, `.pkt` deliverable): ảnh `PC Wireless` trên client `GUEST1` quét thấy **đồng thời hai SSID** `STAFF-WIFI` và `GUEST-WIFI` (channel 1, 63%, `WPA2-PSK`) và trang `Wireless LANs` của `WLC2` với WLAN `GUEST-WIFI` (WLAN ID 2, VLAN 20, WPA2-PSK/AES) — **vùng `PSK Pass Phrase` đã che**. Chưa associate (TC-06/TC-07), chưa kiểm chứng map VLAN cho client (TC-08).
+>
 > **Minh chứng audit lựa chọn thiết bị (2026-10-18) — cảnh báo: các file dưới đây được viện dẫn trong [../docs/device-selection-decision.md](../docs/device-selection-decision.md) nhưng hiện KHÔNG có trong repo; cần chụp bổ sung:**
 > `audit-wlc-3504-config-menu.png` (model cũ **không** có trang WLAN) · `audit-wlc-pt-wireless-lans.png` (trang `Wireless LANs` có SSID + VLAN + WPA2) · `audit-wlc-pt-management-ip.png` (địa chỉ quản trị trên cổng GUI `Management` / API port `Vlan1`) · `audit-lap-pt-radio.png` (radio của LAP không có trường xác thực) · `audit-ap-pt-port1-security.png` (AP standalone có SSID/xác thực nhưng không có trường VLAN).
 >
-> **TC-01, TC-02, TC-03 và TC-04 đã `Passed`** kèm minh chứng ở trên. Các test case còn lại (TC-05 → TC-14) vẫn `Not Tested`. Không tạo screenshot giả.
+> **TC-01, TC-02, TC-03, TC-04 và TC-05 đã `Passed`** kèm minh chứng ở trên. Các test case còn lại (TC-06 → TC-14) vẫn `Not Tested`. Không tạo screenshot giả.
 
 ## Quy định
 
