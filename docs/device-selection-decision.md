@@ -1,6 +1,8 @@
 # Quyết định lựa chọn thiết bị vô tuyến (Device Selection Decision)
 
 > Bản ghi quyết định (decision record) cho lựa chọn model **WLC** và **AP**. Mọi khẳng định trong tài liệu này đều dựa trên quan sát trực tiếp trong **Cisco Packet Tracer 9.0.1.0858** (GUI + danh mục thiết bị + tài liệu `IpcAPI` đi kèm), minh chứng tại `../evidence/`. Những gì **chưa** kiểm chứng hoạt động vẫn ghi rõ là chưa kiểm chứng.
+>
+> **Cảnh báo minh chứng:** các ảnh `audit-*.png` (và `wlc-pt-feasibility-*.png`) được viện dẫn trong tài liệu này **hiện chưa có trong `../evidence/`** (xem [../evidence/README.md](../evidence/README.md)) — cần chụp bổ sung. Các quan sát ở §3 dựa trên ghi nhận trực tiếp cùng ngày (2026-10-18).
 
 ## 1. Bối cảnh
 
@@ -57,7 +59,7 @@ Minh chứng: [`../evidence/audit-wlc-pt-wireless-lans.png`](../evidence/audit-w
 
 Minh chứng: [`../evidence/audit-lap-pt-radio.png`](../evidence/audit-lap-pt-radio.png).
 
-> **Lưu ý:** nhận định cũ "LAP-PT có trang `WLC / Primary Controller`" **chưa được xác nhận** và hiện **không tìm thấy**. Cơ chế join thực tế phải kiểm chứng ở **TC-03**; chưa kết luận join được hay không.
+> **Lưu ý:** nhận định cũ "LAP-PT có trang `WLC / Primary Controller`" **chưa được xác nhận** và hiện **không tìm thấy**. Cơ chế join đã được kiểm chứng ở **TC-03 (`Passed`, 2026-10-19)**: `LAP1` `Status: Online` trong `AP Groups` của `WLC-PT`, qua **auto-discovery** của PT (minh chứng `../evidence/tc-03-lap-wlc-join.png`).
 
 ### 3.4 `AccessPoint-PT` (AP độc lập) — có xác thực nhưng không có VLAN
 
@@ -102,16 +104,16 @@ Bằng chứng phụ trợ: các lab mẫu đi kèn của Packet Tracer có `wlc
 ### 4.1 Hệ quả bắt buộc
 
 1. **TC-01 đã chạy lại trên `WLC-PT` — `Passed` (bản test copy).** Management IPv4 `192.168.99.10/24`, gateway `192.168.99.1`, đặt trên cổng GUI hiển thị là **`Management`** (API/mô phỏng đặt tên port là `Vlan1` — **giống `WLC-3504`**, `WLC-PT` **không có** cổng API tên `management` riêng). Đặt địa chỉ **bằng API** (`pt_host_ip_config`), **không cần raw JS**. Nguồn ping `SRV1` (`0% loss`, 4/4) và `R1` (`5/5`). Kết quả `Passed` của `WLC-3504` giữ lại làm lịch sử P1. Lệnh/địa chỉ chi tiết xem [implementation-notes.md](implementation-notes.md) §5 và [../tests/test-cases.md](../tests/test-cases.md) TC-01. **Lưu ý:** kiểm chứng này ban đầu thực hiện trên **bản test copy** (`..._TESTCOPY_2026-10-18.pkt`, đã xoá `WLC1`); **file deliverable sau đó đã được migrate sang `WLC-PT`** (Phase C, 2026-10-19).
-2. **Uplink Switch↔WLC đã kiểm chứng trên `WLC-PT`.** `WLC-PT` chỉ có `GigabitEthernet0` (uplink, **không có tuỳ chọn VLAN/trunk trong GUI**) + `Vlan1` (management). Cách dùng: `WLC2 Gi0` → `SW1 Fa0/4` đặt **trunk** native VLAN 99, allowed `10,20,99`; frame untagged của `Vlan1` rơi vào native 99 ⇒ management ping được (TC-01). **Cơ chế central switching → VLAN 10/20 của client vẫn chưa chứng minh**, phải kiểm chứng ở TC-03/TC-08.
+2. **Uplink Switch↔WLC đã kiểm chứng trên `WLC-PT`.** `WLC-PT` chỉ có `GigabitEthernet0` (uplink, **không có tuỳ chọn VLAN/trunk trong GUI**) + `Vlan1` (management). Cách dùng: `WLC2 Gi0` → `SW1 Fa0/4` đặt **trunk** native VLAN 99, allowed `10,20,99`; frame untagged của `Vlan1` rơi vào native 99 ⇒ management ping được (TC-01). **Cơ chế central switching → VLAN 10/20 của client vẫn chưa chứng minh**, phải kiểm chứng ở TC-08.
 3. **`addTrunkVlans` trên `WLC-3504`** (`Invalid arguments for IPC call`) trở nên không còn ý nghĩa với controller mới; vấn đề uplink giữa WLC-PT và switch cần đánh giá mới.
-4. **Cơ chế join LAP→WLC chưa rõ** (không thấy trường `Primary Controller` trên `LAP-PT`) ⇒ **TC-03 là cổng chặn tiếp theo**, phải chạy trước TC-04.
+4. **Cơ chế join LAP→WLC đã kiểm chứng (TC-03 `Passed`, 2026-10-19):** `LAP1` `Status: Online` trong `AP Groups` của `WLC-PT`; PT dùng **auto-discovery** (không có trường `Primary Controller` để đặt). Chưa có minh chứng bắt tay CAPWAP; `CAPWAP.PRIMARY_AC = 0.0.0.0` ở cả hai model **không** được đọc là bằng chứng. **Bước kế tiếp sau TC-03 là TC-04** (tạo WLAN).
 5. Cấu hình `WLC-3504` trong `../configs/wlc-ap/` giữ lại làm **tài liệu lịch sử của P1**; cấu hình mới ghi vào mục riêng cho `WLC-PT` sau khi chạy lại TC-01.
 
 ### 4.2 Điều kiện xem lại quyết định
 
 Quyết định này cần xem lại nếu xảy ra bất kỳ trường hợp nào sau:
 
-- `WLC-PT` **không** nhận LAP-PT (đóng frame đăng ký) trong TC-03 ⇒ ghi `Blocked`, cân nhắc phương án C kèm sửa phạm vi.
+- `WLC-PT` **không** nhận LAP-PT (đóng frame đăng ký) trong TC-03 ⇒ ghi `Blocked`, cân nhắc phương án C kèm sửa phạm vi. **Điều kiện này KHÔNG xảy ra — TC-03 `Passed` ngày 2026-10-19 (`LAP1` `Status: Online`).**
 - `WLC-PT` tạo được WLAN nhưng **không phát sóng** hoặc **không map được VLAN** ⇒ dừng ở TC-04/TC-05, ghi `Blocked`, không giả định.
 - Packet Tracer được nâng cấp phiên bản khác 9.0.1.0858 ⇒ toàn bộ quan sát ở §3 phải kiểm chứng lại.
 
@@ -128,7 +130,7 @@ Quyết định này cần xem lại nếu xảy ra bất kỳ trường hợp n
 | 7 | `AccessPoint-PT` có SSID + WPA-PSK/WPA2-PSK nhưng **không** có trường VLAN | **Verified** | `../evidence/audit-ap-pt-port1-security.png` |
 | 8 | `AP-PT-A` và `AP-PT-AC` vẫn có trong palette 9.0.1.0858 | **Verified** | bảng §3.5 (quan sát palette) |
 | 9 | Không có WPA3/SAE trong `WirelessAuthenType` | **Verified** | `IpcAPI/class_wireless_*.html` |
-| 10 | LAP-PT join được `WLC-PT` | **Not Tested** | TC-03 |
+| 10 | LAP-PT join được `WLC-PT` | **Verified** (2026-10-19; TC-03 `Passed`) | `../evidence/tc-03-lap-wlc-join.png` |
 | 11 | `WLC-PT` tạo + phát được `STAFF-WIFI` (VLAN 10) | **Not Tested** | TC-04 |
 | 12 | `WLC-PT` tạo + phát được `GUEST-WIFI` (VLAN 20) | **Not Tested** | TC-05 |
 | 13 | Client associate `STAFF-WIFI` bằng WPA2-PSK | **Not Tested** | TC-06 |

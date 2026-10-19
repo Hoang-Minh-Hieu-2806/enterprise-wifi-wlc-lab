@@ -1,6 +1,6 @@
 # Kế hoạch kiểm thử (Core / Conditional / Research-only)
 
-> Cột kết quả thực tế (`Actual result`) để trống cho tới khi có kiểm thử thật. Hiện **TC-01 và TC-02 đã `Passed`** (2026-10-18); các test case còn lại vẫn **Not Tested**. Chi tiết từng bước xem tại [../tests/test-cases.md](../tests/test-cases.md).
+> Cột kết quả thực tế (`Actual result`) để trống cho tới khi có kiểm thử thật. Hiện **TC-01, TC-02 và TC-03 đã `Passed`** (TC-01, TC-02 `2026-10-18`; TC-03 `2026-10-19`); các test case còn lại vẫn **Not Tested**. Chi tiết từng bước xem tại [../tests/test-cases.md](../tests/test-cases.md).
 >
 > **Sau audit lựa chọn thiết bị (2026-10-18):** controller đổi từ `WLC-3504` sang **`WLC-PT`**; **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy). Xem [device-selection-decision.md](device-selection-decision.md).
 
@@ -63,7 +63,7 @@ File này **không** đại diện cho test case nào và **không** được d�
 
 ## 6.1 Minh chứng audit lựa chọn thiết bị (không phải kết quả test case)
 
-Đợt audit 2026-10-18 khảo sát trực tiếp giao diện thiết bị trên đúng bản 9.0.1.0858 để chốt lại model controller và AP. Các ảnh sau **là minh chứng quan sát giao diện**, không phải kết quả test case, và **không** dùng để chuyển TC nào sang `Passed`:
+Đợt audit 2026-10-18 khảo sát trực tiếp giao diện thiết bị trên đúng bản 9.0.1.0858 để chốt lại model controller và AP. Các ảnh sau **là minh chứng quan sát giao diện**, không phải kết quả test case, và **không** dùng để chuyển TC nào sang `Passed`. **Cảnh báo: các file dưới đây hiện KHÔNG có trong `../evidence/` — cần chụp bổ sung trước khi nghiệm thu.**
 
 | File | Nội dung quan sát |
 | --- | --- |
@@ -80,4 +80,5 @@ Quyết định dựa trên các minh chứng này: [device-selection-decision.m
 | Test ID | Ngày | Kết quả | Minh chứng | Ghi chú |
 | --- | --- | --- | --- | --- |
 | TC-01 | 2026-10-18 | `Passed` *(chạy lại trên `WLC-PT`, bản test copy)* | `../evidence/tc-01-wlc-pt-reachability-canvas.png` | Management IPv4 `192.168.99.10/24` trên cổng GUI `Management` (API `Vlan1`), đặt bằng API; ping từ `SRV1` `192.168.99.20`: 4/4 `0% loss`, và `R1` `5/5`. Uplink `WLC-PT Gi0` → `SW1 Fa0/4` trunk native 99 (không cần trunk phía WLC). Bản `WLC-3504` cũ: `../evidence/tc-01-wlc-reachability.png` — chi tiết tại [implementation-notes.md](implementation-notes.md) §5 |
-| TC-02 | 2026-10-18 | `Passed` | `../evidence/tc-02-lap-ip.png`, `../evidence/tc-02-lap-ping-gateway.png`, `../evidence/tc-02-lap-arp-r1.png` | `LAP-PT` trên `SW1 Fa0/3` (access VLAN 99), IP tĩnh `192.168.99.30/24`, gateway `192.168.99.1`. Simple PDU `LAP1 → R1` = Successful; ping ngược `R1 → .30` = 5/5. Cổng AP chỉ lên khi có cấu hình IP; LAP không có CLI — chi tiết tại [implementation-notes.md](implementation-notes.md) §5 |
+| TC-02 | 2026-10-18 | `Passed` | `../evidence/tc-02-lap-ip.png`, `../evidence/tc-02-lap-ping-gateway.png`, `../evidence/tc-02-lap-arp-r1.png`, `../evidence/tc-02-sw1-mac-fa03.png` | `LAP-PT` trên `SW1 Fa0/3` (access VLAN 99), IP tĩnh `192.168.99.30/24`, gateway `192.168.99.1`. Simple PDU `LAP1 → R1` = Successful; ping ngược `R1 → .30` = 5/5. Cổng AP chỉ lên khi có cấu hình IP; LAP không có CLI — chi tiết tại [implementation-notes.md](implementation-notes.md) §5 |
+| TC-03 | 2026-10-19 | `Passed` | `../evidence/tc-03-lap-wlc-join.png` | `WLC2 → Config → AP Groups` hiển thị `LAP1` (MAC `0001.968E.6B01`) `Status: Online` trong nhóm `default-group` — LAP-PT đã đăng ký/join `WLC-PT` qua auto-discovery của PT. Hỗ trợ: XML `CAPWAP_AC/APS` của WLC chứa MAC LAP; `R1 → .10`/`.30` = 5/5. **Giới hạn:** không có minh chứng bắt tay CAPWAP; `CAPWAP.PRIMARY_AC = 0.0.0.0` ở cả hai model không đọc là bằng chứng |

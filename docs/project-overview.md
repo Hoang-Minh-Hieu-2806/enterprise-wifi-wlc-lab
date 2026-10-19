@@ -44,8 +44,8 @@ Tóm tắt: quản lý tập trung bằng WLC (01 LAP-PT trước), hai SSID, ph
 | 1 | Tài liệu thiết kế (overview, requirements, topology, IP/VLAN, security) | `docs/` | In Progress (finalize, chưa nghiệm thu) |
 | 2 | File mô phỏng Packet Tracer (`.pkt`, đúng bản 9.0.1.0858) | `packet-tracer/` | In Progress — `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1 + `WLC-PT` (đã thay `WLC-3504`) + LAP-PT; chưa có client |
 | 3 | Bản sao cấu hình thiết bị (đã che secret) | `configs/` | In Progress — `router/` + `switch/` có bản khung P1; `wlc-ap/` ghi cấu hình hạ tầng `WLC-PT` (đã cập nhật sau khi chạy lại TC-01) |
-| 4 | Kế hoạch và ca kiểm thử Core/Conditional | `docs/testing-plan.md`, `tests/test-cases.md` | In Progress — **TC-01 và TC-02 `Passed`**; TC-03→TC-14 `Not Tested`. **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy) |
-| 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | In Progress — minh chứng bring-up P1 + TC-01, TC-02 + **minh chứng audit lựa chọn thiết bị** |
+| 4 | Kế hoạch và ca kiểm thử Core/Conditional | `docs/testing-plan.md`, `tests/test-cases.md` | In Progress — **TC-01, TC-02 và TC-03 `Passed`**; TC-04→TC-14 `Not Tested`. **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy); **TC-03 xác nhận `LAP-PT` join `WLC-PT` (`Status: Online`)** |
+| 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | In Progress — minh chứng bring-up P1 + TC-01, TC-02, TC-03 + **minh chứng audit lựa chọn thiết bị (một số file `audit-*.png` chưa có, cần chụp bổ sung)** |
 | 6 | Báo cáo (dàn ý + nội dung trong `report/`, chưa cần DOCX/PDF) | `report/` | In Progress — `midterm-report.md` đã soạn |
 
 ## 5. Tiêu chí hoàn thành dự án
@@ -67,8 +67,8 @@ Không có khẳng định nào về WPA3, EAP, roaming, throughput khi chưa c�
 
 ## 6. Rủi ro chính
 
-- **Cổng chặn — LAP-PT join WLC:** chưa tìm thấy trường `Primary Controller` trên `LAP-PT`, và `WLC-PT` không có trang danh sách AP ⇒ cơ chế join chưa rõ. Nếu TC-03 không đạt: ghi `Blocked`, dừng trước TC-04, cân nhắc AP standalone kèm sửa scope.
-- **`WLC-PT` không có tuỳ chọn VLAN/trunk trên `GigabitEthernet0`** ⇒ chế độ cổng Switch↔WLC chưa chốt được; phải kiểm chứng central switching thực tế (TC-03/TC-08). Nếu không mang được VLAN 10/20 ⇒ phân đoạn VLAN bất khả thi; ghi `Blocked`, chuyển AP standalone kèm sửa scope rõ ràng (xem [topology.md](topology.md) §3.1).
+- **Cổng chặn — LAP-PT join WLC:** **đã giải quyết (TC-03 `Passed`, 2026-10-19 — `LAP1` `Status: Online` trong `AP Groups`, qua auto-discovery của PT).** Rủi ro còn lại liên quan: `WLC-PT` không có trang danh sách AP riêng và PT không có API trả trạng thái AP, nên trạng thái join chỉ quan sát được qua `AP Groups`/XML. Không có minh chứng bắt tay CAPWAP.
+- **`WLC-PT` không có tuỳ chọn VLAN/trunk trên `GigabitEthernet0`** ⇒ chế độ cổng Switch↔WLC chưa chốt được; phải kiểm chứng central switching thực tế (TC-08). Nếu không mang được VLAN 10/20 ⇒ phân đoạn VLAN bất khả thi; ghi `Blocked`, chuyển AP standalone kèm sửa scope rõ ràng (xem [topology.md](topology.md) §3.1).
 - WLAN tạo được trong GUI nhưng không phát / không map đúng VLAN → kiểm tra lại cơ chế join và chế độ cổng.
 - Server-PT không hỗ trợ RADIUS → ghi `Blocked` cho TC RADIUS, giữ nguyên kết quả Core.
 - Cấu hình ACL hoặc DHCP không như kỳ vọng → ghi lại workaround, không ngụy tạo kết quả. Riêng thiếu `ip helper-address` là **lỗi cấu hình**, không phải limitation của simulator.

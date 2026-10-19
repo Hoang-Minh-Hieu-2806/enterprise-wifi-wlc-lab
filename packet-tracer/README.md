@@ -6,7 +6,9 @@ Thư mục chứa file mô phỏng Cisco Packet Tracer (`.pkt`) của dự án, 
 
 > **Đã có `enterprise-wifi-wlc-lab-v1.pkt`** (cập nhật 2026-10-19) — khung có dây P1 gồm Router `2911` (`R1`), Switch `2960-24TT` (`SW1`), Server-PT (`SRV1`), WLC `WLC-PT` (`WLC2`) và LAP-PT (`LAP1`), đã cấu hình VLAN 10/20/99, trunk Switch↔WLC và DHCP relay. Ảnh canvas kèm tại [../evidence/p1-wired-skeleton-topology.png](../evidence/p1-wired-skeleton-topology.png).
 >
-> **TC-01 và TC-02 đã `Passed`** (2026-10-18).
+> **TC-01, TC-02 và TC-03 đã `Passed`** (TC-01, TC-02 `2026-10-18`; TC-03 `2026-10-19` — `LAP1` join `WLC2`, `Status: Online`).
+>
+> **Lưu ý khi mở file (re-audit 2026-10-19):** `WLC-PT` giữ `192.168.99.10/24` trong `.pkt`, nhưng **`LAP-PT` không lưu IP tĩnh** — mở lại file, `LAP1` trở về DHCP và AP hiện `Offline`. Cần **đặt lại tĩnh `192.168.99.30/24` (gw `192.168.99.1`) cho `LAP1`** thì AP mới rejoin (`Status: Online`).
 >
 > **Đã thay controller:** file nay dùng **`WLC-PT`** (`WLC2`) — model có trang `Wireless LANs` (khác `WLC-3504` cũ, **không có giao diện cấu hình vô tuyến** trong bản 9.0.1.0858). **TC-01 đã chạy lại và `Passed`** (xem [../docs/device-selection-decision.md](../docs/device-selection-decision.md)).
 >
