@@ -1,8 +1,10 @@
 # Danh sách ca kiểm thử (Test Cases)
 
-> Cột `Actual result` để trống cho tới khi có kiểm thử thật trên Packet Tracer 9.0.1.0858. Hiện **TC-01, TC-02 và TC-03 đã `Passed`**; các test case còn lại vẫn **Not Tested**. Kế hoạch tổng thể và phân loại Core/Conditional xem tại [../docs/testing-plan.md](../docs/testing-plan.md). RADIUS (TC-13) là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
+> Cột `Actual result` để trống cho tới khi có kiểm thử thật trên Packet Tracer 9.0.1.0858. Hiện **TC-01, TC-02, TC-03 và TC-04 đã `Passed`**; các test case còn lại vẫn **Not Tested**. Kế hoạch tổng thể và phân loại Core/Conditional xem tại [../docs/testing-plan.md](../docs/testing-plan.md). RADIUS (TC-13) là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
 >
 > **Lưu ý sau audit lựa chọn thiết bị (2026-10-18):** quyết định đổi controller từ `WLC-3504` sang **`WLC-PT`**. **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy) — Management IPv4 `192.168.99.10/24`, gw `192.168.99.1`, đặt trên cổng GUI hiển thị là `Management` (API/mô phỏng đặt tên `Vlan1`), **đặt được bằng API, không cần raw JS**. **TC-03 đã kiểm chứng và `Passed`**: `WLC2 → Config → AP Groups` hiển thị `LAP1` (`0001.968E.6B01`) `Status: Online` trong nhóm `default-group`; `CAPWAP.PRIMARY_AC` của cả `LAP-PT` và `WLC-PT` là `0.0.0.0` (PT dùng auto-discovery, không có trường đặt IP controller trong GUI). **`.pkt` deliverable đã được thay sang `WLC-PT` (2026-10-19)** — hết chờ. Xem [../docs/device-selection-decision.md](../docs/device-selection-decision.md). `Expected result` **không** sửa theo kết quả thực tế.
+>
+> **Cập nhật 2026-10-19 — TC-04 `Passed`:** WLAN `STAFF-WIFI` (WLAN ID `1`, VLAN `10`, WPA2-PSK/AES) đã tạo trên `WLC2` và **phát sóng được xác nhận bằng quét thật từ client `STAFF1`**; chưa associate (TC-06) và chưa kiểm chứng map VLAN (TC-08). Minh chứng: `../evidence/tc-04-staff-wlan.png`, `../evidence/tc-04-wlc-staff-wlan-config.png` (PSK đã che).
 
 ## TC-01 — WLC management reachability (Core)
 
@@ -52,9 +54,9 @@
 | **Preconditions** | TC-03 đạt; WLAN `STAFF-WIFI` đã cấu hình trên trang `Wireless LANs` của WLC |
 | **Procedure** | 1. Từ Staff client quét mạng vô tuyến tại vùng phủ LAP-PT-1. 2. Ghi SSID, WLAN ID và VLAN đã cấu hình. |
 | **Expected result** | Nhìn thấy `STAFF-WIFI` và associate thử được ở bước TC-06 |
-| **Actual result** | _Not Tested_ |
-| **Evidence filename** | `evidence/tc-04-staff-wlan.png` (dự kiến, chưa có) |
-| **Status** | Not Tested |
+| **Actual result** | **Passed** — kiểm chứng 2026-10-19 trên `.pkt` deliverable `packet-tracer/enterprise-wifi-wlc-lab-v1.pkt` (đã thêm client `STAFF1`). **Tạo WLAN:** trường WLAN không có API trong bản 9.0.1.0858 nên thực hiện trên GUI `WLC2 → Config → Wireless LANs` (điều khiển GUI tự động bằng UI Automation của gói MCP — vẫn là kênh GUI, không phải API): `Name` = `SSID` = `STAFF-WIFI`, `VLAN` = `10`, Authentication = `WPA2-PSK`, `Encryption Type` = `AES` (chọn WPA2-PSK tự đặt AES), passphrase kiểm thử 15 ký tự (**che khi chụp, không ghi giá trị**), trạng thái `Enabled`; WLAN nằm trong nhóm AP `default-group`. **Đối chiếu XML `serializeToXml()`:** `<WLAN_CONFIG>` có `NAME`/`SSID` `STAFF-WIFI`, `AUTHEN_TYPE 4` (WPA2-PSK), `ENCRYPT_TYPE 4`, `VLAN 10`, `WLAN ID 1`, `ENABLED true`; `AP_GROUP default-group` liệt kê WLAN `STAFF-WIFI`. **Phát sóng — xác nhận bằng quét thật:** client `STAFF1` (`Laptop-PT`, cổng vô tuyến `Wireless0`, MAC `0001.968E.6B02`) mở `PC Wireless` → `Connect` → danh sách mạng thấy **`STAFF-WIFI`**, channel `1`, tín hiệu `59%`, `Security Setting: WPA2-PSK`, Wireless Mode `Infrastructure`, Network Type `Mixed B/G/N`. **Chưa làm (ngoài phạm vi TC-04, có chủ đích):** chưa associate vào SSID (TC-06), chưa kiểm chứng map SSID→VLAN 10 cho client (TC-08); `Central Control` của WLAN giữ nguyên mặc định model (`Local switching, local authentication`) — chưa kết luận. **Giới hạn đã ghi nhận:** PT lưu passphrase WPA2-PSK **dạng rõ** trong XML `.pkt` (`<WEP_KEY>`) — đã che khi chụp và không ghi giá trị vào tài liệu; trạng thái `LAP1` (IP tĩnh + join) là runtime — phải đặt lại sau khi mở file thì SSID mới phát. |
+| **Evidence filename** | `evidence/tc-04-staff-wlan.png` (quét SSID từ `STAFF1`), `evidence/tc-04-wlc-staff-wlan-config.png` (trang `Wireless LANs` của `WLC2`, PSK đã che) |
+| **Status** | Passed (2026-10-19; broadcast xác nhận bằng quét; associate để TC-06; map VLAN để TC-08) |
 
 ## TC-05 — WLAN GUEST-WIFI được tạo và phát sóng (Core)
 

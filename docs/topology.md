@@ -1,8 +1,8 @@
 # Topology logic (mức triển khai được)
 
-> Topology dưới đây là **thiết kế đã chốt model, chưa kiểm chứng hoạt động vô tuyến**. Model thiết bị đã chốt, khung có dây và LAP-PT đã dựng trong Packet Tracer 9.0.1.0858 (xem [implementation-notes.md](implementation-notes.md) §1–§2). Cơ chế join AP→WLC **đã kiểm chứng (TC-03 `Passed`, 2026-10-19)**; ánh xạ WLAN→VLAN vẫn phải được kiểm chứng trên đúng model đã chốt.
+> Topology dưới đây là **thiết kế đã chốt model, đang kiểm chứng dần hoạt động vô tuyến**. Model thiết bị đã chốt, khung có dây và LAP-PT đã dựng trong Packet Tracer 9.0.1.0858 (xem [implementation-notes.md](implementation-notes.md) §1–§2). Cơ chế join AP→WLC **đã kiểm chứng (TC-03 `Passed`, 2026-10-19)** và WLAN đầu tiên **đã tạo + phát sóng (TC-04 `Passed`, 2026-10-19: `STAFF-WIFI`)**; ánh xạ WLAN→VLAN cho client vẫn phải được kiểm chứng trên đúng model đã chốt.
 >
-> **Cập nhật 2026-10-18 — đổi controller sang `WLC-PT`.** `WLC-3504` không có giao diện cấu hình vô tuyến trong bản 9.0.1.0858 nên không thể làm controller; lý do và minh chứng tại [device-selection-decision.md](device-selection-decision.md). **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy): địa chỉ quản trị `192.168.99.10` đặt trên cổng GUI `Management` (API port `Vlan1`). **Chế độ cổng Switch↔WLC đã chạy được cho management** (`SW1 Fa0/4` trunk native 99); **lưu lượng client VLAN 10/20 vẫn chưa chốt** cho tới khi kiểm chứng central switching (TC-08). **`.pkt` deliverable đã thay sang `WLC-PT`** (2026-10-19). **Cập nhật 2026-10-19 — TC-03 `Passed`:** `LAP1` `Status: Online` trong `AP Groups` của `WLC-PT` (auto-discovery).
+> **Cập nhật 2026-10-18 — đổi controller sang `WLC-PT`.** `WLC-3504` không có giao diện cấu hình vô tuyến trong bản 9.0.1.0858 nên không thể làm controller; lý do và minh chứng tại [device-selection-decision.md](device-selection-decision.md). **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy): địa chỉ quản trị `192.168.99.10` đặt trên cổng GUI `Management` (API port `Vlan1`). **Chế độ cổng Switch↔WLC đã chạy được cho management** (`SW1 Fa0/4` trunk native 99); **lưu lượng client VLAN 10/20 vẫn chưa chốt** cho tới khi kiểm chứng central switching (TC-08). **`.pkt` deliverable đã thay sang `WLC-PT`** (2026-10-19). **Cập nhật 2026-10-19 — TC-03 `Passed`:** `LAP1` `Status: Online` trong `AP Groups` của `WLC-PT` (auto-discovery). **TC-04 `Passed` (2026-10-19):** WLAN `STAFF-WIFI` (WLAN ID 1, VLAN 10, WPA2-PSK/AES) đã tạo trên `WLC2` và **phát sóng — quét thấy từ client `STAFF1`**.
 
 ## 1. Thành phần và model đã chốt
 
@@ -10,12 +10,12 @@
 | --- | --- | --- | --- | --- |
 | Router | `2911` | 01 | Định tuyến liên VLAN (subinterface 802.1Q), **DHCP relay bắt buộc** (§3), ACL cô lập Guest | Model đã chốt; subinterface + relay đã dựng; **ACL chưa kiểm chứng** |
 | Switch Layer 2 | `2960-24TT` | 01 | VLAN 10, 20, 99; cổng Switch↔WLC, các cổng còn lại chốt theo model | Model đã chốt; VLAN/trunk đã dựng và đọc lại được |
-| WLC | **`WLC-PT`** | 01 | Quản lý tập trung LAP và WLAN/SSID; có trang `Wireless LANs` (SSID, VLAN, WPA2-PSK, WPA2 + RADIUS) | Cổng thật: `Vlan1` (mang IP quản trị; GUI hiển thị `Management`) + `GigabitEthernet0` (uplink). **TC-01 chạy lại `Passed`** (`../evidence/tc-01-wlc-pt-reachability-canvas.png`); chưa tạo WLAN. **`WLC-PT` là controller trong `.pkt` deliverable** |
-| LAP-PT (Lightweight AP) | `LAP-PT` | 01 ở giai đoạn đầu | AP chính, join về WLC; phát cả hai SSID nếu model cho phép | Đã đấu vào `SW1 Fa0/3` (access VLAN 99) và **có IP `192.168.99.30`** (TC-02 `Passed`); cổng thật là `GigabitEthernet0` + `Dot11Radio0` (catalog ghi `Port 0` là sai); **join `WLC-PT` đã kiểm chứng — `LAP1` `Status: Online`** (TC-03 `Passed`, 2026-10-19) |
+| WLC | **`WLC-PT`** | 01 | Quản lý tập trung LAP và WLAN/SSID; có trang `Wireless LANs` (SSID, VLAN, WPA2-PSK, WPA2 + RADIUS) | Cổng thật: `Vlan1` (mang IP quản trị; GUI hiển thị `Management`) + `GigabitEthernet0` (uplink). **TC-01 chạy lại `Passed`** (`../evidence/tc-01-wlc-pt-reachability-canvas.png`); **WLAN `STAFF-WIFI` (VLAN 10, WPA2-PSK) đã tạo và phát sóng — TC-04 `Passed` (2026-10-19)**; `GUEST-WIFI` chưa tạo. **`WLC-PT` là controller trong `.pkt` deliverable** |
+| LAP-PT (Lightweight AP) | `LAP-PT` | 01 ở giai đoạn đầu | AP chính, join về WLC; phát cả hai SSID nếu model cho phép | Đã đấu vào `SW1 Fa0/3` (access VLAN 99) và **có IP `192.168.99.30`** (TC-02 `Passed`); cổng thật là `GigabitEthernet0` + `Dot11Radio0` (catalog ghi `Port 0` là sai); **join `WLC-PT` đã kiểm chứng — `LAP1` `Status: Online`** (TC-03 `Passed`, 2026-10-19); **SSID `STAFF-WIFI` quét thấy từ client `STAFF1`** (TC-04 `Passed`) |
 | AP mở rộng | cùng `LAP-PT` | +1–2 sau | Chỉ thêm sau khi AP đầu join thành công và client kết nối được | Planned |
 | AP dự phòng | `AccessPoint-PT` standalone | Dự phòng | Standalone, chỉ dùng khi chứng minh WLC tập trung bất khả thi + sửa scope | Chưa dùng; quan sát GUI tại `../evidence/audit-ap-pt-port1-security.png` |
 | Server-PT | `Server-PT` | 01 | DHCP (đã tạo pool); kiểm tra thêm khả năng RADIUS | DHCP server chạy; **chưa có client để kiểm chứng cấp phát** |
-| Wireless clients | Chưa chốt | ≥ 4 | 2 Staff + 2 Guest để kiểm thử phân tách và gateway độc lập | Planned |
+| Wireless clients | `Laptop-PT` (pilot) | ≥ 4 | 2 Staff + 2 Guest để kiểm thử phân tách và gateway độc lập | Pilot `STAFF1` (`Laptop-PT`, NIC vô tuyến) đã quét SSID — TC-04 `Passed`; model cuối chưa chốt |
 
 Các model khác trong palette có khả năng khác nhau — không giả định tương đương. Model cuối cùng đã chốt tại [implementation-notes.md](implementation-notes.md) §2.
 
@@ -65,7 +65,7 @@ flowchart TB
 | Switch ↔ WLC | Quản trị WLC (VLAN 99) + mang lưu lượng VLAN 10/20 của client | **Management đã chốt trên `WLC-PT`** — `SW1 Fa0/4` trunk native VLAN 99, allowed 10,20,99; `WLC-PT Gi0` uplink (GUI không có tuỳ chọn trunk/VLAN); frame untagged của `Vlan1` rơi vào native 99 ⇒ management ping được (TC-01 `Passed`). **Lưu lượng client VLAN 10/20 chưa chốt** — cần TC-08 |
 | Switch ↔ LAP-PT | Uplink AP (quản trị VLAN 99 + tải SSID/VLAN nếu hỗ trợ) | **Đã chốt: access VLAN 99 trên `FastEthernet0/3`.** LAP-PT chỉ có `GigabitEthernet0` (Ethernet) + `Dot11Radio0`; không thấy cổng trunk/phụ. IP quản trị đã thông (TC-02 `Passed`); multi-SSID→multi-VLAN còn phải kiểm chứng khi có client |
 | Switch ↔ Server-PT | Server tới đúng VLAN phục vụ DHCP (và RADIUS nếu thử) | **Đã chốt:** access VLAN 99 trên `FastEthernet0/2` (theo [ip-vlan-plan.md](ip-vlan-plan.md) §2) |
-| LAP-PT ↔ Client | Vô tuyến, SSID ánh xạ tới VLAN | `STAFF-WIFI` → 10, `GUEST-WIFI` → 20; xác thực WPA2-PSK trước. **Chưa kiểm chứng** |
+| LAP-PT ↔ Client | Vô tuyến, SSID ánh xạ tới VLAN | `STAFF-WIFI` → 10: trường VLAN = 10 và **SSID đã phát sóng — quét thấy từ `STAFF1`** (TC-04 `Passed`, 2026-10-19); `GUEST-WIFI` → 20 và xác thực WPA2-PSK (associate) **chưa kiểm chứng** (TC-05, TC-06) |
 
 Chi tiết subnet và gateway chuẩn xem tại [ip-vlan-plan.md](ip-vlan-plan.md) (authoritative).
 
@@ -92,7 +92,7 @@ Server-PT ở VLAN 99 nhưng cấp DHCP cho VLAN 10 và VLAN 20 ⇒ router phả
 3. **(xong cấu hình)** Cấu hình DHCP scope trên Server-PT + `ip helper-address` trên router (§3.2). Chưa cần client, nhưng phải xong trước TC-08.
 4. **(xong một phần)** Nối 01 LAP-PT, kiểm tra LAP nhận IP — **TC-02 `Passed`** ngày 2026-10-18 (`192.168.99.30` tĩnh trên `GigabitEthernet0`, `SW1 Fa0/3` access VLAN 99).
 5. **(xong)** LAP-PT join `WLC-PT` (TC-03) — **`Passed` ngày 2026-10-19**: `LAP1` `Status: Online` trong `AP Groups` (nhóm `default-group`), cơ chế **auto-discovery** của PT (không có trường `Primary Controller`; `CAPWAP.PRIMARY_AC = 0.0.0.0` không đọc là bằng chứng). Minh chứng: `../evidence/tc-03-lap-wlc-join.png`. **Lưu ý:** `LAP-PT` **không lưu IP tĩnh vào `.pkt`** — mở lại file phải đặt lại `192.168.99.30/24` thì AP mới rejoin.
-6. Tạo WLAN Staff trước (TC-04), rồi Guest (TC-05); associate + WPA2-PSK từng SSID (TC-06/TC-07).
+6. **(xong một phần)** Tạo WLAN Staff (TC-04) — **`Passed` 2026-10-19**: `STAFF-WIFI` (WLAN ID 1, VLAN 10, WPA2-PSK/AES) đã tạo trên `WLC2` và quét thấy từ client `STAFF1`; **còn** `GUEST-WIFI` (TC-05) và associate + WPA2-PSK từng SSID (TC-06/TC-07).
 7. Kiểm tra IP/gateway (TC-08/TC-09), rồi ACL cô lập (TC-10/TC-11), cuối cùng đối chiếu VLAN + hiển thị ACL (TC-12).
 8. Chỉ sau khi Core ổn định mới thử RADIUS (TC-13, Conditional).
 9. Chỉ thêm LAP thứ 2–3 sau khi AP đầu và client chạy ổn định.
@@ -108,6 +108,6 @@ Server-PT ở VLAN 99 nhưng cấp DHCP cho VLAN 10 và VLAN 20 ⇒ router phả
 - [x] Đã cấu hình `ip helper-address` cho VLAN 10/20 trỏ về Server-PT (§3.2).
 - [x] Chế độ cổng phía switch/router đã chốt: `Gi0/0`→`Gi0/1` (router, trunk), `Fa0/1` (WLC, trunk native 99), `Fa0/2` (server, access VLAN 99), `Fa0/3` (LAP-PT, **access VLAN 99** — TC-02).
 - [x] LAP-PT join `WLC-PT` — **`Passed` (TC-03)**: cơ chế là **auto-discovery** của PT (không thấy trường `Primary Controller`); `LAP1` `Status: Online` trong `AP Groups`; minh chứng `../evidence/tc-03-lap-wlc-join.png`.
-- [ ] AP có hỗ trợ 2 SSID đồng thời và map đúng VLAN không.
+- [ ] AP có hỗ trợ 2 SSID đồng thời và map đúng VLAN không. **Một phần:** WLAN `STAFF-WIFI` (VLAN 10) đã tạo + phát sóng (TC-04 `Passed`); SSID thứ hai và map VLAN cho client chưa kiểm chứng.
 - [ ] Server-PT có đồng thời DHCP + RADIUS không.
 - [ ] Mọi kết nối chỉ được coi là đúng sau khi có file `.pkt` và minh chứng kiểm thử.

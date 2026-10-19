@@ -4,15 +4,17 @@ Thư mục chứa file mô phỏng Cisco Packet Tracer (`.pkt`) của dự án, 
 
 ## Hiện trạng
 
-> **Đã có `enterprise-wifi-wlc-lab-v1.pkt`** (cập nhật 2026-10-19) — khung có dây P1 gồm Router `2911` (`R1`), Switch `2960-24TT` (`SW1`), Server-PT (`SRV1`), WLC `WLC-PT` (`WLC2`) và LAP-PT (`LAP1`), đã cấu hình VLAN 10/20/99, trunk Switch↔WLC và DHCP relay. Ảnh canvas kèm tại [../evidence/p1-wired-skeleton-topology.png](../evidence/p1-wired-skeleton-topology.png).
+> **Đã có `enterprise-wifi-wlc-lab-v1.pkt`** (cập nhật 2026-10-19) — khung có dây P1 gồm Router `2911` (`R1`), Switch `2960-24TT` (`SW1`), Server-PT (`SRV1`), WLC `WLC-PT` (`WLC2`), LAP-PT (`LAP1`) và wireless client `STAFF1` (`Laptop-PT`) — 7 thiết bị; đã cấu hình VLAN 10/20/99, trunk Switch↔WLC, DHCP relay và **WLAN `STAFF-WIFI` (VLAN 10, WPA2-PSK) — TC-04 `Passed`**. Ảnh canvas kèm tại [../evidence/p1-wired-skeleton-topology.png](../evidence/p1-wired-skeleton-topology.png) (trạng thái P1 ban đầu; chưa gồm `STAFF1`/WLAN).
 >
-> **TC-01, TC-02 và TC-03 đã `Passed`** (TC-01, TC-02 `2026-10-18`; TC-03 `2026-10-19` — `LAP1` join `WLC2`, `Status: Online`).
+> **TC-01, TC-02, TC-03 và TC-04 đã `Passed`** (TC-01, TC-02 `2026-10-18`; TC-03 `2026-10-19` — `LAP1` join `WLC2`, `Status: Online`; TC-04 `2026-10-19` — WLAN `STAFF-WIFI` phát sóng, quét thấy từ `STAFF1`, minh chứng [../evidence/tc-04-staff-wlan.png](../evidence/tc-04-staff-wlan.png) + [../evidence/tc-04-wlc-staff-wlan-config.png](../evidence/tc-04-wlc-staff-wlan-config.png) — PSK đã che).
 >
-> **Lưu ý khi mở file (re-audit 2026-10-19):** `WLC-PT` giữ `192.168.99.10/24` trong `.pkt`, nhưng **`LAP-PT` không lưu IP tĩnh** — mở lại file, `LAP1` trở về DHCP và AP hiện `Offline`. Cần **đặt lại tĩnh `192.168.99.30/24` (gw `192.168.99.1`) cho `LAP1`** thì AP mới rejoin (`Status: Online`).
+> **Lưu ý khi mở file (re-audit 2026-10-19):** `WLC-PT` giữ `192.168.99.10/24` và **WLAN `STAFF-WIFI` lưu trong `.pkt`** (mở lại vẫn còn — đã kiểm chứng), nhưng **`LAP-PT` không lưu IP tĩnh** — mở lại file, `LAP1` trở về DHCP và AP hiện `Offline`. Cần **đặt lại tĩnh `192.168.99.30/24` (gw `192.168.99.1`) cho `LAP1`** thì AP mới rejoin (`Status: Online`) và phát lại SSID.
 >
 > **Đã thay controller:** file nay dùng **`WLC-PT`** (`WLC2`) — model có trang `Wireless LANs` (khác `WLC-3504` cũ, **không có giao diện cấu hình vô tuyến** trong bản 9.0.1.0858). **TC-01 đã chạy lại và `Passed`** (xem [../docs/device-selection-decision.md](../docs/device-selection-decision.md)).
 >
-> **Chưa có wireless client**; các bản `test.pkt` trên máy là bản nháp, đã chặn trong `.gitignore`.
+> **Đã có 01 wireless client (`STAFF1`, `Laptop-PT`)** dùng để quét SSID; các bản `test.pkt` trên máy là bản nháp, đã chặn trong `.gitignore`.
+>
+> **Lưu ý bảo mật:** PT lưu passphrase WPA2-PSK **dạng rõ** trong XML của `.pkt` (`<WEP_KEY>`) — không chia sẻ file ra ngoài nhóm; khi chụp minh chứng phải che vùng passphrase.
 
 ## Quy định khi bổ sung file `.pkt`
 

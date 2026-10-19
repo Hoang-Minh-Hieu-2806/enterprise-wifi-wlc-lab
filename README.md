@@ -7,7 +7,7 @@
 
 ## 1. Mục tiêu dự án
 
-1. Xây dựng mạng WLAN doanh nghiệp mô phỏng với quản lý tập trung bằng WLC (`WLC-PT` — model đã xác nhận có trang cấu hình WLAN trong Packet Tracer 9.0.1.0858; **join AP→WLC đã kiểm chứng ở TC-03**, phát WLAN vẫn chưa kiểm chứng).
+1. Xây dựng mạng WLAN doanh nghiệp mô phỏng với quản lý tập trung bằng WLC (`WLC-PT` — model đã xác nhận có trang cấu hình WLAN trong Packet Tracer 9.0.1.0858; **join AP→WLC đã kiểm chứng ở TC-03**; **WLAN `STAFF-WIFI` đã tạo và phát sóng — TC-04 `Passed`**, phần client/WLAN còn lại chưa kiểm chứng).
 2. Bắt đầu với 01 Lightweight AP (LAP-PT); chỉ mở rộng lên 2–3 AP sau khi AP đầu tiên join WLC và client kết nối thành công.
 3. Triển khai hai SSID dự kiến: `STAFF-WIFI` và `GUEST-WIFI`, mỗi SSID phát sóng và kiểm thử độc lập.
 4. Phân đoạn mạng bằng VLAN cho nhân viên (staff), khách (guest) và quản trị (management).
@@ -35,12 +35,12 @@ Phiên bản Packet Tracer, model thiết bị quan sát được và các chứ
 
 - 01 Router (định tuyến liên VLAN, DHCP relay **bắt buộc** cho VLAN 10/20 vì Server-PT ở VLAN 99, ACL).
 - 01 Switch Layer 2 (VLAN; cổng Switch↔WLC chốt theo model thực tế — xem [docs/topology.md](docs/topology.md) §3).
-- 01 WLC (`WLC-PT`) quản lý tập trung AP và WLAN/SSID — trang `Wireless LANs` đã quan sát trực tiếp trong GUI, **chưa kiểm chứng tạo WLAN thành công**.
+- 01 WLC (`WLC-PT`) quản lý tập trung AP và WLAN/SSID — trang `Wireless LANs` đã quan sát trực tiếp trong GUI và **đã tạo thành công WLAN `STAFF-WIFI`** (TC-04 `Passed`, 2026-10-19).
 - 01 LAP-PT ở giai đoạn đầu (mở rộng lên 2–3 AP sau khi AP đầu join thành công); AP standalone chỉ là dự phòng.
 - 01 Server-PT cung cấp DHCP; khả năng RADIUS sẽ kiểm tra riêng.
-- Ít nhất 4 wireless client: 2 Staff + 2 Guest.
+- Ít nhất 4 wireless client: 2 Staff + 2 Guest (hiện có pilot `STAFF1` — `Laptop-PT`, dùng ở TC-04).
 
-Xem chi tiết tại [docs/topology.md](docs/topology.md). Ánh xạ WLAN→VLAN chưa được kiểm chứng; **cơ chế join AP→WLC đã kiểm chứng (TC-03 `Passed`)**.
+Xem chi tiết tại [docs/topology.md](docs/topology.md). Phần vô tuyến đã bắt đầu kiểm chứng — **WLAN `STAFF-WIFI` phát sóng (TC-04 `Passed`)** và **cơ chế join AP→WLC đã kiểm chứng (TC-03 `Passed`)**; ánh xạ SSID→VLAN cho client chưa được kiểm chứng.
 
 ## 4. Phân tách SSID và VLAN (đề xuất)
 
@@ -50,7 +50,7 @@ Xem chi tiết tại [docs/topology.md](docs/topology.md). Ánh xạ WLAN→VLAN
 | `GUEST-WIFI` | 20 | GUEST | 192.168.20.0/24 | Khách |
 | — (quản trị, có dây) | 99 | MANAGEMENT | 192.168.99.0/24 | Quản trị thiết bị mạng |
 
-> Ánh xạ SSID→VLAN và phần vô tuyến vẫn là **đề xuất, chưa kiểm chứng**. Riêng **hạ tầng có dây và địa chỉ quản trị đã cấu hình và kiểm chứng**: gateway `.1` mỗi VLAN, WLC `.10`, switch SVI `.2`, server `.20` — xem [docs/ip-vlan-plan.md](docs/ip-vlan-plan.md) (tài liệu chuẩn cho mọi địa chỉ) và minh chứng TC-01.
+> Phần vô tuyến đã bắt đầu kiểm chứng: `STAFF-WIFI` (VLAN 10) đã tạo và phát sóng (**TC-04 `Passed`**, 2026-10-19); ánh xạ SSID→VLAN cho client và các phần WLAN còn lại vẫn **chưa kiểm chứng**. Riêng **hạ tầng có dây và địa chỉ quản trị đã cấu hình và kiểm chứng**: gateway `.1` mỗi VLAN, WLC `.10`, switch SVI `.2`, server `.20` — xem [docs/ip-vlan-plan.md](docs/ip-vlan-plan.md) (tài liệu chuẩn cho mọi địa chỉ) và minh chứng TC-01.
 
 ## 5. Hướng tiếp cận xác thực và kiểm soát truy cập
 
@@ -110,15 +110,15 @@ enterprise-wifi-wlc-lab/
 ```
 
 - `docs/` — tài liệu thiết kế, kế hoạch và ghi chú triển khai (tiếng Việt).
-- `packet-tracer/` — file mô phỏng `.pkt`; `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1.
-- `configs/` — bản sao cấu hình thiết bị đã che secret; `router/` và `switch/` có bản khung P1, `wlc-ap/` ghi cấu hình hạ tầng WLC (chưa có WLAN/SSID).
+- `packet-tracer/` — file mô phỏng `.pkt`; `enterprise-wifi-wlc-lab-v1.pkt` gồm khung có dây P1 + WLAN `STAFF-WIFI` + client `STAFF1`.
+- `configs/` — bản sao cấu hình thiết bị đã che secret; `router/` và `switch/` có bản khung P1, `wlc-ap/` ghi cấu hình hạ tầng WLC + WLAN `STAFF-WIFI` (không ghi giá trị PSK).
 - `tests/` — kế hoạch và ca kiểm thử (Core / Conditional / Research-only).
-- `evidence/` — ảnh chụp màn hình, kết quả kiểm thử; có minh chứng bring-up P1, minh chứng TC-01/TC-02/TC-03 và minh chứng audit lựa chọn thiết bị (`audit-*.png`).
+- `evidence/` — ảnh chụp màn hình, kết quả kiểm thử; có minh chứng bring-up P1, minh chứng TC-01/TC-02/TC-03/TC-04 và minh chứng audit lựa chọn thiết bị (`audit-*.png`).
 - `report/` — dàn ý và nội dung báo cáo trong giai đoạn hiện tại (chưa cần DOCX/PDF).
 
 ## 7. Cách mở dự án Packet Tracer
 
-> File `.pkt` đã có: `packet-tracer/enterprise-wifi-wlc-lab-v1.pkt` — khung có dây P1 + `WLC-PT` + `LAP-PT` (đã join controller); **chưa có wireless client**.
+> File `.pkt` đã có: `packet-tracer/enterprise-wifi-wlc-lab-v1.pkt` — khung có dây P1 + `WLC-PT` + `LAP-PT` (đã join controller) + WLAN `STAFF-WIFI` + client `STAFF1` (`Laptop-PT`); **cần đặt lại IP tĩnh `192.168.99.30` cho `LAP1` sau khi mở file** và bấm Connect trên `STAFF1` để quét lại SSID (trạng thái join/broadcast là runtime).
 
 1. Cài đặt đúng Cisco Packet Tracer **9.0.1.0858** (bản đã chốt, xem tại [docs/implementation-notes.md](docs/implementation-notes.md)).
 2. Clone repository:
@@ -134,16 +134,16 @@ Quy định đặt file `.pkt` xem tại [packet-tracer/README.md](packet-tracer
 
 ## 8. Trạng thái dự án hiện tại
 
-Repository hiện ở giai đoạn **đã dựng khung có dây (P1), kiểm chứng management reachability của controller và đăng ký LAP-PT về WLC**: **TC-01 `Passed`**, **TC-02 `Passed`** và **TC-03 `Passed`** (2026-10-19), nhưng **chưa có phần vô tuyến (WLAN, client)**.
+Repository hiện ở giai đoạn **đã dựng khung có dây (P1), controller + LAP-PT hoạt động và WLAN đầu tiên đã phát sóng**: **TC-01 `Passed`**, **TC-02 `Passed`**, **TC-03 `Passed`** và **TC-04 `Passed`** (2026-10-19); phần client (associate, DHCP, ACL) vẫn chưa kiểm chứng.
 
 > **Đã hoàn tất — đổi controller sang `WLC-PT` (2026-10-19).** Audit lựa chọn thiết bị phát hiện `WLC-3504` **không có giao diện cấu hình vô tuyến** trong bản 9.0.1.0858. Đã thay `WLC-3504` → `WLC-PT` **ngay trong `.pkt` deliverable** và **chạy lại TC-01** (địa chỉ quản trị trên interface GUI `Management`, API `Vlan1`). Xem [docs/device-selection-decision.md](docs/device-selection-decision.md).
 
 | Nhóm trạng thái | Ý nghĩa | Trạng thái hiện tại |
 | --- | --- | --- |
-| Planned | Đã đề xuất trong tài liệu, chưa cấu hình | Phần vô tuyến: WLAN/SSID, WPA2, ACL, wireless client |
-| In Progress | Đang thực hiện | Hạ tầng có dây + TC-01/TC-02/TC-03 xong; **controller `WLC-PT` đã thay trong `.pkt` deliverable** |
-| Not Tested | Chưa kiểm thử, chưa có minh chứng | TC-04 → TC-14 trong [tests/test-cases.md](tests/test-cases.md) |
-| Passed / Failed / Blocked | Chỉ dùng khi có evidence thực tế | **TC-01 `Passed`** (chạy lại trên `WLC-PT`), **TC-02 `Passed`** (trên `LAP-PT`), **TC-03 `Passed`** (LAP-PT join `WLC-PT`); chưa có `Failed`/`Blocked` |
+| Planned | Đã đề xuất trong tài liệu, chưa cấu hình | `GUEST-WIFI`, cấu hình ACL, các client còn lại; phần associate/WPA2-PSK và DHCP cho client chưa triển khai |
+| In Progress | Đang thực hiện | Hạ tầng có dây + TC-01→TC-04 xong; phần vô tuyến bắt đầu (pilot `STAFF1`; WLAN `STAFF-WIFI` đã phát sóng) |
+| Not Tested | Chưa kiểm thử, chưa có minh chứng | TC-05 → TC-14 trong [tests/test-cases.md](tests/test-cases.md) |
+| Passed / Failed / Blocked | Chỉ dùng khi có evidence thực tế | **TC-01 `Passed`** (chạy lại trên `WLC-PT`), **TC-02 `Passed`** (trên `LAP-PT`), **TC-03 `Passed`** (LAP-PT join `WLC-PT`), **TC-04 `Passed`** (WLAN `STAFF-WIFI` phát sóng); chưa có `Failed`/`Blocked` |
 
 Nhãn `Passed` chỉ được dùng khi có minh chứng hỗ trợ. Một tính năng Conditional (RADIUS) chưa được hỗ trợ **không** làm mất trạng thái hoàn thành của luồng Core.
 
@@ -159,11 +159,12 @@ Nhãn `Passed` chỉ được dùng khi có minh chứng hỗ trợ. Một tính
 - [x] **LAP-PT nhận IP quản trị (TC-02 `Passed`, 2026-10-18):** `192.168.99.30/24` tĩnh trên `GigabitEthernet0`, uplink `SW1 Fa0/3` access VLAN 99 — minh chứng `evidence/tc-02-*.png`.
 - [x] **LAP-PT join `WLC-PT` (TC-03 `Passed`, 2026-10-19):** `WLC2 → Config → AP Groups` hiển thị `LAP1` (`0001.968E.6B01`) `Status: Online` trong nhóm `default-group` (auto-discovery của PT) — minh chứng `evidence/tc-03-lap-wlc-join.png`. Không có minh chứng bắt tay CAPWAP.
 - [x] **Giao diện của `WLC-PT`** đã quan sát trực tiếp: có `Wireless LANs` (SSID, trường VLAN, WPA2-PSK, WPA2 + RADIUS), `AP Groups`, `DHCP` — minh chứng `evidence/audit-wlc-pt-wireless-lans.png`.
+- [x] **WLAN `STAFF-WIFI` tạo và phát sóng (TC-04 `Passed`, 2026-10-19):** WLAN ID 1, VLAN 10, WPA2-PSK/AES trên `WLC2`; quét từ `STAFF1` (`Laptop-PT`) thấy `STAFF-WIFI` — minh chứng `evidence/tc-04-staff-wlan.png`, `evidence/tc-04-wlc-staff-wlan-config.png` (PSK đã che).
 
 Đã quan sát trong GUI nhưng **chưa kiểm chứng hoạt động**:
 
 - [x] **Thay controller `WLC-3504` → `WLC-PT` trong `.pkt` và chạy lại TC-01** (hoàn tất 2026-10-19).
-- [ ] Tạo và phát WLAN (`STAFF-WIFI`, `GUEST-WIFI`) trên `WLC-PT`.
+- [ ] Tạo và phát `GUEST-WIFI` trên `WLC-PT` (`STAFF-WIFI` đã xong — TC-04 `Passed`).
 - [ ] Nhiều WLAN chạy đồng thời.
 - [ ] Ánh xạ mỗi SSID tới đúng VLAN (trường VLAN đã quan sát trong GUI nhưng chưa kiểm chứng hoạt động).
 - [ ] WPA2-PSK: client associate thành công/thất bại.

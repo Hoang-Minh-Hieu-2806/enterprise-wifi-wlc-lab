@@ -7,7 +7,7 @@ Thư mục kiểm thử của dự án (bản 9.0.1.0858).
 
 ## Hiện trạng
 
-> **TC-01, TC-02 và TC-03 đã `Passed`** (TC-01 `2026-10-18` chạy lại trên `WLC-PT`, minh chứng `../evidence/tc-01-wlc-pt-reachability-canvas.png`; bản `WLC-3504` cũ: `../evidence/tc-01-wlc-reachability.png`; TC-02 `2026-10-18` (kiểm chứng lại `2026-10-19`) — LAP-PT có IP quản trị, `../evidence/tc-02-*.png`; TC-03 `2026-10-19` — LAP-PT join `WLC-PT` `Status: Online`, `../evidence/tc-03-lap-wlc-join.png`); các test case còn lại (TC-04 → TC-14) ở trạng thái **Not Tested**. Huỳnh Như Hoàng sở hữu chạy test Core và giữ evidence; Đặng Văn Hoàng sở hữu phần WLC/AP; Hoàng Minh Hiếu tham gia kiểm thử và chạy acceptance chọn lọc.
+> **TC-01, TC-02, TC-03 và TC-04 đã `Passed`** (TC-01 `2026-10-18` chạy lại trên `WLC-PT`, minh chứng `../evidence/tc-01-wlc-pt-reachability-canvas.png`; bản `WLC-3504` cũ: `../evidence/tc-01-wlc-reachability.png`; TC-02 `2026-10-18` (kiểm chứng lại `2026-10-19`) — LAP-PT có IP quản trị, `../evidence/tc-02-*.png`; TC-03 `2026-10-19` — LAP-PT join `WLC-PT` `Status: Online`, `../evidence/tc-03-lap-wlc-join.png`; TC-04 `2026-10-19` — WLAN `STAFF-WIFI` phát sóng, quét thấy từ `STAFF1`, `../evidence/tc-04-staff-wlan.png` + `../evidence/tc-04-wlc-staff-wlan-config.png`); các test case còn lại (TC-05 → TC-14) ở trạng thái **Not Tested**. Huỳnh Như Hoàng sở hữu chạy test Core và giữ evidence; Đặng Văn Hoàng sở hữu phần WLC/AP; Hoàng Minh Hiếu tham gia kiểm thử và chạy acceptance chọn lọc.
 
 ## Quy định
 

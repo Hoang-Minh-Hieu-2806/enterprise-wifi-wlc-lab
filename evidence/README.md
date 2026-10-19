@@ -13,10 +13,12 @@ Thư mục lưu minh chứng kiểm thử trên bản 9.0.1.0858: ảnh chụp m
 >
 > [`tc-03-lap-wlc-join.png`](tc-03-lap-wlc-join.png) — minh chứng TC-03 `Passed` (2026-10-19, chụp lại từ file deliverable `enterprise-wifi-wlc-lab-v1.pkt` sau khi đặt lại IP tĩnh `192.168.99.30` cho `LAP1`): `WLC2 → Config → AP Groups` liệt kê `LAP1` (MAC `0001.968E.6B01`) với `Status: Online` trong nhóm `default-group` — LAP-PT đã đăng ký/chịu quản lý bởi `WLC-PT`. **Giới hạn:** trạng thái `Online` là **runtime** (không lưu trong `.pkt`; mở lại file AP hiện `Offline` cho tới khi đặt IP cho `LAP1`); không có minh chứng bắt tay CAPWAP; `CAPWAP.PRIMARY_AC = 0.0.0.0` ở cả hai model (PT auto-discovery) và **không** được đọc là bằng chứng theo hướng nào.
 >
+> [`tc-04-staff-wlan.png`](tc-04-staff-wlan.png), [`tc-04-wlc-staff-wlan-config.png`](tc-04-wlc-staff-wlan-config.png) — minh chứng TC-04 `Passed` (2026-10-19, `.pkt` deliverable): ảnh `PC Wireless` trên client `STAFF1` quét thấy SSID `STAFF-WIFI` (channel 1, 59%, `WPA2-PSK`) và trang `Wireless LANs` của `WLC2` với WLAN `STAFF-WIFI` (WLAN ID 1, VLAN 10, WPA2-PSK/AES) — **vùng passphrase đã che**. Chưa associate (TC-06), chưa kiểm chứng map VLAN cho client (TC-08).
+>
 > **Minh chứng audit lựa chọn thiết bị (2026-10-18) — cảnh báo: các file dưới đây được viện dẫn trong [../docs/device-selection-decision.md](../docs/device-selection-decision.md) nhưng hiện KHÔNG có trong repo; cần chụp bổ sung:**
 > `audit-wlc-3504-config-menu.png` (model cũ **không** có trang WLAN) · `audit-wlc-pt-wireless-lans.png` (trang `Wireless LANs` có SSID + VLAN + WPA2) · `audit-wlc-pt-management-ip.png` (địa chỉ quản trị trên cổng GUI `Management` / API port `Vlan1`) · `audit-lap-pt-radio.png` (radio của LAP không có trường xác thực) · `audit-ap-pt-port1-security.png` (AP standalone có SSID/xác thực nhưng không có trường VLAN).
 >
-> **TC-01, TC-02 và TC-03 đã `Passed`** kèm minh chứng ở trên. Các test case còn lại (TC-04 → TC-14) vẫn `Not Tested`. Không tạo screenshot giả.
+> **TC-01, TC-02, TC-03 và TC-04 đã `Passed`** kèm minh chứng ở trên. Các test case còn lại (TC-05 → TC-14) vẫn `Not Tested`. Không tạo screenshot giả.
 
 ## Quy định
 

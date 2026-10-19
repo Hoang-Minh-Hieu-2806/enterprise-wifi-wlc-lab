@@ -9,11 +9,11 @@
 | Ngày báo cáo | Thứ Năm, 22/10/2026 |
 | Môi trường mô phỏng | Cisco Packet Tracer 9.0.1.0858 |
 
-> **Tính trung thực của báo cáo:** đây là báo cáo **giữa kỳ**, trình bày **ý tưởng, công việc đã làm và công việc dự định**. Model thiết bị đã **đối chiếu trực tiếp** trong Packet Tracer 9.0.1.0858 và khung có dây P1 đã dựng được (§3.2). **TC-01, TC-02 và TC-03 đã `Passed`** kèm minh chứng; các test case còn lại vẫn `Not Tested`. Phần vô tuyến (SSID, WLAN, WPA2) và ACL vẫn là **thiết kế đề xuất, chưa kiểm chứng**. Không có kết quả nào được báo cáo là đã chạy thành công khi chưa có minh chứng.
+> **Tính trung thực của báo cáo:** đây là báo cáo **giữa kỳ**, trình bày **ý tưởng, công việc đã làm và công việc dự định**. Model thiết bị đã **đối chiếu trực tiếp** trong Packet Tracer 9.0.1.0858 và khung có dây P1 đã dựng được (§3.2). **TC-01, TC-02, TC-03 và TC-04 đã `Passed`** kèm minh chứng; các test case còn lại vẫn `Not Tested`. Phần tạo + phát sóng WLAN đã bước đầu kiểm chứng (TC-04); associate/WPA2 handshake và ACL vẫn là **thiết kế đề xuất, chưa kiểm chứng**. Không có kết quả nào được báo cáo là đã chạy thành công khi chưa có minh chứng.
 >
 > **Đính chính sau audit lựa chọn thiết bị (2026-10-18):** bản soạn trước đây ghi WLC là `WLC-3504` và cho rằng model này có trang `Wireless LANs`. Kiểm chứng lại giao diện cho thấy `WLC-3504` **không có** trang cấu hình vô tuyến; các trường đó thuộc về `WLC-PT`. Nhóm đã đổi controller sang `WLC-PT` và **đã chạy lại TC-01 (`Passed`)**. Chi tiết: [../docs/device-selection-decision.md](../docs/device-selection-decision.md).
 >
-> **Cập nhật 2026-10-19 — TC-03 `Passed`:** `LAP-PT` join `WLC-PT` đã được kiểm chứng — `WLC2 → Config → AP Groups` hiển thị `LAP1` (MAC `0001.968E.6B01`) `Status: Online` trong nhóm `default-group` (cơ chế auto-discovery của PT; minh chứng `../evidence/tc-03-lap-wlc-join.png`). Đây là **cập nhật tiến độ sau ngày soạn thảo**; phần thân báo cáo bên dưới vẫn giữ nguyên nội dung giữa kỳ, chỉ các ô tiến độ được chú thích thêm. Bước kế tiếp: TC-04 (tạo/phát WLAN `STAFF-WIFI`).
+> **Cập nhật 2026-10-19 — TC-03 `Passed`:** `LAP-PT` join `WLC-PT` đã được kiểm chứng — `WLC2 → Config → AP Groups` hiển thị `LAP1` (MAC `0001.968E.6B01`) `Status: Online` trong nhóm `default-group` (cơ chế auto-discovery của PT; minh chứng `../evidence/tc-03-lap-wlc-join.png`). Đây là **cập nhật tiến độ sau ngày soạn thảo**; phần thân báo cáo bên dưới vẫn giữ nguyên nội dung giữa kỳ, chỉ các ô tiến độ được chú thích thêm. Bước kế tiếp: TC-04 (tạo/phát WLAN `STAFF-WIFI`). **Bổ sung 2026-10-19: TC-04 đã `Passed` — WLAN `STAFF-WIFI` (VLAN 10, WPA2-PSK) tạo + phát sóng, quét thấy từ client `STAFF1` (minh chứng `../evidence/tc-04-staff-wlan.png`, `../evidence/tc-04-wlc-staff-wlan-config.png`); bước kế tiếp là TC-05.**
 
 ---
 
@@ -79,7 +79,7 @@ Doanh nghiệp vừa và nhỏ cần một mạng Wi-Fi **quản lý tập trung
 | 6 | DHCP tập trung cho mọi VLAN | Server-PT cấp IP cho client Staff/Guest qua DHCP relay | Pool đã tạo + relay đã cấu hình; chưa có client để kiểm chứng |
 | 7 | Cô lập Guest bằng ACL | Guest không tới được Staff và các thiết bị quản trị, nhưng vẫn nhận được DHCP | Dự định |
 | 8 | Bảo vệ mạng quản trị | Thiết bị hạ tầng nằm riêng ở VLAN 99, ưu tiên địa chỉ tĩnh | Hạ tầng **đã cấu hình** (TC-01/TC-02, join TC-03); chưa kiểm thử truy cập chéo |
-| 9 | Kiểm thử và minh chứng đầy đủ | 14 test case Core/Conditional, mỗi kết quả gắn với file minh chứng | **TC-01, TC-02, TC-03 `Passed`**; 11 case còn lại `Not Tested` |
+| 9 | Kiểm thử và minh chứng đầy đủ | 14 test case Core/Conditional, mỗi kết quả gắn với file minh chứng | **TC-01, TC-02, TC-03, TC-04 `Passed`**; 10 case còn lại `Not Tested` |
 
 **Điểm nhấn kỹ thuật:** tính năng số 7 là điểm thú vị nhất — Guest bị chặn khỏi VLAN 99 nhưng **vẫn phải nhận được IP** từ server nằm trong VLAN 99. Điều này buộc ACL phải có ngoại lệ DHCP có chủ đích, chứ không chặn cả subnet.
 
@@ -204,9 +204,9 @@ Nếu file `.pkt` hoặc Packet Tracer gặp lỗi ngay tại buổi báo cáo:
 
 - Đồ án đã hoàn thành phần **thiết kế và kế hoạch**: topology logic, kế hoạch VLAN/IP, thiết kế bảo mật và bộ 14 test case có truy vết tới yêu cầu.
 - **Model thiết bị đã chốt** và **khung có dây P1 đã dựng được**: Router `2911` – Switch `2960-24TT` – Server-PT – WLC, gồm VLAN 10/20/99, trunk Switch↔WLC và DHCP relay `ip helper-address` trên router.
-- **Đã có 3 kết quả kiểm thử thật kèm minh chứng**: TC-01 `Passed` (management reachability của WLC, `0% loss`), TC-02 `Passed` (LAP-PT có IP quản trị hợp lệ và ping được gateway) và **TC-03 `Passed` (LAP-PT join `WLC-PT`, `Status: Online`; cập nhật 2026-10-19)**. 11 test case còn lại vẫn `Not Tested`.
+- **Đã có 4 kết quả kiểm thử thật kèm minh chứng**: TC-01 `Passed` (management reachability của WLC, `0% loss`), TC-02 `Passed` (LAP-PT có IP quản trị hợp lệ và ping được gateway), **TC-03 `Passed` (LAP-PT join `WLC-PT`, `Status: Online`; cập nhật 2026-10-19)** và **TC-04 `Passed` (WLAN `STAFF-WIFI` tạo + phát sóng; cập nhật 2026-10-19)**. 10 test case còn lại vẫn `Not Tested`.
 - **Phát hiện quan trọng của đợt audit 2026-10-18:** controller ban đầu `WLC-3504` **không có giao diện cấu hình vô tuyến** trong Packet Tracer 9.0.1.0858; các trường WLAN/SSID/VLAN/WPA2 từng được ghi nhận thực ra thuộc `WLC-PT`. Nhóm đã đổi controller sang `WLC-PT` và **đã chạy lại TC-01 (`Passed`)**. Đây là ví dụ điển hình cho việc không được suy luận khả năng thiết bị từ tài liệu bên ngoài.
-- Phần vô tuyến (WLAN/SSID/WPA2, cơ chế AP join) và ACL sẽ được bổ sung trong giai đoạn tiếp theo, kèm minh chứng. **Bước kế tiếp là TC-03** (LAP-PT join `WLC-PT`) — hiện chưa tìm thấy cơ chế join trong giao diện, nên đây là rủi ro lớn nhất của dự án. **(Cập nhật 2026-10-19: TC-03 đã `Passed` — `LAP1` `Status: Online`; bước kế tiếp là TC-04.)**
+- Phần vô tuyến (WLAN/SSID/WPA2, cơ chế AP join) và ACL sẽ được bổ sung trong giai đoạn tiếp theo, kèm minh chứng. **Bước kế tiếp là TC-03** (LAP-PT join `WLC-PT`) — hiện chưa tìm thấy cơ chế join trong giao diện, nên đây là rủi ro lớn nhất của dự án. **(Cập nhật 2026-10-19: TC-03 đã `Passed` — `LAP1` `Status: Online`; TC-04 đã `Passed` — `STAFF-WIFI` tạo + phát sóng; bước kế tiếp là TC-05.)**
 - Cam kết của nhóm: mọi kết luận về hiệu quả mã hóa và kiểm soát truy cập chỉ được đưa ra khi có minh chứng kiểm thử đi kèm; **không tính việc thấy trường trong GUI là bằng chứng chức năng chạy được**.
 
 ---
