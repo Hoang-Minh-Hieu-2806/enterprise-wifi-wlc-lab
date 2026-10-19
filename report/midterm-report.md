@@ -11,7 +11,7 @@
 
 > **Tính trung thực của báo cáo:** đây là báo cáo **giữa kỳ**, trình bày **ý tưởng, công việc đã làm và công việc dự định**. Model thiết bị đã **đối chiếu trực tiếp** trong Packet Tracer 9.0.1.0858 và khung có dây P1 đã dựng được (§3.2). **TC-01 và TC-02 đã `Passed`** kèm minh chứng; các test case còn lại vẫn `Not Tested`. Phần vô tuyến (SSID, WLAN, WPA2), cơ chế join AP và ACL vẫn là **thiết kế đề xuất, chưa kiểm chứng**. Không có kết quả nào được báo cáo là đã chạy thành công khi chưa có minh chứng.
 >
-> **Đính chính sau audit lựa chọn thiết bị (2026-10-18):** bản soạn trước đây ghi WLC là `WLC-3504` và cho rằng model này có trang `Wireless LANs`. Kiểm chứng lại giao diện cho thấy `WLC-3504` **không có** trang cấu hình vô tuyến; các trường đó thuộc về `WLC-PT`. Nhóm đã đổi controller sang `WLC-PT` và **sẽ chạy lại TC-01**. Chi tiết: [../docs/device-selection-decision.md](../docs/device-selection-decision.md).
+> **Đính chính sau audit lựa chọn thiết bị (2026-10-18):** bản soạn trước đây ghi WLC là `WLC-3504` và cho rằng model này có trang `Wireless LANs`. Kiểm chứng lại giao diện cho thấy `WLC-3504` **không có** trang cấu hình vô tuyến; các trường đó thuộc về `WLC-PT`. Nhóm đã đổi controller sang `WLC-PT` và **đã chạy lại TC-01 (`Passed`)**. Chi tiết: [../docs/device-selection-decision.md](../docs/device-selection-decision.md).
 
 ---
 
@@ -138,7 +138,7 @@ flowchart TB
 | 20 | GUEST | `192.168.20.0/24` | `192.168.20.1` | Khách (`GUEST-WIFI`) |
 | 99 | MANAGEMENT | `192.168.99.0/24` | `192.168.99.1` | WLC, switch, router, Server-PT, LAP-PT |
 
-Địa chỉ hạ tầng: switch SVI `192.168.99.2` và Server-PT `192.168.99.20` đã cấu hình trong khung có dây P1; WLC `192.168.99.10` đã đặt và **kiểm chứng ping được** (TC-01, trên model `WLC-3504`) — sẽ đặt lại trên interface `Management` khi chuyển sang `WLC-PT`.
+Địa chỉ hạ tầng: switch SVI `192.168.99.2` và Server-PT `192.168.99.20` đã cấu hình trong khung có dây P1; WLC `192.168.99.10` đã đặt và **kiểm chứng ping được** (TC-01, chạy lại trên `WLC-PT`) — trên cổng GUI `Management` (API `Vlan1`).
 
 ### 3.4 Hai điểm kỹ thuật quyết định sự thành bại
 
@@ -203,7 +203,7 @@ Nếu file `.pkt` hoặc Packet Tracer gặp lỗi ngay tại buổi báo cáo:
 - Đồ án đã hoàn thành phần **thiết kế và kế hoạch**: topology logic, kế hoạch VLAN/IP, thiết kế bảo mật và bộ 14 test case có truy vết tới yêu cầu.
 - **Model thiết bị đã chốt** và **khung có dây P1 đã dựng được**: Router `2911` – Switch `2960-24TT` – Server-PT – WLC, gồm VLAN 10/20/99, trunk Switch↔WLC và DHCP relay `ip helper-address` trên router.
 - **Đã có 2 kết quả kiểm thử thật kèm minh chứng**: TC-01 `Passed` (management reachability của WLC, `0% loss`) và TC-02 `Passed` (LAP-PT có IP quản trị hợp lệ và ping được gateway). 12 test case còn lại vẫn `Not Tested`.
-- **Phát hiện quan trọng của đợt audit 2026-10-18:** controller ban đầu `WLC-3504` **không có giao diện cấu hình vô tuyến** trong Packet Tracer 9.0.1.0858; các trường WLAN/SSID/VLAN/WPA2 từng được ghi nhận thực ra thuộc `WLC-PT`. Nhóm đã đổi controller sang `WLC-PT` và sẽ **chạy lại TC-01**. Đây là ví dụ điển hình cho việc không được suy luận khả năng thiết bị từ tài liệu bên ngoài.
+- **Phát hiện quan trọng của đợt audit 2026-10-18:** controller ban đầu `WLC-3504` **không có giao diện cấu hình vô tuyến** trong Packet Tracer 9.0.1.0858; các trường WLAN/SSID/VLAN/WPA2 từng được ghi nhận thực ra thuộc `WLC-PT`. Nhóm đã đổi controller sang `WLC-PT` và **đã chạy lại TC-01 (`Passed`)**. Đây là ví dụ điển hình cho việc không được suy luận khả năng thiết bị từ tài liệu bên ngoài.
 - Phần vô tuyến (WLAN/SSID/WPA2, cơ chế AP join) và ACL sẽ được bổ sung trong giai đoạn tiếp theo, kèm minh chứng. **Bước kế tiếp là TC-03** (LAP-PT join `WLC-PT`) — hiện chưa tìm thấy cơ chế join trong giao diện, nên đây là rủi ro lớn nhất của dự án.
 - Cam kết của nhóm: mọi kết luận về hiệu quả mã hóa và kiểm soát truy cập chỉ được đưa ra khi có minh chứng kiểm thử đi kèm; **không tính việc thấy trường trong GUI là bằng chứng chức năng chạy được**.
 

@@ -2,7 +2,7 @@
 
 > Topology dưới đây là **thiết kế đã chốt model, chưa kiểm chứng hoạt động vô tuyến**. Model thiết bị đã chốt, khung có dây và LAP-PT đã dựng trong Packet Tracer 9.0.1.0858 (xem [implementation-notes.md](implementation-notes.md) §1–§2). Ánh xạ WLAN→VLAN và cơ chế join AP→WLC vẫn phải được kiểm chứng trên đúng model đã chốt.
 >
-> **Cập nhật 2026-10-18 — đổi controller sang `WLC-PT`.** `WLC-3504` không có giao diện cấu hình vô tuyến trong bản 9.0.1.0858 nên không thể làm controller; lý do và minh chứng tại [device-selection-decision.md](device-selection-decision.md). **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy): địa chỉ quản trị `192.168.99.10` đặt trên cổng GUI `Management` (API port `Vlan1`). **Chế độ cổng Switch↔WLC đã chạy được cho management** (`SW1 Fa0/4` trunk native 99); **lưu lượng client VLAN 10/20 vẫn chưa chốt** cho tới khi kiểm chứng central switching (TC-03/TC-08). **`.pkt` deliverable vẫn còn `WLC-3504`** — việc thay trong file gốc đang chờ.
+> **Cập nhật 2026-10-18 — đổi controller sang `WLC-PT`.** `WLC-3504` không có giao diện cấu hình vô tuyến trong bản 9.0.1.0858 nên không thể làm controller; lý do và minh chứng tại [device-selection-decision.md](device-selection-decision.md). **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy): địa chỉ quản trị `192.168.99.10` đặt trên cổng GUI `Management` (API port `Vlan1`). **Chế độ cổng Switch↔WLC đã chạy được cho management** (`SW1 Fa0/4` trunk native 99); **lưu lượng client VLAN 10/20 vẫn chưa chốt** cho tới khi kiểm chứng central switching (TC-03/TC-08). **`.pkt` deliverable đã thay sang `WLC-PT`** (2026-10-19).
 
 ## 1. Thành phần và model đã chốt
 
@@ -10,7 +10,7 @@
 | --- | --- | --- | --- | --- |
 | Router | `2911` | 01 | Định tuyến liên VLAN (subinterface 802.1Q), **DHCP relay bắt buộc** (§3), ACL cô lập Guest | Model đã chốt; subinterface + relay đã dựng; **ACL chưa kiểm chứng** |
 | Switch Layer 2 | `2960-24TT` | 01 | VLAN 10, 20, 99; cổng Switch↔WLC, các cổng còn lại chốt theo model | Model đã chốt; VLAN/trunk đã dựng và đọc lại được |
-| WLC | **`WLC-PT`** | 01 | Quản lý tập trung LAP và WLAN/SSID; có trang `Wireless LANs` (SSID, VLAN, WPA2-PSK, WPA2 + RADIUS) | Cổng thật: `Vlan1` (mang IP quản trị; GUI hiển thị `Management`) + `GigabitEthernet0` (uplink). **TC-01 chạy lại `Passed`** trên bản test copy (`../evidence/tc-01-wlc-pt-reachability-canvas.png`); chưa tạo WLAN. **`WLC-3504` vẫn còn trong `.pkt` deliverable** |
+| WLC | **`WLC-PT`** | 01 | Quản lý tập trung LAP và WLAN/SSID; có trang `Wireless LANs` (SSID, VLAN, WPA2-PSK, WPA2 + RADIUS) | Cổng thật: `Vlan1` (mang IP quản trị; GUI hiển thị `Management`) + `GigabitEthernet0` (uplink). **TC-01 chạy lại `Passed`** (`../evidence/tc-01-wlc-pt-reachability-canvas.png`); chưa tạo WLAN. **`WLC-PT` là controller trong `.pkt` deliverable** |
 | LAP-PT (Lightweight AP) | `LAP-PT` | 01 ở giai đoạn đầu | AP chính, join về WLC; phát cả hai SSID nếu model cho phép | Đã đấu vào `SW1 Fa0/3` (access VLAN 99) và **có IP `192.168.99.30`** (TC-02 `Passed`); cổng thật là `GigabitEthernet0` + `Dot11Radio0` (catalog ghi `Port 0` là sai); **chưa kiểm chứng join** |
 | AP mở rộng | cùng `LAP-PT` | +1–2 sau | Chỉ thêm sau khi AP đầu join thành công và client kết nối được | Planned |
 | AP dự phòng | `AccessPoint-PT` standalone | Dự phòng | Standalone, chỉ dùng khi chứng minh WLC tập trung bất khả thi + sửa scope | Chưa dùng; quan sát GUI tại `../evidence/audit-ap-pt-port1-security.png` |
@@ -88,7 +88,7 @@ Server-PT ở VLAN 99 nhưng cấp DHCP cho VLAN 10 và VLAN 20 ⇒ router phả
 ## 4. Thứ tự bring-up (bắt buộc)
 
 1. **(xong trên model cũ)** Dựng có dây: Router `2911` – Switch `2960-24TT` – Server-PT – WLC `WLC-3504`; trunk cho cổng Switch↔WLC. Đặt IP quản trị cho WLC và kiểm tra management reachability — **TC-01 `Passed`** ngày 2026-10-18 **trên `WLC-3504`**.
-2. **(đã chạy trên bản test copy, chưa thay trong `.pkt` deliverable)** Thay controller bằng **`WLC-PT`** theo [device-selection-decision.md](device-selection-decision.md); đặt Management IPv4 `192.168.99.10/24` trên cổng GUI **`Management`** (API port `Vlan1`) bằng API (`pt_host_ip_config`); nối `WLC2 Gi0` → `SW1 Fa0/4` (trunk native 99, allowed 10,20,99); **TC-01 chạy lại `Passed`** (`../evidence/tc-01-wlc-pt-reachability-canvas.png`). Cấu hình `WLC-3504` giữ lại như lịch sử P1. **Còn lại:** thay `WLC-3504` bằng `WLC-PT` ngay trong `.pkt` deliverable.
+2. **(xong — đã thay trong `.pkt` deliverable)** Thay controller bằng **`WLC-PT`** theo [device-selection-decision.md](device-selection-decision.md); đặt Management IPv4 `192.168.99.10/24` trên cổng GUI **`Management`** (API port `Vlan1`) bằng API (`pt_host_ip_config`); nối `WLC2 Gi0` → `SW1 Fa0/4` (trunk native 99, allowed 10,20,99); **TC-01 chạy lại `Passed`** (`../evidence/tc-01-wlc-pt-reachability-canvas.png`). Cấu hình `WLC-3504` giữ lại như lịch sử P1. **Đã thay `WLC-3504` bằng `WLC-PT` trong `.pkt` deliverable** (2026-10-19).
 3. **(xong cấu hình)** Cấu hình DHCP scope trên Server-PT + `ip helper-address` trên router (§3.2). Chưa cần client, nhưng phải xong trước TC-08.
 4. **(xong một phần)** Nối 01 LAP-PT, kiểm tra LAP nhận IP — **TC-02 `Passed`** ngày 2026-10-18 (`192.168.99.30` tĩnh trên `GigabitEthernet0`, `SW1 Fa0/3` access VLAN 99).
 5. **(cổng chặn)** LAP-PT join `WLC-PT` (TC-03) — chưa tìm thấy trường `Primary Controller` trên LAP-PT và `WLC-PT` không có trang danh sách AP. Nếu join thất bại: ghi `Blocked`, dừng, **không thêm AP**, chưa tạo WLAN.
@@ -102,7 +102,7 @@ Server-PT ở VLAN 99 nhưng cấp DHCP cho VLAN 10 và VLAN 20 ⇒ router phả
 - [x] Model router/switch/WLC/Server-PT cụ thể và interface thực dùng.
 - [x] Controller đã đánh giá và chốt `WLC-PT` (quan sát GUI trực tiếp, có trang `Wireless LANs`).
 - [x] **Chạy lại TC-01 trên `WLC-PT`** (bản test copy) — `Passed`, địa chỉ quản trị trên cổng GUI `Management` (API `Vlan1`).
-- [ ] **Thay `WLC-3504` bằng `WLC-PT` trong `.pkt` deliverable** (Phase C).
+- [x] **Thay `WLC-3504` bằng `WLC-PT` trong `.pkt` deliverable** (Phase C, xong 2026-10-19).
 - [ ] Chế độ cổng **Switch↔`WLC-PT`** mang đủ VLAN 99 + 10 + 20 (nếu không → nhánh dự phòng §3.1).
       **VLAN 99 đã kiểm chứng trên cả `WLC-3504` lẫn `WLC-PT`** (TC-01 `Passed`; trên `WLC-PT` chỉ cần trunk phía switch). **VLAN 10/20 cho client vẫn chưa** — cần test với client thật (TC-03/TC-08).
 - [x] Đã cấu hình `ip helper-address` cho VLAN 10/20 trỏ về Server-PT (§3.2).

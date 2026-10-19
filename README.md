@@ -136,14 +136,14 @@ Quy định đặt file `.pkt` xem tại [packet-tracer/README.md](packet-tracer
 
 Repository hiện ở giai đoạn **đã dựng khung có dây (P1) và kiểm chứng management reachability của controller**: **TC-01 `Passed`** và **TC-02 `Passed`**, nhưng **chưa có phần vô tuyến (WLAN, client)**.
 
-> **Đang thực hiện — đổi controller sang `WLC-PT` (2026-10-18).** Audit lựa chọn thiết bị phát hiện `WLC-3504` **không có giao diện cấu hình vô tuyến** trong bản 9.0.1.0858, nên `.pkt` vẫn còn controller model cũ. Cần thay bằng `WLC-PT` và **chạy lại TC-01** (địa chỉ quản trị chuyển sang interface `Management`). Xem [docs/device-selection-decision.md](docs/device-selection-decision.md).
+> **Đã hoàn tất — đổi controller sang `WLC-PT` (2026-10-19).** Audit lựa chọn thiết bị phát hiện `WLC-3504` **không có giao diện cấu hình vô tuyến** trong bản 9.0.1.0858. Đã thay `WLC-3504` → `WLC-PT` **ngay trong `.pkt` deliverable** và **chạy lại TC-01** (địa chỉ quản trị trên interface GUI `Management`, API `Vlan1`). Xem [docs/device-selection-decision.md](docs/device-selection-decision.md).
 
 | Nhóm trạng thái | Ý nghĩa | Trạng thái hiện tại |
 | --- | --- | --- |
 | Planned | Đã đề xuất trong tài liệu, chưa cấu hình | Phần vô tuyến: WLAN/SSID, WPA2, ACL, wireless client |
-| In Progress | Đang thực hiện | Hạ tầng có dây + TC-01/TC-02 xong; **đang thay controller sang `WLC-PT`** |
+| In Progress | Đang thực hiện | Hạ tầng có dây + TC-01/TC-02 xong; **controller `WLC-PT` đã thay trong `.pkt` deliverable** |
 | Not Tested | Chưa kiểm thử, chưa có minh chứng | TC-03 → TC-14 trong [tests/test-cases.md](tests/test-cases.md) |
-| Passed / Failed / Blocked | Chỉ dùng khi có evidence thực tế | **TC-01 `Passed`**, **TC-02 `Passed`** (đều trên `WLC-3504`); chưa có `Failed`/`Blocked` |
+| Passed / Failed / Blocked | Chỉ dùng khi có evidence thực tế | **TC-01 `Passed`** (chạy lại trên `WLC-PT`), **TC-02 `Passed`** (trên `LAP-PT` + `WLC-PT`); chưa có `Failed`/`Blocked` |
 
 Nhãn `Passed` chỉ được dùng khi có minh chứng hỗ trợ. Một tính năng Conditional (RADIUS) chưa được hỗ trợ **không** làm mất trạng thái hoàn thành của luồng Core.
 
@@ -155,13 +155,13 @@ Nhãn `Passed` chỉ được dùng khi có minh chứng hỗ trợ. Một tính
 - [x] VLAN 10/20/99 trên switch; trunk `Fa0/1` (WLC) và `Gi0/1` (router) native VLAN 99 + tagged 10,20; access `Fa0/2` VLAN 99.
 - [x] Liên VLAN trên router (`Gi0/0.10`, `Gi0/0.20`) kèm `ip helper-address 192.168.99.20`.
 - [x] Server-PT tĩnh `192.168.99.20` + 2 pool DHCP (STAFF, GUEST), Service On.
-- [x] **WLC management reachability (TC-01 `Passed`, 2026-10-18, trên `WLC-3504`):** Management IPv4 `192.168.99.10/24` trên `Vlan1`, ping từ `SRV1` đạt `0% loss` — minh chứng `evidence/tc-01-wlc-reachability.png`. **Cần chạy lại trên `WLC-PT`.**
+- [x] **WLC management reachability (TC-01 `Passed`, chạy lại trên `WLC-PT` 2026-10-19):** Management IPv4 `192.168.99.10/24` trên cổng GUI `Management` (API port `Vlan1`), ping từ `SRV1` đạt `0% loss` — minh chứng `evidence/tc-01-wlc-pt-reachability-canvas.png`. Bản `WLC-3504` cũ (`evidence/tc-01-wlc-reachability.png`) giữ làm lịch sử P1.
 - [x] **LAP-PT nhận IP quản trị (TC-02 `Passed`, 2026-10-18):** `192.168.99.30/24` tĩnh trên `GigabitEthernet0`, uplink `SW1 Fa0/3` access VLAN 99 — minh chứng `evidence/tc-02-*.png`.
 - [x] **Giao diện của `WLC-PT`** đã quan sát trực tiếp: có `Wireless LANs` (SSID, trường VLAN, WPA2-PSK, WPA2 + RADIUS), `AP Groups`, `DHCP` — minh chứng `evidence/audit-wlc-pt-wireless-lans.png`.
 
 Đã quan sát trong GUI nhưng **chưa kiểm chứng hoạt động**:
 
-- [ ] **Thay controller `WLC-3504` → `WLC-PT` trong `.pkt` và chạy lại TC-01.**
+- [x] **Thay controller `WLC-3504` → `WLC-PT` trong `.pkt` và chạy lại TC-01** (hoàn tất 2026-10-19).
 - [ ] LAP-PT join/register với `WLC-PT` (chưa tìm thấy trường `Primary Controller`; `WLC-PT` không có trang danh sách AP).
 - [ ] Tạo và phát WLAN (`STAFF-WIFI`, `GUEST-WIFI`) trên `WLC-PT`.
 - [ ] Nhiều WLAN chạy đồng thời.

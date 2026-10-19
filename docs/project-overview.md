@@ -42,8 +42,8 @@ Tóm tắt: quản lý tập trung bằng WLC (01 LAP-PT trước), hai SSID, ph
 | # | Sản phẩm | Vị trí | Trạng thái hiện tại |
 | --- | --- | --- | --- |
 | 1 | Tài liệu thiết kế (overview, requirements, topology, IP/VLAN, security) | `docs/` | In Progress (finalize, chưa nghiệm thu) |
-| 2 | File mô phỏng Packet Tracer (`.pkt`, đúng bản 9.0.1.0858) | `packet-tracer/` | In Progress — `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1 + `WLC-3504` (model cũ) + LAP-PT; **cần thay controller bằng `WLC-PT`**; chưa có client |
-| 3 | Bản sao cấu hình thiết bị (đã che secret) | `configs/` | In Progress — `router/` + `switch/` có bản khung P1; `wlc-ap/` ghi cấu hình hạ tầng `WLC-3504` (sẽ cập nhật cho `WLC-PT` sau khi chạy lại TC-01) |
+| 2 | File mô phỏng Packet Tracer (`.pkt`, đúng bản 9.0.1.0858) | `packet-tracer/` | In Progress — `enterprise-wifi-wlc-lab-v1.pkt` là khung có dây P1 + `WLC-PT` (đã thay `WLC-3504`) + LAP-PT; chưa có client |
+| 3 | Bản sao cấu hình thiết bị (đã che secret) | `configs/` | In Progress — `router/` + `switch/` có bản khung P1; `wlc-ap/` ghi cấu hình hạ tầng `WLC-PT` (đã cập nhật sau khi chạy lại TC-01) |
 | 4 | Kế hoạch và ca kiểm thử Core/Conditional | `docs/testing-plan.md`, `tests/test-cases.md` | In Progress — **TC-01 và TC-02 `Passed`**; TC-03→TC-14 `Not Tested`. **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy) |
 | 5 | Minh chứng (screenshots, kết quả lệnh) | `evidence/` | In Progress — minh chứng bring-up P1 + TC-01, TC-02 + **minh chứng audit lựa chọn thiết bị** |
 | 6 | Báo cáo (dàn ý + nội dung trong `report/`, chưa cần DOCX/PDF) | `report/` | In Progress — `midterm-report.md` đã soạn |

@@ -4,15 +4,15 @@ Lưu bản sao cấu hình/ghi chú cấu hình của WLC và LAP-PT (screenshot
 
 ## Hiện trạng
 
-> **Hạ tầng WLC + LAP-PT đã cấu hình và kiểm chứng — TC-01 và TC-02 `Passed` ngày 2026-10-18.** Trong đó **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy `..._TESTCOPY_2026-10-18.pkt`): management `192.168.99.10/24` ping `0% loss`. WLAN/SSID/WPA2 và cơ chế join LAP→WLC vẫn **chưa làm**; phần đó chỉ thao tác được trên GUI. **`WLC-3504` vẫn còn trong `.pkt` deliverable** — việc thay thế trong file gốc đang chờ.
+> **Hạ tầng WLC + LAP-PT đã cấu hình và kiểm chứng — TC-01 và TC-02 `Passed` ngày 2026-10-18.** Trong đó **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy `..._TESTCOPY_2026-10-18.pkt`): management `192.168.99.10/24` ping `0% loss`. WLAN/SSID/WPA2 và cơ chế join LAP→WLC vẫn **chưa làm**; phần đó chỉ thao tác được trên GUI. **`.pkt` deliverable đã được thay sang `WLC-PT`** (2026-10-19).
 >
-> **Đang chuyển controller (2026-10-18):** audit lựa chọn thiết bị phát hiện `WLC-3504` **không có giao diện cấu hình vô tuyến** trong bản 9.0.1.0858 (chỉ `GLOBAL/Settings` + `INTERFACE`), nên không thể tạo WLAN/SSID/WPA2. Quyết định đổi sang **`WLC-PT`** — xem [../../docs/device-selection-decision.md](../../docs/device-selection-decision.md). **Mục `WLC-3504` bên dưới giữ lại làm lịch sử của giai đoạn P1** và sẽ được thay bằng cấu hình `WLC-PT` sau khi chạy lại TC-01.
+> **Đã chuyển controller (2026-10-18 → hoàn tất 2026-10-19):** audit lựa chọn thiết bị phát hiện `WLC-3504` **không có giao diện cấu hình vô tuyến** trong bản 9.0.1.0858 (chỉ `GLOBAL/Settings` + `INTERFACE`), nên không thể tạo WLAN/SSID/WPA2. Quyết định đổi sang **`WLC-PT`** — xem [../../docs/device-selection-decision.md](../../docs/device-selection-decision.md). **Mục `WLC-3504` bên dưới giữ lại làm lịch sử của giai đoạn P1** (cấu hình `WLC-PT` đã thay thế trong `.pkt` deliverable).
 
-### WLC-PT — controller mới (đã cấu hình trên bản test copy; chưa thay trong `.pkt` deliverable)
+### WLC-PT — controller hiện tại (đã thay trong `.pkt` deliverable)
 
 | Hạng mục | Giá trị | Ghi chú |
 | --- | --- | --- |
-| Model | `WLC-PT` | Đã đặt làm `WLC2` trong **bản test copy**; **chưa** thay thế `WLC-3504` trong `.pkt` deliverable |
+| Model | `WLC-PT` | Đặt làm `WLC2` trong `.pkt` deliverable (đã thay `WLC1`/`WLC-3504` ngày 2026-10-19) |
 | Cổng thật | `Vlan1` (mang IP quản trị; GUI hiển thị `Management`) + `GigabitEthernet0` (uplink) | đọc trực tiếp từ API/mô phỏng; **khác `WLC-3504` ở chỗ không có cổng API `management`/`virtual` riêng** |
 | Management IPv4 | `192.168.99.10/24`, gw `192.168.99.1`, DNS `192.168.99.20` | **đã đặt** trên cổng GUI hiển thị `Management` (API port `Vlan1` — **giống** `WLC-3504`), bằng API `pt_host_ip_config` — **không cần raw JS**; TC-01 chạy lại `Passed` |
 | Uplink | `GigabitEthernet0` → SW1 `Fa0/4` | **đã chốt cho management**: SW1 `Fa0/4` **trunk** native VLAN 99, allowed `10,20,99`; phía WLC không cần set trunk (GUI không có tuỳ chọn VLAN/trunk); management ping được (TC-01 `Passed`). **Lưu lượng client VLAN 10/20 chưa chốt** (TC-03/TC-08) |
@@ -65,7 +65,7 @@ Minh chứng: [../../evidence/tc-02-lap-ip.png](../../evidence/tc-02-lap-ip.png)
 
 ## Nội dung dự kiến (làm theo thứ tự)
 
-1. **(xong trên bản test copy)** Thay controller `WLC-3504` → `WLC-PT`; đặt Management IPv4 `192.168.99.10/24` trên cổng GUI `Management` (API `Vlan1`) bằng API; nối `WLC2 Gi0` → `SW1 Fa0/4` (trunk native 99, allowed 10,20,99); **TC-01 chạy lại `Passed`**. **Còn lại:** thay `WLC-3504` bằng `WLC-PT` trong `.pkt` **deliverable**.
+1. **(xong)** Thay controller `WLC-3504` → `WLC-PT`; đặt Management IPv4 `192.168.99.10/24` trên cổng GUI `Management` (API `Vlan1`) bằng API; nối `WLC2 Gi0` → `SW1 Fa0/4` (trunk native 99, allowed 10,20,99); **TC-01 chạy lại `Passed`**. **Đã thay `WLC-3504` bằng `WLC-PT` trong `.pkt` deliverable** (2026-10-19).
 2. LAP-PT join `WLC-PT` (TC-03) — **cổng chặn**; chưa tìm thấy cơ chế join. Nếu thất bại: ghi `Blocked`, dừng, không tạo WLAN.
 3. WLAN `STAFF-WIFI` → VLAN 10 và `GUEST-WIFI` → VLAN 20 với **WPA2-PSK trước** (TC-04→TC-07).
 4. RADIUS/WPA2-Enterprise (TC-13, Conditional) chỉ sau khi Core ổn định và khi được hỗ trợ.

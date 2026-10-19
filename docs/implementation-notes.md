@@ -54,7 +54,7 @@ Model dưới đây **đã chốt** bằng cách đặt thiết bị thật vào
 | WPA3 / EAP cụ thể / roaming / RF / throughput | **Không hỗ trợ** — `WirelessAuthenType` trong `IpcAPI` không có WPA3/SAE | Research-only |
 | WPA2-Enterprise / EAPOL | Có class `EapolWirelessServerProcess` + struct `capwap_control_message`/`lwapp_udp_packet` trong `IpcAPI` | Chưa (TC-13, Conditional) |
 
-> Các mục `Có` ở cột kiểm chứng mới thuộc **khung có dây P1**, cộng **TC-01 (đã `Passed` trên cả `WLC-3504` lẫn `WLC-PT`)** và **TC-02 trên `LAP-PT`**; chưa có client vô tuyến nên các mục WLAN/VLAN client vẫn `Chưa`. Lưu ý kiểm chứng `WLC-PT` thực hiện trên **bản test copy** (`..._TESTCOPY_2026-10-18.pkt`); `.pkt` deliverable **vẫn còn `WLC-3504`**. Bản cấu hình đối chiếu lưu tại `../configs/`.
+> Các mục `Có` ở cột kiểm chứng mới thuộc **khung có dây P1**, cộng **TC-01 (đã `Passed` trên cả `WLC-3504` lẫn `WLC-PT`)** và **TC-02 trên `LAP-PT`**; chưa có client vô tuyến nên các mục WLAN/VLAN client vẫn `Chưa`. Lưu ý kiểm chứng `WLC-PT` thực hiện trên **bản test copy** (`..._TESTCOPY_2026-10-18.pkt`); **`.pkt` deliverable đã được thay sang `WLC-PT` (2026-10-19)**. Bản cấu hình đối chiếu lưu tại `../configs/`.
 
 ## 4. Quyết định cấu hình
 
