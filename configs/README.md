@@ -8,9 +8,11 @@ Thư mục lưu bản sao cấu hình thiết bị để đối chiếu và ch�
 
 ## Hiện trạng
 
-> **Đã có cấu hình khung có dây (P1).** `router/router-r1-running-config.txt` và `switch/switch-sw1-running-config.txt`, xuất ngày 2026-10-18. `wlc-ap/README.md` đã ghi cấu hình **hạ tầng** WLC (Management IPv4 trên `Vlan1` + switchport uplink) và **WLAN `STAFF-WIFI`** (VLAN 10, WPA2-PSK — TC-04 `Passed` 2026-10-19, thao tác trên GUI vì WLAN không có API; không ghi giá trị PSK).
+> **Đã có cấu hình khung có dây (P1) + TC-08.** `router/router-r1-running-config.txt` và `switch/switch-sw1-running-config.txt`, xuất lại ngày 2026-10-21 từ official `.pkt`. `wlc-ap/README.md` đã ghi cấu hình **hạ tầng** WLC (Management IPv4 trên `Vlan1` + switchport uplink) và **hai WLAN `STAFF-WIFI`/`GUEST-WIFI`** (VLAN 10/20, WPA2-PSK — TC-04 + TC-05 `Passed` 2026-10-19, thao tác trên GUI vì WLAN không có API; không ghi giá trị PSK).
 >
 > **TC-01 `Passed`** (2026-10-18): ping tới Management IPv4 của WLC đạt `0% loss`. Minh chứng: [../evidence/tc-01-wlc-reachability.png](../evidence/tc-01-wlc-reachability.png). Bring-up khung: [../evidence/p1-wired-skeleton-topology.png](../evidence/p1-wired-skeleton-topology.png).
+>
+> **TC-08 `Passed`** (2026-10-20; cấu hình lưu vào official `.pkt` 2026-10-21): `SW1 Fa0/3` trunk native 99 cho LAP, `Fa0/4` trunk cho WLC, client VLAN 10/20 nhận DHCP đúng subnet qua local switching. Minh chứng: [../evidence/tc-08-trunk.png](../evidence/tc-08-trunk.png), [../evidence/tc-08-mac-vlan.png](../evidence/tc-08-mac-vlan.png).
 
 ## Quy định khi bổ sung
 

@@ -15,7 +15,7 @@ Lưu bản sao cấu hình/ghi chú cấu hình của WLC và LAP-PT (screenshot
 | Model | `WLC-PT` | Đặt làm `WLC2` trong `.pkt` deliverable (đã thay `WLC1`/`WLC-3504` ngày 2026-10-19) |
 | Cổng thật | `Vlan1` (mang IP quản trị; GUI hiển thị `Management`) + `GigabitEthernet0` (uplink) | đọc trực tiếp từ API/mô phỏng; **khác `WLC-3504` ở chỗ không có cổng API `management`/`virtual` riêng** |
 | Management IPv4 | `192.168.99.10/24`, gw `192.168.99.1`, DNS `192.168.99.20` | **đã đặt** trên cổng GUI hiển thị `Management` (API port `Vlan1` — **giống** `WLC-3504`), bằng API `pt_host_ip_config` — **không cần raw JS**; TC-01 chạy lại `Passed` |
-| Uplink | `GigabitEthernet0` → SW1 `Fa0/4` | **đã chốt cho management**: SW1 `Fa0/4` **trunk** native VLAN 99, allowed `10,20,99`; phía WLC không cần set trunk (GUI không có tuỳ chọn VLAN/trunk); management ping được (TC-01 `Passed`). **Lưu lượng client VLAN 10/20 chưa chốt** (TC-08) |
+| Uplink | `GigabitEthernet0` → SW1 `Fa0/4` | **đã chốt cho management**: SW1 `Fa0/4` **trunk** native VLAN 99, allowed `10,20,99`; phía WLC không cần set trunk (GUI không có tuỳ chọn VLAN/trunk); management ping được (TC-01 `Passed`). **Đây là đường management**; TC-08 test copy cho thấy client VLAN 10/20 đi qua uplink AP `Fa0/3`, không qua `Fa0/4` (WLC) ⇒ **central switching chưa kiểm chứng**; cấu hình đã lưu vào official `.pkt` 2026-10-21 |
 | WLAN | **`STAFF-WIFI` (VLAN 10) + `GUEST-WIFI` (VLAN 20) đã tạo (2026-10-19)** | `STAFF-WIFI`: WLAN ID `1`, `VLAN 10`, WPA2-PSK/AES, passphrase kiểm thử 15 ký tự, `Enabled`, thuộc `default-group` — TC-04 `Passed`. `GUEST-WIFI`: WLAN ID `2`, `VLAN 20`, WPA2-PSK/AES, passphrase kiểm thử **riêng** 15 ký tự, `Enabled`, thuộc `default-group` — TC-05 `Passed` (quét đồng thời hai SSID từ `GUEST1`). **Không ghi giá trị passphrase** — PT lưu dạng rõ trong XML `.pkt`. Trang `Wireless LANs` có `Name`, `SSID`, trường `VLAN`, Authentication (WEP/WPA-PSK/WPA2-PSK/WPA/WPA2 + RADIUS), `Encryption Type`, `Central Control` |
 | AP Groups / DHCP | Có trang nhưng **chưa dùng** | nhóm vẫn dùng Server-PT làm nguồn DHCP; built-in DHCP của `WLC-PT` mặc định **TẮT** |
 
@@ -39,7 +39,7 @@ Minh chứng quan sát giao diện: [../../evidence/audit-wlc-pt-wireless-lans.p
 
 **Hạn chế khiến model này bị loại khỏi vai trò controller:** GUI Config chỉ có `GLOBAL/Settings` + `INTERFACE` (`GigabitEthernet1`–`5`, `Management`) — **không có trang tạo WLAN/SSID/VLAN/WPA2/RADIUS**. Minh chứng: [../../evidence/audit-wlc-3504-config-menu.png](../../evidence/audit-wlc-3504-config-menu.png).
 
-**Đã xử lý (một phần):** `addTrunkVlans('10,20,99')` trên `WLC-3504` báo `Invalid arguments for IPC call` — không còn áp dụng cho `WLC-PT` (cổng không có tuỳ chọn trunk trong GUI). Trên `WLC-PT` chỉ cần đặt trunk ở phía `SW1 Fa0/4`; management (VLAN 99) thông (TC-01 `Passed`). **Còn mở:** lưu lượng client VLAN 10/20 (TC-08).
+**Đã xử lý (một phần):** `addTrunkVlans('10,20,99')` trên `WLC-3504` báo `Invalid arguments for IPC call` — không còn áp dụng cho `WLC-PT` (cổng không có tuỳ chọn trunk trong GUI). Trên `WLC-PT` chỉ cần đặt trunk ở phía `SW1 Fa0/4`; management (VLAN 99) thông (TC-01 `Passed`). TC-08 test copy xác nhận client VLAN 10/20 đi qua **uplink AP `Fa0/3`** (local switching), không qua `Fa0/4` (WLC) ⇒ **central switching chưa kiểm chứng**; cấu hình đã lưu vào official `.pkt` 2026-10-21.
 
 Minh chứng: [../../evidence/tc-01-wlc-reachability.png](../../evidence/tc-01-wlc-reachability.png).
 
@@ -59,7 +59,7 @@ Minh chứng: [../../evidence/tc-01-wlc-reachability.png](../../evidence/tc-01-w
 - **LAP-PT không có CLI/console** (`getCommandLine()` trả `null`) ⇒ không chạy được lệnh `ping`. Đã kiểm chứng bằng **Simple PDU** của PT: `ipc.appWindow().getUserCreatedPDU().addSimplePdu('LAP1','R1')` → PDU List Window báo **Successful** (ICMP), và ping ngược `R1 → 192.168.99.30` = `5/5`.
 - GUI của LAP **không có trường IP** — tab Config chỉ có radio `Ipv4 Static`/`Ipv4 DHCP` cho Gateway/DNS. Chọn radio `Static` trên GUI sẽ **xoá IP** đã đặt qua API (đã gặp và đặt lại).
 - **Cơ chế join đã kiểm chứng (TC-03 `Passed`, 2026-10-19):** `LAP1` hiển thị `Status: Online` trong `AP Groups` của `WLC-PT` (nhóm `default-group`). Trước đó audit **không tìm thấy** trang `WLC` / trường `Primary Controller` trong tab Config của `LAP-PT`; cơ chế thực tế là **auto-discovery** của PT (không có trường đặt IP controller, `CAPWAP.PRIMARY_AC = 0.0.0.0` ở cả hai model — **không** đọc là bằng chứng). Chưa có minh chứng bắt tay CAPWAP. Minh chứng: [../../evidence/tc-03-lap-wlc-join.png](../../evidence/tc-03-lap-wlc-join.png).
-- Uplink AP để **access VLAN 99** là đủ ở giai đoạn này: AP ở chế độ lightweight đóng gói lưu lượng client vào CAPWAP gửi về WLC, còn VLAN 10/20 đi ra uplink WLC. Phải kiểm chứng lại khi có client thật (TC-08).
+- Uplink AP: **access VLAN 99** đủ cho quản trị/TC-02. **Từ TC-08, `SW1 Fa0/3` được đặt trunk** native `99`, allowed `10,20,99`; MAC client VLAN 10/20 học trên `Fa0/3` ⇒ lưu lượng đi qua **local switching tại AP**, không phải CAPWAP/central switching về WLC. **Central switching chưa kiểm chứng**; cấu hình đã lưu vào official `.pkt` 2026-10-21.
 
 Minh chứng: [../../evidence/tc-02-lap-ip.png](../../evidence/tc-02-lap-ip.png), [../../evidence/tc-02-lap-ping-gateway.png](../../evidence/tc-02-lap-ping-gateway.png), [../../evidence/tc-02-lap-arp-r1.png](../../evidence/tc-02-lap-arp-r1.png).
 
@@ -67,7 +67,7 @@ Minh chứng: [../../evidence/tc-02-lap-ip.png](../../evidence/tc-02-lap-ip.png)
 
 1. **(xong)** Thay controller `WLC-3504` → `WLC-PT`; đặt Management IPv4 `192.168.99.10/24` trên cổng GUI `Management` (API `Vlan1`) bằng API; nối `WLC2 Gi0` → `SW1 Fa0/4` (trunk native 99, allowed 10,20,99); **TC-01 chạy lại `Passed`**. **Đã thay `WLC-3504` bằng `WLC-PT` trong `.pkt` deliverable** (2026-10-19).
 2. **(xong)** LAP-PT join `WLC-PT` (TC-03) — **`Passed` 2026-10-19**: `LAP1` `Status: Online` trong `AP Groups`; PT auto-discovery. Minh chứng: [../../evidence/tc-03-lap-wlc-join.png](../../evidence/tc-03-lap-wlc-join.png).
-3. **(xong)** Hai WLAN với **WPA2-PSK** — **TC-04 `Passed` 2026-10-19** (`STAFF-WIFI` → VLAN 10, quét thấy từ `STAFF1`) và **TC-05 `Passed` 2026-10-19** (`GUEST-WIFI` → VLAN 20, quét đồng thời hai SSID từ `GUEST1`); **associate Staff/Guest đã `Passed`** (TC-06 + TC-07, 2026-10-19); **còn** map VLAN cho client (TC-08).
+3. **(xong)** Hai WLAN với **WPA2-PSK** — **TC-04 `Passed` 2026-10-19** (`STAFF-WIFI` → VLAN 10, quét thấy từ `STAFF1`) và **TC-05 `Passed` 2026-10-19** (`GUEST-WIFI` → VLAN 20, quét đồng thời hai SSID từ `GUEST1`); **associate Staff/Guest đã `Passed`** (TC-06 + TC-07, 2026-10-19); **map VLAN cho client đã `Passed` cho tiêu chí IP đúng subnet trên bản test copy TC-08** (2026-10-20, kèm giới hạn; qua uplink AP — local switching, **central switching chưa kiểm chứng**; cấu hình đã lưu vào official `.pkt` 2026-10-21).
 4. RADIUS/WPA2-Enterprise (TC-13, Conditional) chỉ sau khi Core ổn định và khi được hỗ trợ.
 
 AP standalone chỉ là dự phòng, không thuộc luồng chính (không có trường VLAN nên không thay WLC).

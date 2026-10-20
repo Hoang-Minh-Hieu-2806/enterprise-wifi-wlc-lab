@@ -3,9 +3,9 @@
 ! Model: 2911
 ! Phien ban Packet Tracer: Cisco Packet Tracer 9.0.1.0858
 ! Interface thuc dung: GigabitEthernet0/0 (VLAN 99 native, 192.168.99.1/24); GigabitEthernet0/0.10 (dot1Q 10, 192.168.10.1/24); GigabitEthernet0/0.20 (dot1Q 20, 192.168.20.1/24)
-! Ngay xuat: 2026-10-18
+! Ngay xuat: 2026-10-21
 ! Nguoi thuc hien: Hoang Minh Hieu (nhom truong, ho tro ky thuat)
-! Trang thai: khung co day P1 - CHUA co client vo tuyen, chua test case nao Passed
+! Trang thai: TC-01 -> TC-08 Passed; cau hinh TC-08 da luu vao official .pkt (2026-10-21); ACL chua cau hinh
 ! Secret: khong co enable secret / password / PSK trong file nay
 ! ============================================================
 

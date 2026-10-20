@@ -4,11 +4,11 @@ Lưu bản sao cấu hình của router (ví dụ `show running-config`, `show a
 
 ## Hiện trạng
 
-> **Đã có cấu hình khung có dây.** `router-r1-running-config.txt` — model `2911`, xuất ngày 2026-10-18 từ `show running-config` trên bản 9.0.1.0858.
+> **Đã có cấu hình khung có dây + TC-08.** `router-r1-running-config.txt` — model `2911`, xuất lại ngày 2026-10-21 từ official `packet-tracer/enterprise-wifi-wlc-lab-v1.pkt`, trên bản 9.0.1.0858.
 >
-> Đã kiểm chứng trong khung P1: `Gi0/0` = `192.168.99.1/24` (VLAN 99 native), `Gi0/0.10`/`Gi0/0.20` dot1Q với `ip helper-address 192.168.99.20`.
+> Đã kiểm chứng: `Gi0/0` = `192.168.99.1/24` (VLAN 99 native), `Gi0/0.10`/`Gi0/0.20` dot1Q với `ip helper-address 192.168.99.20`; client VLAN 10/20 nhận DHCP đúng subnet (TC-08).
 >
-> **Chưa có:** ACL. **TC-01 đã `Passed`** — minh chứng [../../evidence/tc-01-wlc-reachability.png](../../evidence/tc-01-wlc-reachability.png). Minh chứng bring-up P1 tại [../../evidence/p1-wired-skeleton-topology.png](../../evidence/p1-wired-skeleton-topology.png).
+> **Chưa có:** ACL. **TC-01 `Passed`** — minh chứng [../../evidence/tc-01-wlc-reachability.png](../../evidence/tc-01-wlc-reachability.png). Minh chứng bring-up P1 tại [../../evidence/p1-wired-skeleton-topology.png](../../evidence/p1-wired-skeleton-topology.png).
 
 ## Nội dung dự kiến (theo [../../docs/ip-vlan-plan.md](../../docs/ip-vlan-plan.md))
 
