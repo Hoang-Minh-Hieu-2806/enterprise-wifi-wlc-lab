@@ -18,7 +18,9 @@ Lưu bản sao cấu hình/ghi chú cấu hình của WLC và LAP-PT (screenshot
 > | Clients (leases final) | S-LAP1 `.104`, S-LAP2 `.103`, S-LAP3 `.106` / G-LAP1 `.142`, G-LAP2 `.144`, G-PHONE `.141` | gateway ping 4/4 (final audit) |
 > | RADIUS secret | `<RADIUS-SECRET-REDACTED>` (client `WLC1` tại RADIUS-SRV `.22`) | giá trị thật chỉ tồn tại trong `.pkt` |
 >
-> Cấu hình chi tiết + kết quả kiểm thử final: [../../docs/final-implementation.md](../../docs/final-implementation.md) mục 3 và 5.
+> Cấu hình chi tiết + kết quả kiểm chứng final: [../../docs/final-implementation.md](../../docs/final-implementation.md) mục 3 và 5.
+>
+> **DHCP trên final:** vì Primary DHCP Server của cả hai dynamic interface trỏ về **management `.99.10` của chính WLC**, client vô tuyến nhận lease từ **pool nội bộ WLC** (STAFF-LOCAL từ `.10.101`, GUEST-LOCAL từ `.20.141`) — lease bảng trên khớp dải này. `DHCP-SRV .99.20` chỉ là dự phòng; chi tiết [../../docs/ip-vlan-plan.md](../../docs/ip-vlan-plan.md) §4.
 > *(Các bảng WLC-PT / WLC-3504-P1 bên dưới giữ nguyên như lịch sử giai đoạn v1 — controller WLC-PT không còn nằm trong final.)*
 
 ## Hiện trạng (lịch sử — giai đoạn v1, trước 2026-11-01)

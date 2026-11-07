@@ -1,20 +1,27 @@
 # Router Configs
 
-Lưu bản sao cấu hình của router (ví dụ `show running-config`, `show access-lists`). Người sở hữu: Huỳnh Như Hoàng; phối hợp Đặng Văn Hoàng về interface/VLAN, Hoàng Minh Hiếu hỗ trợ khi cần.
+Lưu bản sao cấu hình của router (startup-config thật xuất từ live PT; nếu cần bổ sung thêm `show running-config`, `show access-lists`). Người sở hữu: Huỳnh Như Hoàng; phối hợp Đặng Văn Hoàng về interface/VLAN, Hoàng Minh Hiếu hỗ trợ khi cần.
 
-## Hiện trạng
+## Hiện trạng (final build 2026-11-07)
 
-> **Đã có cấu hình khung có dây + TC-08.** `router-r1-running-config.txt` — model `2911`, xuất lại ngày 2026-10-21 từ official `packet-tracer/enterprise-wifi-wlc-lab-v1.pkt`, trên bản 9.0.1.0858.
+> **Đã xuất:**
 >
-> Đã kiểm chứng: `Gi0/0` = `192.168.99.1/24` (VLAN 99 native), `Gi0/0.10`/`Gi0/0.20` dot1Q với `ip helper-address 192.168.99.20`; client VLAN 10/20 nhận DHCP đúng subnet (TC-08).
+> - `router-r1-running-config.txt` — `R1` (**2901**, thuộc bản final `packet-tracer/final.pkt`) — xuất 2026-11-07, PT 9.0.1.0858.
+> - `router-r2-running-config.txt` — `R2` (**2901**) — cấu hình dự phòng/cân bằng tương tự R1.
+
+> Đã kiểm chứng (final): PAT overload `list 1` ra `Gi0/0`, `ip nat inside` trên `Gi0/1`; static routes `192.168.10/20/99` → next-hop CORE-SW (`10.0.0.2` trên R1, `10.0.1.2` trên R2); default route → ISP (`203.0.113.1` trên R1, `203.0.113.5` trên R2); Staff/Guest ping `8.8.8.8` 4/4 (PAT hoạt động).
 >
-> **Chưa có:** ACL. **TC-01 `Passed`** — minh chứng [../../evidence/tc-01-wlc-reachability.png](../../evidence/tc-01-wlc-reachability.png). Minh chứng bring-up P1 tại [../../evidence/p1-wired-skeleton-topology.png](../../evidence/p1-wired-skeleton-topology.png).
+> Topology + ý nghĩa cấu hình: [../../docs/final-implementation.md](../../docs/final-implementation.md) §2–§3 và §2.3.
 
-## Nội dung dự kiến (theo [../../docs/ip-vlan-plan.md](../../docs/ip-vlan-plan.md))
+## Nội dung cấu hình mỗi file
 
-- Liên VLAN cho 10/20/99 với gateway `192.168.10.1`, `192.168.20.1`, `192.168.99.1` (thiết kế subinterface 802.1Q hoặc theo model thực tế).
-- DHCP relay **bắt buộc**: `ip helper-address 192.168.99.20` trên subinterface VLAN 10 và VLAN 20 (xem [../../docs/ip-vlan-plan.md](../../docs/ip-vlan-plan.md) §3.1).
-- ACL explicit deny Guest→Staff/Management + permit tối thiểu, trong đó **phải permit DHCP** tới Server-PT (kiểm chứng ở TC-10, TC-11, TC-12).
+- PAT overload: `ip nat inside source list 1 interface Gi0/0 overload`; ACL NAT permit 3 subnet nội bộ (10/20/99), dùng chung cho hai path.
+- Static route về LAN: 3 route cho `192.168.10.0/24`, `192.168.20.0/24`, `192.168.99.0/24` — next-hop là CORE-SW theo path `/30` (`10.0.0.2` trên R1, `10.0.1.2` trên R2).
+- Default route → ISP (`203.0.113.1` trên R1 / `203.0.113.5` trên R2).
+
+## Lịch sử giai đoạn P1 (v1, trước 2026-11-01)
+
+- `router-r1-running-config.txt` trước đợt final mô tả khung `2911` router-on-a-stick (subinterface `Gi0/0.10/.20`, `ip helper-address` trên subinterface); minh chứng bring-up P1 tại [../../evidence/p1-wired-skeleton-topology.png](../../evidence/p1-wired-skeleton-topology.png) — nay file chứa bản final; lịch sử phiên bản v1 xem `git log -- configs/router/`.
 
 ## Quy định
 

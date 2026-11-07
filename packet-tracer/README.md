@@ -9,7 +9,7 @@ Thư mục chứa file mô phỏng Cisco Packet Tracer (`.pkt`) của dự án, 
 > - **ISP** (Router-PT, Lo0 `8.8.8.8/32`) ↔ **R1** + **R2** (2901, edge + PAT overload, hai path `/30` `203.0.113.0/30` và `203.0.113.4/30`);
 > - **R1/R2 ↔ CORE-SW** (3560-24PS, `ip routing`, SVI VLAN 10/20/99, DHCP relay, ACL Guest, default AD 1 + backup AD 254) qua `/30` `10.0.0.0/30` và `10.0.1.0/30`;
 > - **CORE-SW ↔ ACCESS-SW** (2960, trunk Fa0/1) ↔ **WLC1** (WLC-3504, mgmt `192.168.99.10`, dynamic interfaces staff/guest) + **LAP-STAFF**, **LAP-GUEST** (LAP-PT);
-> - VLAN 99: **DHCP-SRV** (`.20`, 2 pool), **RADIUS-SRV** (`.22`, AAA port 1645, client `WLC1`, users staff1/2/3), **Web-SRV** (`.21`), **ADMIN-PC** (`.10`);
+> - VLAN 99: **DHCP-SRV** (`.20`, service DHCP — dự phòng; client vô tuyến được cấp bởi WLC, xem [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) §4), **RADIUS-SRV** (`.22`, AAA port 1645, client `WLC1`, users staff1/2/3), **Web-SRV** (`.21`), **ADMIN-PC** (`.99.50`, tĩnh);
 > - Client wireless: **S-LAP1/2/3** (`STAFF-WIFI`, WPA2-Enterprise/802.1X) và **G-LAP1/2 + G-PHONE** (`GUEST-WIFI`, WPA2-PSK).
 >
 > Trạng thái chi tiết + kết quả kiểm thử: [../docs/final-implementation.md](../docs/final-implementation.md). Canvas: [../evidence/Final.jpg](../evidence/Final.jpg).
@@ -21,7 +21,7 @@ Thư mục chứa file mô phỏng Cisco Packet Tracer (`.pkt`) của dự án, 
 ## Lưu ý khi mở `final.pkt`
 
 1. **DHCP lease không giữ sau khi reopen** — chạy `ipconfig /renew` trên từng client (đặc tính PT).
-2. **Association wireless đôi lúc rớt sau khi thao tác nhiều** (limi hạn chế PT 9.0.1.0858, chứng kiến 2026-11-06, `../evidence/Final but error.png`): power-cycle AP rồi client, đặt lại DHCP (`0.0.0.0` → dhcp), đợi 10–20 s, `/renew`.
+2. **Association wireless đôi lúc rớt sau khi thao tác nhiều** (limitation PT 9.0.1.0858, chứng kiến 2026-11-06, `../evidence/Final but error.png`): power-cycle AP rồi client, đặt lại DHCP (`0.0.0.0` → dhcp), đợi 10–20 s, `/renew`.
 3. **`show ip interface` của PT không hiển thị ACL named** trên `Vlan20` — xem Running Config hoặc `configs/switch/core-sw-running-config.txt`.
 4. **Bảo mật:** PSK/secret lưu dạng rõ trong XML `.pkt` — không chia sẻ file ra ngoài nhóm; ảnh chụp phải che passphrase.
 
@@ -35,4 +35,4 @@ Thư mục chứa file mô phỏng Cisco Packet Tracer (`.pkt`) của dự án, 
 
 ## Cách mở
 
-Xem hướng dẫn tại [../README.md](../README.md#7-cách-mở-dự-án-packet-tracer-khi-đã-có-file-pkt).
+Xem hướng dẫn tại [../README.md](../README.md#7-cách-mở-finalpkt).

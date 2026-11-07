@@ -16,6 +16,8 @@ Thư mục lưu bản sao cấu hình thiết bị để đối chiếu và ch�
 >
 > **Kiểm chứng kèm theo:** ACL `GUEST-ACL` binding trên `Vlan20 in` nằm trong startup-config; PAT + static route khớp trên R1/R2; `ip helper-address` trên Vlan10/Vlan20.
 >
+> **DHCP (từ audit final):** client vô tuyến được **WLC cấp từ pool nội bộ** (Primary DHCP Server = management `.99.10` của chính WLC), lease Staff `.101+`, Guest `.141+`. `DHCP-SRV` `.99.20` chỉ là dự phòng; `ip helper-address` trên SVI giữ cho các request không đi qua WLC — CORE-SW chỉ relay, không giữ pool.
+>
 > **Kiểm chứng kèm theo (giới hạn):** WLC1/RADIUS-SRV/DHCP-SRV cấu hình qua GUI (không có CLI) — mô tả tại `configs/wlc-ap/README.md` và final doc mục 3–5.
 >
 > **Lịch sử giai đoạn P1 (v1, trước 2026-11-01):** `router/`, `switch/` có các file cấu hình cũ của giai đoạn khung có dây 9-thiết bị (SW1 + R1 2911 router-on-a-stick). File `switch-sw1-running-config.txt` sẽ được giữ lại cho đối chiếu; minh chứng cũ `tc-08-*` đã bị xoá trong đợt final (xem `git log -- configs/ evidence/`).

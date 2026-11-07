@@ -21,7 +21,7 @@ Thiết kế tổng thể:
 - **Access:** `ACCESS-SW` (2960) trunk Fa0/1 → CORE-SW; WLC1 và 2 AP nối vào trunk, client traffic được
   map về các VLAN tương ứng qua WLC.
 - **Wireless:** `WLC1` (WLC-3504) quản trị qua VLAN 99, tạo VLAN dynamic interface cho STAFF/GUEST và 2 WLAN; `LAP-STAFF` / `LAP-GUEST` (LAP-PT) phát `STAFF-WIFI` (WPA2-Enterprise/RADIUS) và `GUEST-WIFI` (WPA2-PSK).
-- **Server zone (VLAN 99):** `DHCP-SRV` (`.20`, 2 pool + relay từ CORE-SW), `RADIUS-SRV` (`.22`, AAA 1645), `Web-SRV` (`.21`), `ADMIN-PC` (`.10`).
+- **Server zone (VLAN 99, địa chỉ tĩnh):** `DHCP-SRV` (`.20`, service DHCP — **dự phòng**, xem §4), `RADIUS-SRV` (`.22`, AAA 1645), `Web-SRV` (`.21`), `ADMIN-PC` (`.50`).
 
 ## 1. Topology & inventory (18 thiết bị, 21 link)
 
@@ -31,12 +31,13 @@ Thiết kế tổng thể:
 | WAN | R1, R2 | 2901 | Edge + PAT overload; static routes về 10/20/99 |
 | L2/L3 | CORE-SW | 3560-24PS | L3 core: SVI 10/20/99, DHCP relay, ACL, default route |
 | L2 | ACCESS-SW | 2960-24TT | Access cho WLC/AP |
-| Wireless | WLC1 | WLC-3504 | Controller; mgmt `.99.10`; 2 dynamically tạo interface |
+| Wireless | WLC1 | WLC-3504 | Controller; mgmt `.99.10`; 2 dynamic interface |
 | Wireless | LAP-STAFF, LAP-GUEST | LAP-PT | AP bằng CAPWAP join WLC1 |
-| Server | DHCP-SRV | Server-PT | DHCP 2 pool (`.20`) + NAT helper đích; RADIUS AAA (`.22`); HTTP (`.21`) |
+| Server | DHCP-SRV | Server-PT | Service DHCP — dự phòng cho client vô tuyến (xem §4); `.20` |
+| Server | RADIUS-SRV, Web-SRV | Server-PT | AAA port 1645 (`.22`); HTTP (`.21`) |
 | Client | S-LAP1/2/3 | Laptop-PT | Staff, wireless 802.1X |
-| Client | G-LAP1/2, G-PHONE | Laptop-PT / Smartphone -PT | Guest, WPA2-PSK |
-| Mgmt | ADMIN-PC | PC-PT | Quản trị VLAN 99 |
+| Client | G-LAP1/2, G-PHONE | Laptop-PT / Smartphone-PT | Guest, WPA2-PSK |
+| Mgmt | ADMIN-PC | PC-PT | Quản trị VLAN 99 (`.99.50`, tĩnh; web GUI WLC từ đây) |
 
 Minh chứng canvas: [`../evidence/Final.jpg`](../evidence/Final.jpg), [`../evidence/Final 2.png`](../evidence/Final%202.png).
 
@@ -59,9 +60,9 @@ Minh chứng canvas: [`../evidence/Final.jpg`](../evidence/Final.jpg), [`../evid
 | --- | --- | --- | --- | --- |
 | 10 | STAFF | `192.168.10.0/24` | `.1` (+ `ip helper-address 192.168.99.20`) | `Vlan10` SVI MAC `00d0.5877.bd01` |
 | 20 | GUEST | `192.168.20.0/24` | `.1` (+ helper + **ACL `GUEST-ACL` in**) | SVI MAC `…bd02` |
-| 99 | MGMT | `192.168.99.0/24` | `.1` | WLC `.10`, DHCP `.20`, Web `.21`, RADIUS `.22`, ADMIN-PC `.10` |
+| 99 | MGMT | `192.168.99.0/24` | `.1` | WLC `.10`, DHCP `.20`, Web `.21`, RADIUS `.22`, ADMIN-PC `.50` |
 
-Định tuyến trên `CORE-SW`: `ip route 0.0.0.0 0.0.0.0 10.0.0.1` (AD 1) + `ip route 0.0.0.0 0.0.0.0 10.0.1.1 254` (backup qua R2). Trên R1/R2: static route ve LAN `192.168.10/20/99` → next-hop CORE-SW; default → ISP.
+Định tuyến trên `CORE-SW`: `ip route 0.0.0.0 0.0.0.0 10.0.0.1` (AD 1) + `ip route 0.0.0.0 0.0.0.0 10.0.1.1 254` (backup qua R2). Trên R1/R2: static route về LAN `192.168.10/20/99` → next-hop CORE-SW; default → ISP.
 
 ### 2.3 NAT/PAT
 
@@ -89,12 +90,23 @@ Kiểm chứng: cờ NAT từng bị nghi ngờ rớt sau một chuỗi thao tá
 
 > **Giới hạn:** bắt tay **802.1X RADIUS end-to-end chưa có bằng chứng** quá trình exchange giữa client↔AP↔WLC↔server (PT không log được EAP trên client); cấu hình ở cả hai phía WLC1 + RADIUS-SRV đã được kiểm soát khớp chuẩn (port 1645 khớp cả 2 đầu) nhưng phải xử lý là "đã cấu hình, chưa chứng minh exchange" (TC-13).
 
-## 4. DHCP (Server-PT + relay)
+## 4. DHCP — nguồn cấp thực tế
 
-- `DHCP-SRV` (`.99.20`), pool nội bộ cho Mgmt + 2 pool chính: **STAFF-POOL** `192.168.10.101 → n`, gateway `.10.1`; **GUEST-POOL** `192.168.20.141 → n`, gateway `.20.1`. Service DHCP bật On.
-- `CORE-SW` đặt `ip helper-address 192.168.99.20` trên Vlan10 và Vlan20 — CORE-SW chỉ làm **DHCP relay**, không giữ pool.
-- PT hạn chế: `serverPool` factory vẫn tồn tại (limit 1 user, tối ưu range thấp — ghi nhận limitation).
-- Lease **không được giữ sau khi reopen file** — client phải `/renew` (độc tính đã biết của PT).
+**Client vô tuyến (trạng thái final):** DHCP được xử lý bởi **chính WLC1**, không phải `DHCP-SRV`:
+
+- Primary DHCP Server trên cả 2 dynamic interface (`staff` `192.168.10.2`, `guest` `192.168.20.2`) = **`192.168.99.10` (management của WLC1)** ⇒ WLC cấp lease từ các pool nội bộ: STAFF-LOCAL bắt đầu `.10.101`, GUEST-LOCAL bắt đầu `.20.141`.
+- Lease quan sát khớp dải này: Staff `.103/.104/.106`, Guest `.141/.142/.144` — **không khớp** luồng cấp tuần tự từ `.99.20` (dải bắt đầu `.10.100`/`.20.100`).
+- Client FlexConnect local switching: DHCP request flood vào VLAN 10/20 và được WLC phục vụ qua dynamic interface.
+
+**DHCP-SRV `.99.20` — vai trò dự phòng:**
+
+- Service DHCP bật, có pools STAFF/GUEST, nhưng **không quan sát thấy client nào nhận lease từ nó** trong audit final.
+- `ip helper-address 192.168.99.20` trên `Vlan10`/`Vlan20` của CORE-SW vẫn cấu hình — giữ làm đường relay cho các DHCP request không đi qua WLC; CORE-SW chỉ làm relay, không giữ pool.
+
+**Đặc tính PT (giữ nguyên):**
+
+- `serverPool` factory của Server-PT tồn tại vĩnh viễn (limit 1 user, range thấp) — ghi nhận limitation.
+- Lease **không được giữ sau khi reopen file** — client phải `/renew`.
 
 ## 5. RADIUS/AAA (RADIUS-SRV .99.22)
 
@@ -109,7 +121,7 @@ ACL named `GUEST-ACL` (**không dùng số** — giữ tên dễ đọc) trên `
 
 ```
 ip access-list extended GUEST-ACL
- permit udp any any eq bootps        ! DHCP discover từ Guest phải ra tới relay/server
+ permit udp any any eq bootps        ! permit DHCP (bootps) của Guest — không chặn traffic DHCP
  deny   ip any 192.168.10.0 0.0.0.255 ! chặn Guest → Staff
  deny   ip any 192.168.99.0 0.0.0.255 ! chặn Guest → Mgmt (bao gồm DHCP-SRV nhưng bootps vẫn permit trước)
  permit ip any any                    ! cho phép Guest đi Internet
