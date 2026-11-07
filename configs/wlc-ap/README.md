@@ -2,7 +2,26 @@
 
 Lưu bản sao cấu hình/ghi chú cấu hình của WLC và LAP-PT (screenshot GUI WLC, export nếu có, danh sách WLAN/SSID). Người sở hữu: Đặng Văn Hoàng.
 
-## Hiện trạng
+## Final build (2026-11-07) — WLC-3504 quay lại làm controller
+
+> **⚠ Cập nhật quan trọng:** bản final (`packet-tracer/final.pkt`) **không dùng `WLC-PT` nữa** — controller là **`WLC1` (`WLC-3504`)**. Phát hiện 2026-10-18 ("3504 không có trang vô tuyến") vẫn đúng cho **tab Config của GUI PT**; nhưng trên final, WLAN của WLC-3504 được cấu hình qua **web GUI của controller** (truy cập từ ADMIN-PC, `http://192.168.99.10`) — nơi chứa đầy đủ trang WLAN/Security/RADIUS.
+>
+> Đọc được trên final (trạng thái thật, audit 2026-11-05→07):
+>
+> | Hạng mục | Giá trị | Ghi chú |
+> | --- | --- | --- |
+> | Controller | `WLC1`, `WLC-3504` | Management `192.168.99.10/24` (VLAN 99); web GUI truy cập từ ADMIN-PC |
+> | Dynamic interface | **staff** `192.168.10.2` / **guest** `192.168.20.2` | mỗi WLAN ứng một interface; Primary DHCP Server = `.99.10` (management của WLC) cho cả hai |
+> | WLAN 1 | `STAFF-WIFI`, VLAN 10 | WPA2 + **Auth 802.1X (RADIUS)** + AES; AAA server `192.168.99.22`, port **1645** |
+> | WLAN 2 | `GUEST-WIFI`, VLAN 20 | WPA2-PSK |
+> | AP | LAP-STAFF, LAP-GUEST (`LAP-PT`) | join WLC1 (`Status: Online`) |
+> | Clients (leases final) | S-LAP1 `.104`, S-LAP2 `.103`, S-LAP3 `.106` / G-LAP1 `.142`, G-LAP2 `.144`, G-PHONE `.141` | gateway ping 4/4 (final audit) |
+> | RADIUS secret | `<RADIUS-SECRET-REDACTED>` (client `WLC1` tại RADIUS-SRV `.22`) | giá trị thật chỉ tồn tại trong `.pkt` |
+>
+> Cấu hình chi tiết + kết quả kiểm thử final: [../../docs/final-implementation.md](../../docs/final-implementation.md) mục 3 và 5.
+> *(Các bảng WLC-PT / WLC-3504-P1 bên dưới giữ nguyên như lịch sử giai đoạn v1 — controller WLC-PT không còn nằm trong final.)*
+
+## Hiện trạng (lịch sử — giai đoạn v1, trước 2026-11-01)
 
 > **Hạ tầng WLC + LAP-PT đã cấu hình và kiểm chứng — TC-01, TC-02 `Passed` ngày 2026-10-18, TC-03, TC-04 và TC-05 `Passed` ngày 2026-10-19.** Trong đó **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy `..._TESTCOPY_2026-10-18.pkt`): management `192.168.99.10/24` ping `0% loss`; **TC-03 xác nhận `LAP-PT` join `WLC-PT` (`Status: Online`)**; **TC-04 `Passed`: WLAN `STAFF-WIFI` đã tạo và phát sóng — quét thấy từ client `STAFF1`**; **TC-05 `Passed`: WLAN `GUEST-WIFI` (VLAN 20) tạo độc lập và phát sóng đồng thời — quét từ client `GUEST1` thấy cả hai SSID** (thao tác trên GUI `Wireless LANs` — không có API cho WLAN). **`.pkt` deliverable đã được thay sang `WLC-PT`** (2026-10-19).
 >

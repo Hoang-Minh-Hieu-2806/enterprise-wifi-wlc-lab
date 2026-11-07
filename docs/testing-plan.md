@@ -1,5 +1,7 @@
 # Kế hoạch kiểm thử (Core / Conditional / Research-only)
 
+> **⚠ Cập nhật final (2026-11-07):** trạng thái TC-09→TC-14 trên bản **final** đã chạy thật và được ghi tại [final-implementation.md](final-implementation.md) §7 + [../tests/test-cases.md](../tests/test-cases.md): **TC-09/10/11 `Passed`** (ping thật, có dấu limitation "1/3 guest"), TC-12 `Passed` config-level, TC-13 **Configured/chưa chứng minh exchange**, TC-14 `Not Tested`. TC-01→TC-08 `Passed` và các trạng thái dưới đây là **lịch sử giai đoạn v1** (file v1 + ảnh minh chứng đã xoá khỏi working tree).
+
 > Cột kết quả thực tế (`Actual result`) chỉ điền khi có kiểm thử thật. Hiện **TC-01 → TC-08 đã `Passed`** (TC-01, TC-02 `2026-10-18`; TC-03 → TC-07 `2026-10-19`; TC-08 `2026-10-20` trên bản test copy, cấu hình đã lưu vào official `.pkt` `2026-10-21`, kèm giới hạn); các test case còn lại (TC-09 → TC-14) vẫn **Not Tested**. Chi tiết từng bước xem tại [../tests/test-cases.md](../tests/test-cases.md).
 >
 > **Sau audit lựa chọn thiết bị (2026-10-18):** controller đổi từ `WLC-3504` sang **`WLC-PT`**; **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy). Xem [device-selection-decision.md](device-selection-decision.md).

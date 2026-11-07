@@ -7,7 +7,18 @@ Thư mục kiểm thử của dự án (bản 9.0.1.0858).
 
 ## Hiện trạng
 
-> **TC-01 → TC-08 đã `Passed`** (TC-01 `2026-10-18` chạy lại trên `WLC-PT`, minh chứng `../evidence/tc-01-wlc-pt-reachability-canvas.png`; bản `WLC-3504` cũ: `../evidence/tc-01-wlc-reachability.png`; TC-02 `2026-10-18` (kiểm chứng lại `2026-10-19`) — LAP-PT có IP quản trị, `../evidence/tc-02-*.png`; TC-03 `2026-10-19` — LAP-PT join `WLC-PT` `Status: Online`, `../evidence/tc-03-lap-wlc-join.png`; TC-04 `2026-10-19` — WLAN `STAFF-WIFI` phát sóng, quét thấy từ `STAFF1`, `../evidence/tc-04-staff-wlan.png` + `../evidence/tc-04-wlc-staff-wlan-config.png`; TC-05 `2026-10-19` — WLAN `GUEST-WIFI` (VLAN 20) phát sóng đồng thời với `STAFF-WIFI`, quét từ `GUEST1`, `../evidence/tc-05-guest-wlan.png` + `../evidence/tc-05-wlc-guest-wlan-config.png`; TC-06 `2026-10-19` — cả hai Staff client (`STAFF1`, `STAFF2`) **associate thật** vào `STAFF-WIFI` bằng WPA2-PSK, `../evidence/tc-06-staff-associate.png` + đối chứng `../evidence/tc-06-staff2-noassoc-control.png`; TC-07 `2026-10-19` — cả hai Guest client (`GUEST1`, `GUEST2`) **đang associate** vào `GUEST-WIFI` bằng WPA2-PSK, `../evidence/tc-07-guest1-associate-live.png` + `../evidence/tc-07-guest2-associate-live.png`; TC-08 `2026-10-20` — **Passed for its stated IP-subnet acceptance criterion, with explicit limitations**, kiểm chứng trên bản test copy `enterprise-wifi-wlc-lab-v1_TC08_TEST_20261020.pkt`, cấu hình đã lưu vào official `.pkt` `2026-10-21`, `../evidence/tc-08-*.png`); các test case còn lại (TC-09 → TC-14) ở trạng thái **Not Tested**. Huỳnh Như Hoàng sở hữu chạy test Core và giữ evidence; Đặng Văn Hoàng sở hữu phần WLC/AP; Hoàng Minh Hiếu tham gia kiểm thử và chạy acceptance chọn lọc.
+**⚠ Quản lý này cho giai đoạn v1 (cũ).** Kể từ 2026-11-07, deliverable là `packet-tracer/final.pkt` (topology enterprise 18 thiết bị); file `v1.pkt` + ảnh `tc-01→tc-08` đã bị xoá khỏi repo (giữ trong lịch sử Git). Checkout status tại [../docs/final-implementation.md](../docs/final-implementation.md) mục 7 và chính bảng tại [test-cases.md](test-cases.md):
+
+**Final build (2026-11-05 → 2026-11-07, ping thật qua PT bridge):**
+
+- **TC-09 Passed** — 6 wireless client ping gateway 4/4.
+- **TC-10 Passed (1/3 guest)** — G-LAP1 → 192.168.10.1 bị chặn 0/4; G-LAP2/G-PHONE chưa chạy bài này riêng.
+- **TC-11 Passed (1/3 guest + config)** — G-LAP1 → 192.168.99.22 bị chặn 0/4; DHCP vẫn permit; ACL binding có trong running/startup.
+- **TC-12 Passed (config-level)** — `configs/switch/core-sw-running-config.txt` khớp design; screenshot show-vlan riêng chưa có.
+- **TC-13 Configured / chưa chứng minh exchange end-to-end** — host + WLC khớp port 1645; không có minh chứng EAP.
+- **TC-14 Not Tested** — chưa thử PSK/tài khoản sai.
+
+**Giai đoạn v1 (lịch sử): TC-01 → TC-08 đã `Passed`** (TC-01/TC-02 `2026-10-18` trên `WLC-PT`; TC-03 `2026-10-19` LAP join `Status: Online`; TC-04 + TC-05 `2026-10-19`; TC-06 + TC-07 `2026-10-19`; TC-08 `2026-10-20` trên test copy, lưu official `2026-10-21`). Minh chứng từng bộ cũ đã bị xoá khỏi working tree; chi tiết nằm trong `git log -- evidence/` và [../docs/final-implementation.md](../docs/final-implementation.md).
 
 ## Quy định
 

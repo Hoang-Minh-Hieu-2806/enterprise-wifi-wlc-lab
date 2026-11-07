@@ -1,18 +1,21 @@
 ! ============================================================
 ! Thiet bi: R1
-! Model: 2911
+! Model: 2901
 ! Phien ban Packet Tracer: Cisco Packet Tracer 9.0.1.0858
-! Interface thuc dung: GigabitEthernet0/0 (VLAN 99 native, 192.168.99.1/24); GigabitEthernet0/0.10 (dot1Q 10, 192.168.10.1/24); GigabitEthernet0/0.20 (dot1Q 20, 192.168.20.1/24)
-! Ngay xuat: 2026-10-21
-! Nguoi thuc hien: Hoang Minh Hieu (nhom truong, ho tro ky thuat)
-! Trang thai: TC-01 -> TC-08 Passed; cau hinh TC-08 da luu vao official .pkt (2026-10-21); ACL chua cau hinh
-! Secret: khong co enable secret / password / PSK trong file nay
+! Vai tro: Edge router-path A — NAT/PAT ra ISP, static route ve LAN
+! Interface thuc dung: GigabitEthernet0/0 (203.0.113.2/30, to ISP, ip nat outside);
+!   GigabitEthernet0/1 (10.0.0.1/30, to CORE-SW Gi0/1, ip nat inside)
+! Vai tro phu: DHCP relay khong nam day (nam tren CORE-SW SVI); R1 chi dinh tuyen
+! Ngay xuat: 2026-11-07 (startup-config doc tu live PT, prior final.pkt)
+! Nguoi thuc hien: Hoang Minh Hieu (nhom truong)
+! Trang thai: final build anh mem final audit — gateway/Internet tu 6 client 4/4
+! Secret: khong co enable secret / password trong file nay (lab network minh bach)
+! Ghi chu: PAT overload "ip nat inside source list 1 interface Gi0/0 overload";
+!   ACL 1 permit 3 subnet noi bo; failover R2 khong co route du phong tren R1
+!   (du phong duyet qua CORE-SW static AD 254)
 ! ============================================================
 
-! --- show running-config ---
-Building configuration...
-
-Current configuration : 933 bytes
+! --- show startup-config (as deployed in final.pkt) ---
 !
 version 15.1
 no service timestamps log datetime msec
@@ -21,77 +24,41 @@ no service password-encryption
 !
 hostname R1
 !
-!
-!
-!
-!
-!
-!
-!
 ip cef
 no ipv6 cef
 !
-!
-!
-!
-license udi pid CISCO2911/K9 sn FTX1524SX1K-
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
+license udi pid CISCO2901/K9 sn FTX15240HIS-
 !
 spanning-tree mode pvst
 !
-!
-!
-!
-!
-!
 interface GigabitEthernet0/0
- ip address 192.168.99.1 255.255.255.0
+ ip address 203.0.113.2 255.255.255.252
+ ip nat outside
  duplex auto
  speed auto
-!
-interface GigabitEthernet0/0.10
- encapsulation dot1Q 10
- ip address 192.168.10.1 255.255.255.0
- ip helper-address 192.168.99.20
-!
-interface GigabitEthernet0/0.20
- encapsulation dot1Q 20
- ip address 192.168.20.1 255.255.255.0
- ip helper-address 192.168.99.20
 !
 interface GigabitEthernet0/1
- no ip address
- duplex auto
- speed auto
-!
-interface GigabitEthernet0/2
- no ip address
+ ip address 10.0.0.1 255.255.255.252
+ ip nat inside
  duplex auto
  speed auto
 !
 interface Vlan1
  no ip address
+ shutdown
 !
+ip nat inside source list 1 interface GigabitEthernet0/0 overload
 ip classless
+ip route 0.0.0.0 0.0.0.0 203.0.113.1
+ip route 192.168.10.0 255.255.255.0 10.0.0.2
+ip route 192.168.20.0 255.255.255.0 10.0.0.2
+ip route 192.168.99.0 255.255.255.0 10.0.0.2
 !
 ip flow-export version 9
 !
-!
-!
-!
-!
-!
+access-list 1 permit 192.168.10.0 0.0.0.255
+access-list 1 permit 192.168.20.0 0.0.0.255
+access-list 1 permit 192.168.99.0 0.0.0.255
 !
 line con 0
 !
@@ -99,7 +66,6 @@ line aux 0
 !
 line vty 0 4
  login
-!
 !
 !
 end

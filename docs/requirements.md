@@ -1,5 +1,7 @@
 # Yêu cầu dự án (Requirements)
 
+> **⚠ Cập nhật final (2026-11-07):** trạng thái theo nhãn dưới đây phản ánh **giai đoạn v1**; trên bản final (`packet-tracer/final.pkt`) các yêu cầu tương ứng đều đã được triển khai/kiểm chứng trong phạm vi ghi tại [final-implementation.md](final-implementation.md): VLAN segmentation + DHCP (REQ-07/08) ✓; ACL Guest isolation (REQ-11) ✓ (chức năng, 1/3 guest); RADIUS (REQ-12) Configured/chưa chứng minh exchange; Internet/PAT (REQ-09 mở rộng) ✓ 4/4. Bảng dưới giữ nguyên như lịch sử v1 để đối chiếu tiến trình.
+
 > Trạng thái dùng các nhãn `Planned` / `In Progress` / `Not Tested` / `Passed` / `Failed` / `Blocked`. **REQ-01, REQ-02, REQ-03, REQ-04, REQ-05 và REQ-06 đã `Passed`** (TC-01, TC-02 `2026-10-18`; TC-03 → TC-07 `2026-10-19`); **REQ-07 vẫn `In Progress`** vì hạ tầng VLAN đã dựng, TC-08 đã chứng minh client nhận IP đúng subnet, nhưng TC-12 (đối chiếu VLAN) chưa chạy; **REQ-08 đã `Passed`** (TC-08 `2026-10-20`, kèm giới hạn). Các yêu cầu còn lại vẫn `Planned`/`Not Tested` — chỉ dùng `Passed` khi có minh chứng. RADIUS là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
 
 ## Bảng yêu cầu

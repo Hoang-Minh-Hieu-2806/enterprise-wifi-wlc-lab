@@ -1,5 +1,7 @@
 # Quyết định lựa chọn thiết bị vô tuyến (Device Selection Decision)
 
+> **⚠ SUPERSEDED (2026-11-07):** bản final (`packet-tracer/final.pkt`) **dùng lại `WLC-3504` làm controller** — quyết định "đổi sang `WLC-PT`" của tài liệu này áp dụng cho giai đoạn v1 (trước 2026-11-01). Nguyên nhân: phát hiện 2026-10-18 ("`WLC-3504` không có giao diện cấu hình vô tuyến") đúng với **tab Config của GUI PT**, nhưng WLC-3504 còn có **web GUI riêng** (truy cập `http://192.168.99.10` từ ADMIN-PC) chứa đầy đủ trang WLAN/Security/RADIUS — được dùng trên final. Xem [final-implementation.md](final-implementation.md) §3 và [../configs/wlc-ap/README.md](../configs/wlc-ap/README.md). Nội dung dưới đây giữ nguyên làm decision record của giai đoạn v1.
+
 > Bản ghi quyết định (decision record) cho lựa chọn model **WLC** và **AP**. Mọi khẳng định trong tài liệu này đều dựa trên quan sát trực tiếp trong **Cisco Packet Tracer 9.0.1.0858** (GUI + danh mục thiết bị + tài liệu `IpcAPI` đi kèm), minh chứng tại `../evidence/`. Những gì **chưa** kiểm chứng hoạt động vẫn ghi rõ là chưa kiểm chứng.
 >
 > **Cảnh báo minh chứng:** các ảnh `audit-*.png` (và `wlc-pt-feasibility-*.png`) được viện dẫn trong tài liệu này **hiện chưa có trong `../evidence/`** (xem [../evidence/README.md](../evidence/README.md)) — cần chụp bổ sung. Các quan sát ở §3 dựa trên ghi nhận trực tiếp cùng ngày (2026-10-18).

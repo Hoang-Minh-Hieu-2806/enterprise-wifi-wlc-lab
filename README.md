@@ -5,6 +5,20 @@
 
 Đồ án môn Quản trị mạng: mô phỏng mạng Wi-Fi doanh nghiệp trên Cisco Packet Tracer, với quản lý tập trung bằng Wireless LAN Controller (WLC), nhiều SSID, phân đoạn VLAN, xác thực truy cập vô tuyến và kiểm soát truy cập giữa các phân đoạn mạng.
 
+> ## ✅ TRẠNG THÁI CUỐI CÙNG (FINAL — 2026-11-07)
+>
+> Deliverable chính thức: **`packet-tracer/final.pkt`** (18 thiết bị / 21 link; SHA-256 `5AA9ADCA…B5CEF`, 100.297 bytes). Kiến trúc enterprise đầy đủ: **ISP → R1/R2 (2901, PAT overload, 2 path /30) → CORE-SW (3560-24PS L3, SVI VLAN 10/20/99) → ACCESS-SW (2960, trunk) → WLC1 (WLC-3504, mgmt `.99.10`) + LAP-STAFF / LAP-GUEST**, kèm **RADIUS-SRV (`.99.22`, AAA 1645)**, **DHCP-SRV (`.99.20`, 2 pool + relay)**, Web-SRV, ADMIN-PC; **6 wireless client** (3 Staff qua `STAFF-WIFI` WPA2-Enterprise/802.1X; 3 Guest qua `GUEST-WIFI` WPA2-PSK).
+>
+> **Đã kiểm chứng bằng ping thật (qua bridge, 2026-11-05 → 2026-11-07):**
+> - Gateway: cả 6 wireless client + ADMIN-PC `ping` **4/4**.
+> - Internet (PAT): Staff → `8.8.8.8` **4/4**; Guest G-LAP1 → `8.8.8.8` **4/4**.
+> - Cách ly Guest: G-LAP1 → `192.168.10.1` **0/4** (bị chặn); → `192.168.99.22` **0/4** (bị chặn); DHCP vẫn permit qua `bootps` (lease `.20.142` đạt).
+> - Staff leases: `.104/.103/.106`; Guest: `.142/.144/.141`.
+>
+> **Chưa kiểm chứng end-to-end (ghi rõ trong limitations):** RADIUS 802.1X exchange client↔server (đã cấu hình chuẩn nhưng không chụp được EAP exchange trong PT), failover R1→R2 (đã cấu hình AD 254 nhưng chưa test power-off), sai PSK (TC-14).
+>
+> Chi tiết nguyên trạng: **[docs/final-implementation.md](docs/final-implementation.md)** (tài liệu chính thức của bản final). Các đoạn "kết quả v1/TC-01→TC-08, `WLC-PT`, `v1.pkt`" bên dưới là **lịch sử giai đoạn P1** (file `v1.pkt` + ảnh minh chứng cũ đã bị xoá khỏi working tree trong đợt chốt final, nằm trong Git history).
+
 ## 1. Mục tiêu dự án
 
 1. Xây dựng mạng WLAN doanh nghiệp mô phỏng với quản lý tập trung bằng WLC (`WLC-PT` — model đã xác nhận có trang cấu hình WLAN trong Packet Tracer 9.0.1.0858; **join AP→WLC đã kiểm chứng ở TC-03**; **cả hai WLAN `STAFF-WIFI` + `GUEST-WIFI` đã tạo và phát sóng đồng thời — TC-04 + TC-05 `Passed`**; **associate Staff + Guest bằng WPA2-PSK đã kiểm chứng — TC-06 + TC-07 `Passed`**; **DHCP/VLAN mapping đã `Passed` cho tiêu chí IP đúng subnet (TC-08, kèm giới hạn; cấu hình đã lưu vào official `.pkt` 2026-10-21; local switching qua uplink AP, central switching chưa kiểm chứng); ACL cho client chưa kiểm chứng**).
@@ -29,7 +43,9 @@
 | Ngôn ngữ tài liệu | Tiếng Việt (báo cáo, tài liệu, test case, hướng dẫn nhóm) |
 | Ngôn ngữ kỹ thuật | Tiếng Anh (tên thư mục, SSID, VLAN, IP, lệnh, commit message) |
 
-Phiên bản Packet Tracer, model thiết bị quan sát được và các chức năng chưa kiểm chứng được ghi tại [docs/implementation-notes.md](docs/implementation-notes.md). Lựa chọn controller và lý do đổi từ `WLC-3504` sang `WLC-PT` ghi tại [docs/device-selection-decision.md](docs/device-selection-decision.md).
+Phiên bản Packet Tracer, model thiết bị quan sát được và các chức năng chưa kiểm chứng được ghi tại [docs/implementation-notes.md](docs/implementation-notes.md). Lựa chọn controller và lý do đổi từ `WLC-3504` sang `WLC-PT` ghi tại [docs/device-selection-decision.md](docs/device-selection-decision.md) (**lịch sử giai đoạn v1** — bản final dùng lại `WLC-3504`, WLAN được cấu hình qua web GUI; xem [docs/final-implementation.md](docs/final-implementation.md) mục 3).
+
+> **Bảng thiết bị dưới đây là giai đoạn v1 (lịch sử).** Danh mục thiết bị của bản final: `ISP` (Router-PT), `R1`/`R2` (2901), `CORE-SW` (3560-24PS), `ACCESS-SW` (2960-24TT), `WLC1` (`WLC-3504`), `LAP-STAFF`/`LAP-GUEST` (LAP-PT), `DHCP-SRV`/`RADIUS-SRV`/`Web-SRV` (Server-PT), `ADMIN-PC`, `S-LAP1/2/3` (Laptop-PT), `G-LAP1/2` (Laptop-PT), `G-PHONE` (Smartphone-PT) — chi tiết tại [docs/final-implementation.md](docs/final-implementation.md).
 
 ## 3. Thành phần mạng dự kiến
 
@@ -73,52 +89,52 @@ enterprise-wifi-wlc-lab/
 ├── docs/
 │   ├── project-overview.md
 │   ├── requirements.md
-│   ├── topology.md
-│   ├── ip-vlan-plan.md
+│   ├── topology.md                  (chứa mục lịch sử v1)
+│   ├── ip-vlan-plan.md              (chứa mục lịch sử v1)
 │   ├── security-design.md
 │   ├── testing-plan.md
+│   ├── final-implementation.md      ⭐ tài liệu chính thức của bản final
 │   ├── implementation-notes.md
 │   ├── device-selection-decision.md
 │   └── team-contributions.md
 ├── packet-tracer/
 │   ├── README.md
-│   └── enterprise-wifi-wlc-lab-v1.pkt
+│   └── final.pkt                    ⭐ deliverable chính thức (18 thiết bị)
 ├── configs/
 │   ├── README.md
 │   ├── router/
 │   │   ├── README.md
-│   │   └── router-r1-running-config.txt
+│   │   ├── router-r1-running-config.txt    (final: R1 2901)
+│   │   └── router-r2-running-config.txt    (final: R2 2901)
 │   ├── switch/
 │   │   ├── README.md
-│   │   └── switch-sw1-running-config.txt
+│   │   ├── core-sw-running-config.txt      (final: CORE-SW 3560-24PS)
+│   │   └── switch-sw1-running-config.txt   (lịch sử v1)
 │   └── wlc-ap/
-│       └── README.md
+│       └── README.md (ghi chú cấu hình WLAN qua web GUI — WLC/server không có CLI)
 ├── tests/
 │   ├── README.md
 │   └── test-cases.md
 ├── evidence/
 │   ├── README.md
-│   ├── p1-wired-skeleton-topology.png
-│   ├── tc-01-wlc-reachability.png
-│   ├── tc-02-lap-ip.png
-│   ├── tc-02-lap-ping-gateway.png
-│   ├── tc-02-lap-arp-r1.png
-│   └── audit-*.png
+│   ├── Final.jpg
+│   ├── Final 2.png
+│   └── Final but error.png
 └── report/
     ├── README.md
     └── midterm-report.md
 ```
 
-- `docs/` — tài liệu thiết kế, kế hoạch và ghi chú triển khai (tiếng Việt).
-- `packet-tracer/` — file mô phỏng `.pkt`; `enterprise-wifi-wlc-lab-v1.pkt` gồm khung có dây P1 + hai WLAN `STAFF-WIFI`/`GUEST-WIFI` + client `STAFF1`, `STAFF2`, `GUEST1` (phiên WIP TC-07 có thêm `GUEST2` nhưng chưa lưu vào file deliverable).
-- `configs/` — bản sao cấu hình thiết bị đã che secret; `router/` và `switch/` có bản khung P1, `wlc-ap/` ghi cấu hình hạ tầng WLC + WLAN `STAFF-WIFI` (không ghi giá trị PSK).
-- `tests/` — kế hoạch và ca kiểm thử (Core / Conditional / Research-only).
-- `evidence/` — ảnh chụp màn hình, kết quả kiểm thử; có minh chứng bring-up P1, minh chứng TC-01 → TC-08 (TC-08 từ bản test copy) và minh chứng audit lựa chọn thiết bị (`audit-*.png`).
+- `docs/` — tài liệu thiết kế, kế hoạch và ghi chú triển khai (tiếng Việt); **`final-implementation.md` là tài liệu chính thức của bản deliverable cuối**.
+- `packet-tracer/` — `final.pkt` (topology enterprise final, 18 thiết bị). File v1 cũ (`enterprise-wifi-wlc-lab-v1.pkt`, 9 thiết bị, `WLC-PT`) đã bị xoá trong đợt chốt final (xem Git history).
+- `configs/` — bản sao cấu hình thiết bị (không có secret); `router/` (R1 + R2, final 2026-11-07), `switch/` (CORE-SW final + sw1 lịch sử v1), `wlc-ap/` ghi cấu hình WLC/SSID qua GUI (không ghi giá trị PSK/secret).
+- `tests/` — kế hoạch và ca kiểm thử (Core / Conditional / Research-only), cập nhật kết quả final tại mục "Minh chứng final" của `test-cases.md`.
+- `evidence/` — minh chứng final: canvas topology (`Final.jpg`, `Final 2.png`) và ghi nhận bất ổn mô phỏng (`Final but error.png`); minh chứng v1 cũ (tc-01→tc-08, audit-*) đã bị xoá, nằm trong Git history. Ảnh chụp audit trung gian của công cụ tự động (`projects/`, `screenshots/`) là scratch cục bộ, không track trong Git.
 - `report/` — dàn ý và nội dung báo cáo trong giai đoạn hiện tại (chưa cần DOCX/PDF).
 
 ## 7. Cách mở dự án Packet Tracer
 
-> File `.pkt` đã có: `packet-tracer/enterprise-wifi-wlc-lab-v1.pkt` — khung có dây P1 + `WLC-PT` + `LAP-PT` + hai WLAN `STAFF-WIFI`/`GUEST-WIFI` + các client `STAFF1`, `STAFF2`, `GUEST1` (`Laptop-PT`); **cấu hình TC-08 đã được lưu vào official `.pkt` ngày 2026-10-21**. Sau khi mở lại, `LAP1` nhận `192.168.99.30` qua DHCP và có thể cần chờ AP online; client Staff/Guest cần `ipconfig /renew` để nhận lease (lease DHCP không được giữ ổn định sau reopen). Client Guest trong file deliverable (`GUEST1`) bấm `Connect` để quét/associate SSID — **TC-07 đã `Passed` trên phiên WIP có thêm `GUEST2`**, nhưng trạng thái associate của Guest không được lưu vào file deliverable.
+> File `.pkt` hiện tại: **`packet-tracer/final.pkt`** — topology enterprise final (ISP + R1/R2 + CORE-SW + ACCESS-SW + WLC-3504 + 2 AP + DHCP/RADIUS/Web server + 6 wireless client + ADMIN-PC). Sau khi mở lại file: chạy `ipconfig /renew` trên từng client (lease DHCP không giữ sau reopen); nếu AP/client mất association, đọc mục "Lưu ý khi mở" tại [packet-tracer/README.md](packet-tracer/README.md). File v1 cũ (`enterprise-wifi-wlc-lab-v1.pkt`) đã bị xoá khỏi repo ngày 2026-11-07 (history: `git log -- packet-tracer/`).
 
 1. Cài đặt đúng Cisco Packet Tracer **9.0.1.0858** (bản đã chốt, xem tại [docs/implementation-notes.md](docs/implementation-notes.md)).
 2. Clone repository:
@@ -134,18 +150,18 @@ Quy định đặt file `.pkt` xem tại [packet-tracer/README.md](packet-tracer
 
 ## 8. Trạng thái dự án hiện tại
 
-Repository hiện ở giai đoạn **đã dựng khung có dây (P1), controller + LAP-PT hoạt động, cả hai WLAN đã phát sóng, hai Staff client và hai Guest client associate bằng WPA2-PSK, client nhận IP đúng subnet**: **TC-01 `Passed`**, **TC-02 `Passed`**, **TC-03 `Passed`**, **TC-04 `Passed`**, **TC-05 `Passed`**, **TC-06 `Passed`**, **TC-07 `Passed`** (2026-10-19) và **TC-08 `Passed` cho tiêu chí IP đúng subnet, kèm giới hạn** (2026-10-20); cấu hình TC-08 đã lưu vào official `.pkt` ngày 2026-10-21. Gateway/ACL cho client vẫn chưa kiểm chứng; **central switching của WLC chưa kiểm chứng**.
+**⚠ Mục này chính thức cập nhật cho bản FINAL (2026-11-07).** Repository hiện ở giai đoạn **deliverable hoàn chỉnh**: topology enterprise 18 thiết bị được dựng xong, cấu hình đầy đủ và đã chạy kiểm thử chức năng bằng ping thật (chi tiết tại [docs/final-implementation.md](docs/final-implementation.md)).
 
-> **Đã hoàn tất — đổi controller sang `WLC-PT` (2026-10-19).** Audit lựa chọn thiết bị phát hiện `WLC-3504` **không có giao diện cấu hình vô tuyến** trong bản 9.0.1.0858. Đã thay `WLC-3504` → `WLC-PT` **ngay trong `.pkt` deliverable** và **chạy lại TC-01** (địa chỉ quản trị trên interface GUI `Management`, API `Vlan1`). Xem [docs/device-selection-decision.md](docs/device-selection-decision.md).
+**Đã kiểm chứng trên final (2026-11-05 → 2026-11-07):**
 
 | Nhóm trạng thái | Ý nghĩa | Trạng thái hiện tại |
 | --- | --- | --- |
-| Planned | Đã đề xuất trong tài liệu, chưa cấu hình | Cấu hình ACL cho client chưa triển khai; DHCP/VLAN mapping đã kiểm chứng (TC-08) và đã lưu vào official `.pkt` |
-| In Progress | Đang thực hiện | Hạ tầng có dây + TC-01→TC-08 xong; phần vô tuyến đang kiểm chứng (client `STAFF1`, `STAFF2`, `GUEST1`, `GUEST2`; hai WLAN `STAFF-WIFI`/`GUEST-WIFI` đã phát sóng đồng thời; associate Staff + Guest đã kiểm chứng — TC-06 + TC-07 `Passed`; IP đúng subnet — TC-08 `Passed`, kèm giới hạn) |
-| Not Tested | Chưa kiểm thử, chưa có minh chứng | TC-09 → TC-14 trong [tests/test-cases.md](tests/test-cases.md) |
-| Passed / Failed / Blocked | Chỉ dùng khi có evidence thực tế | **TC-01 `Passed`** (chạy lại trên `WLC-PT`), **TC-02 `Passed`** (trên `LAP-PT`), **TC-03 `Passed`** (LAP-PT join `WLC-PT`), **TC-04 `Passed`** (WLAN `STAFF-WIFI` phát sóng), **TC-05 `Passed`** (WLAN `GUEST-WIFI` phát sóng đồng thời), **TC-06 `Passed`** (hai Staff client associate vào `STAFF-WIFI` bằng WPA2-PSK), **TC-07 `Passed`** (hai Guest client associate vào `GUEST-WIFI` bằng WPA2-PSK), **TC-08 `Passed` cho tiêu chí IP đúng subnet, kèm giới hạn, đã lưu vào official `.pkt`**; chưa có `Failed`/`Blocked` |
+| Passed | Đã test trên final, có kết quả thật | **Gateway 6/6 client 4/4**; **Staff/Guest → Internet `8.8.8.8` 4/4** (PAT); **Guest bị chặn Staff `.10.1` 0/4 và Mgmt `.99.22` 0/4** (ACL `GUEST-ACL`); **DHCP lease đúng subnet cho 6 client**; Staff/RADIUS/DHCP config khớp 2 đầu |
+| Configured / chưa chứng minh exchange | Cấu hình đúng chuẩn nhưng thiếu minh chứng quá trình | **RADIUS 802.1X** (WLC + server khớp port 1645, users đã tạo; EAP exchange không quan sát được trong PT) |
+| Not Tested | Chưa kiểm thử, chưa có minh chứng | **Sai PSK bị từ chối (TC-14)**; **failover R1→R2** (AD 254 cấu hình xong); screenshot `show vlan brief` riêng |
+| Lịch sử v1 (kết quả trước 2026-11-01) | Giai đoạn P1 trên `v1.pkt` + `WLC-PT` | TC-01→TC-08 `Passed` kèm minh chứng (và giới hạn đã ghi); file `v1.pkt` + ảnh tc-*-old đã xoá khỏi working tree |
 
-Nhãn `Passed` chỉ được dùng khi có minh chứng hỗ trợ. Một tính năng Conditional (RADIUS) chưa được hỗ trợ **không** làm mất trạng thái hoàn thành của luồng Core.
+> Trạng thái TC-01→TC-08 ở **[tests/test-cases.md](tests/test-cases.md)** giữ nguyên làm lịch sử giai đoạn v1; trạng thái tương ứng trên final được mô tả tại [docs/final-implementation.md](docs/final-implementation.md) mục 7. Nhãn `Passed` chỉ dùng khi có kết quả thật; một tính năng Conditional (RADIUS exchange) chưa minh chứng **không** làm mất trạng thái hoàn thành của luồng Core.
 
 ## 9. Hạn chế đã biết và nội dung cần kiểm chứng
 
@@ -178,7 +194,17 @@ Nhãn `Passed` chỉ được dùng khi có minh chứng hỗ trợ. Một tính
 
 Chủ đề Research-only: WPA3, EAP-TLS/PEAP, roaming, nhiễu RF, đo throughput — **không khẳng định**, chỉ làm nền báo cáo. Riêng **WPA3/SAE không có trong `WirelessAuthenType` của `IpcAPI` bản 9.0.1.0858** nên không thể triển khai trên phiên bản đã chốt.
 
-Mọi khẳng định về hiệu quả mã hóa hay kiểm soát truy cập chỉ được ghi nhận sau khi kiểm thử, xem [docs/testing-plan.md](docs/testing-plan.md).
+### Hạn chế của bản FINAL (2026-11-07) — ghi nguyên vào báo cáo
+
+1. **RADIUS 802.1X chưa có minh chứng exchange end-to-end** — cấu hình 2 đầu khớp (port 1645, users, client `WLC1`) nhưng PT không log được EAP giữa client↔AP↔WLC↔server.
+2. **Failover R1→R2 chưa test power-off** — backup default route AD 254 đã cấu hình đúng trên CORE-SW.
+3. **Bất ổn mô phỏng wireless PT 9.0.1.0858** — association đôi lúc rớt khi thao tác nhiều (chứng kiến `evidence/Final but error.png`); recovery power-cycle + DHCP re-lease.
+4. **`show ip interface` của PT không hiển thị ACL named** trên `Vlan20` — dùng Running Config thay thế.
+5. **DHCP lease không giữ sau reopen** `final.pkt` — phải `ipconfig /renew`; `serverPool` factory không xoá vĩnh viễn.
+6. **Central switching của WLC-3504 không kiểm chứng bằng packet-trace** — chứng nhận chức năng bằng associate + lease.
+7. PSK/secret lưu dạng rõ trong XML `.pkt` — không chia sẻ file ngoài nhóm.
+
+Mọi khẳng định về hiệu quả mã hóa hay kiểm soát truy cập chỉ được ghi nhận sau khi kiểm thử, xem [docs/testing-plan.md](docs/testing-plan.md) và [docs/final-implementation.md](docs/final-implementation.md).
 
 ## 10. Thành viên nhóm
 
@@ -193,6 +219,7 @@ Phân công chi tiết xem tại [docs/team-contributions.md](docs/team-contribu
 ## 11. Tài liệu liên quan
 
 - [docs/project-overview.md](docs/project-overview.md) — tổng quan, phạm vi, deliverables.
+- [docs/final-implementation.md](docs/final-implementation.md) — ⭐ **tài liệu chính thức của bản final (2026-11-07)**: kiến trúc, địa chỉ, cấu hình, kết quả kiểm thử, limitations.
 - [docs/requirements.md](docs/requirements.md) — bảng yêu cầu và trạng thái.
 - [docs/topology.md](docs/topology.md) — topology logic (mức triển khai được).
 - [docs/ip-vlan-plan.md](docs/ip-vlan-plan.md) — kế hoạch địa chỉ chuẩn.

@@ -42,8 +42,14 @@ packet-tracer/backup/
 packet-tracer/start-pt-bridge.ps1
 
 # Scratch .pkt on the developer machine: the committed deliverable is
-# packet-tracer/enterprise-wifi-wlc-lab-v1.pkt, not these drafts.
+# packet-tracer/final.pkt, not these drafts.
 packet-tracer/test.pkt
+
+# Intermediate audit captures from MCP tooling sessions (during the final
+# build, 2026-11-05 -> 2026-11-07): local scratch, not graded evidence.
+# Final evidence lives in evidence/Final*.png.
+projects/
+screenshots/
 
 # Third-party Packet Tracer script-module binary (downloaded separately,
 # not redistributed in this repository).

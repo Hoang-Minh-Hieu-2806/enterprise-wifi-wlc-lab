@@ -11,6 +11,8 @@
 > **Cập nhật 2026-10-19 — TC-07 `Passed`:** cả hai Guest client `GUEST1` + `GUEST2` **đang associate** vào `GUEST-WIFI` (`Security: WPA2-Personal`, BSSID `0001.968E.6B02` = radio `LAP1`), xác nhận trên trang live `Wireless Network Status` của `PC Wireless`; PSK không hiển thị. IPv4 tại thời điểm TC-07 vẫn APIPA; DHCP/map VLAN sau đó được kiểm chứng ở TC-08 (bản test copy), gateway/Guest isolation vẫn **chưa kết luận**. Minh chứng: `../evidence/tc-07-guest1-associate-live.png`, `../evidence/tc-07-guest2-associate-live.png`.
 >
 > **Cập nhật 2026-10-20 — TC-08 `Passed` (bản test copy, kèm giới hạn):** `STAFF1` nhận `192.168.10.102/24` và `GUEST1` nhận `192.168.20.102/24` qua DHCP từ `192.168.99.20`; `SW1 Fa0/3` là trunk 802.1Q native VLAN `99`, allowed `10,20,99`; MAC-table học đúng VLAN 10/20 trên `Fa0/3`. **Cập nhật 2026-10-21:** cấu hình TC-08 đã được lưu vào official `packet-tracer/enterprise-wifi-wlc-lab-v1.pkt`; mở lại file và `/renew` cho `STAFF1`/`GUEST1` lần lượt nhận `.10.101/24` và `.20.100/24`. Xem `Actual result` của TC-08.
+>
+> **⚠ Bối cảnh thay đổi topology (2026-11-01 → 2026-11-07):** repository chuyển từ bản v1 (9 thiết bị, `WLC-PT`, `v1.pkt`) sang bản **enterprise final** (`packet-tracer/final.pkt`, 18 thiết bị: ISP + R1/R2 + CORE-SW L3 + ACCESS-SW + WLC-3504 + 2 AP + 3 server + 6 client + ADMIN-PC). File `v1.pkt` và ảnh `tc-01→tc-08` của v1 **đã bị xoá khỏi repo** trong đợt dọn dẹp cùng bản final (vẫn còn trong lịch sử Git). Trạng thái `Passed` của TC-01→TC-08 dưới đây là **kết quả của giai đoạn v1 — giữ nguyên để đối chiếu**, không rerun trên final (final thay đổi hoàn toàn kiến trúc; trạng thái functional tương ứng của các hạng mục này trên final được mô tả tại [../docs/final-implementation.md](../docs/final-implementation.md)). Kết quả thực tế trên final được ghi trong 6 mục TC-09 → TC-14 ngay dưới đây (chạy thật qua ping 2026-11-05 → 2026-11-07).
 
 ## TC-01 — WLC management reachability (Core)
 
@@ -125,9 +127,9 @@
 | **Preconditions** | TC-08 đạt |
 | **Procedure** | 1. Từ Staff `ping 192.168.10.1`. 2. Từ Guest `ping 192.168.20.1`. |
 | **Expected result** | Ping tới gateway của đúng VLAN thành công (reply) |
-| **Actual result** | _Not Tested_ |
-| **Evidence filename** | `evidence/tc-09-ping-gateway.png` (dự kiến, chưa có) |
-| **Status** | Not Tested |
+| **Actual result** | **[Final build 2026-11-07]** Đã chạy thật qua PT bridge từ cả 6 wireless client (S-LAP1 `.104`, S-LAP2 `.103`, S-LAP3 `.106`, G-LAP1 `.142`, G-LAP2 `.144`, G-PHONE `.141`) + ADMIN-PC: mỗi client `ping gateway Vlan của mình` (`.10.1` staff / `.20.1` guest) nhận **4/4 reply (0% loss)** |
+| **Evidence filename** | không có screenshot riêng cho mục này — kết quả ghi bằng số; canvas final xem `evidence/Final.jpg`, `evidence/Final 2.png` |
+| **Status** | **Passed** (final build) |
 
 ## TC-10 — Guest không tới được Staff (Core)
 
@@ -138,9 +140,9 @@
 | **Preconditions** | TC-08 đạt; ACL đã áp trên router (explicit deny Guest→Staff + permit tối thiểu) |
 | **Procedure** | 1. Từ Guest (`192.168.20.0/24`) `ping` tới IP Staff client và `192.168.10.1`. 2. Ghi kết quả trước/sau ACL. |
 | **Expected result** | Ping từ Guest tới Staff thất bại sau ACL (Request timed out / Destination unreachable) |
-| **Actual result** | _Not Tested_ |
-| **Evidence filename** | `evidence/tc-10-guest-to-staff.png` (dự kiến, chưa có) |
-| **Status** | Not Tested |
+| **Actual result** | **[Final build 2026-11-07]** G-LAP1 (`.142`) `ping 192.168.10.1` → **0/4 reply (Request timed out)** — bị ACL `GUEST-ACL` chặn trên `Vlan20` của CORE-SW. G-LAP2/G-PHONE đã associate + có lease nhưng ping matrix riêng **chưa chạy riêng** (ghi limitation) |
+| **Evidence filename** | không có screenshot riêng — kết quả chốt bằng số (như trên); xem `evidence/Final.jpg` + final doc mục 6 |
+| **Status** | **Passed (G-LAP1); hạn chế: chỉ 1/3 guest chạy bài kiểm thử** |
 
 ## TC-11 — Guest không tới được thiết bị quản trị (Core)
 
@@ -151,9 +153,9 @@
 | **Preconditions** | TC-08 đạt (Guest đã nhận IP qua DHCP — chứng minh ngoại lệ DHCP đang hiệu lực); ACL đã áp; địa chỉ quản trị chốt theo [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) |
 | **Procedure** | 1. Từ Guest `ping` tới địa chỉ quản trị (ví dụ WLC `192.168.99.10`) → phải thất bại. 2. Từ Guest `ping` tới switch/router trong VLAN 99 → phải thất bại. 3. Xác nhận Guest **vẫn nhận được IP** từ Server-PT `192.168.99.20` (`ipconfig`, đối chiếu TC-08). 4. Chạy `show access-lists` / `show running-config` trên router. |
 | **Expected result** | Guest không tới được **thiết bị quản trị** (WLC, switch, router, LAP-PT), nhưng **vẫn nhận được IP** từ Server-PT qua DHCP; ACL hiển thị khớp [../docs/security-design.md](../docs/security-design.md). Guest **vẫn tới được** `192.168.99.20` cho DHCP — đây là ngoại lệ có chủ đích, không phải lỗi |
-| **Actual result** | _Not Tested_ |
-| **Evidence filename** | `evidence/tc-11-guest-to-mgmt.png` (dự kiến, chưa có) |
-| **Status** | Not Tested |
+| **Actual result** | **[Final build 2026-11-07]** G-LAP1 `ping 192.168.99.22` (RADIUS-SRV trong VLAN 99) → **0/4 reply** — bị chặn. Đồng thời G-LAP1 vẫn có lease `192.168.20.142` (lease từ DHCP-SRV `.99.20` qua relay) ⇒ ngoại lệ DHCP (`bootps`) hiệu lực. `show running-config` của CORE-SW (output thật, 2026-11-07) chứa `ip access-group GUEST-ACL in` trên `Vlan20`; lưu ý lỗi `show ip interface` của PT vẫn in "not set" (xem final doc mục 6). Đối chứng hướng ngược: `ADMIN-PC → 192.168.99.22` (RADIUS-SRV) **4/4 reply** ⇒ thiết bị quản trị nội bộ bình thường hoạt động, chỉ Guest bị chặn |
+| **Evidence filename** | `configs/switch/core-sw-running-config.txt` (xuất thật ngày 2026-11-07), final doc mục 6; không có screenshot riêng |
+| **Status** | **Passed (G-LAP1 + config-level); hạn chế: chỉ 1/3 guest chạy bài kiểm thử** |
 
 ## TC-12 — VLAN đúng + Staff chỉ giữ truy cập cho phép + ACL hiển thị (Core)
 
@@ -164,9 +166,9 @@
 | **Preconditions** | Switch đã cấu hình VLAN; router đã áp ACL |
 | **Procedure** | 1. Chạy `show vlan brief` (hoặc lệnh tương đương đúng model). 2. Kiểm tra cổng theo [../docs/topology.md](../docs/topology.md). 3. Từ Staff kiểm tra chỉ còn đúng truy cập nội bộ cho phép theo phạm vi đã chốt trước trong [../docs/implementation-notes.md](../docs/implementation-notes.md) (§4). |
 | **Expected result** | VLAN 10/20/99 tồn tại, cổng đúng thiết kế đã chốt; Staff không vượt phạm vi cho phép |
-| **Actual result** | _Not Tested_ |
-| **Evidence filename** | `evidence/tc-12-show-vlan.png` (dự kiến, chưa có) |
-| **Status** | Not Tested |
+| **Actual result** | **[Final build 2026-11-07]** Config-level: `show running-config` thật của CORE-SW (mục `configs/switch/core-sw-running-config.txt`) hiển thị SVI 10/20/99, trunk Fa0/1, helper-address, ACL binding — khớp [../docs/final-implementation.md](../docs/final-implementation.md). Staff giữ đúng phạm vi cho phép: S-LAP1/2/3 → Internet 4/4 và truy cập nội bộ không bị chặn. Screenshot `show vlan brief` riêng **chưa chụp** |
+| **Evidence filename** | `configs/switch/core-sw-running-config.txt` (xuất thật 2026-11-07); không có screenshot `show vlan brief` riêng |
+| **Status** | **Passed (config-level)** |
 
 ## TC-13 — RADIUS/WPA2-Enterprise cho Staff (Conditional)
 
@@ -177,9 +179,9 @@
 | **Preconditions** | TC-06 `Passed`; RADIUS đã cấu hình trên Server-PT và WLC (IP + shared secret, che khi chụp) |
 | **Procedure** | 1. Kết nối Staff client bằng tài khoản RADIUS đúng. 2. Ghi kết quả associate và IP nhận được. Nếu Server-PT/model không hỗ trợ, ghi `Blocked` kèm lý do. |
 | **Expected result** | Associate thành công qua RADIUS (hoặc `Blocked` có lý do nếu không hỗ trợ) |
-| **Actual result** | _Not Tested_ |
-| **Evidence filename** | `evidence/tc-13-radius.png` (dự kiến, chưa có) |
-| **Status** | Not Tested |
+| **Actual result** | **[Final build 2026-11-07 — đã cấu hình, chưa chứng minh exchange end-to-end]** Trên final: `RADIUS-SRV` `.99.22`, service **AAA On port 1645**, client network `WLC1` (`.99.10`, port 1645), users `staff1/2/3`; WLC1 `STAFF-WIFI` = WPA2 + **Auth 802.1X**, AAA server `.99.22:1645` — **hai đầu khớp chuẩn**. Staff client vẫn associate thật (S-LAP1 `.104`, S-LAP2 `.103`, S-LAP3 `.106` — nhận lease sau giai đoạn 802.1X). Tuy nhiên PT không ghi được EAP exchange client↔server để chứng minh luồng xác thực RADIUS (không lấy được screenshot); trạng thái: **đã cấu hình, chưa có minh chứng exchange** |
+| **Evidence filename** | không có — ghi nhận tình trạng trong [../docs/final-implementation.md](../docs/final-implementation.md) mục 3 + 5 |
+| **Status** | **Configured / chưa chứng minh end-to-end** (cập nhật cho final; trước đây: Not Tested) |
 
 ## TC-14 — Sai credential bị từ chối (Core cho PSK, Conditional cho RADIUS)
 
@@ -190,8 +192,8 @@
 | **Preconditions** | TC-06/TC-07 đạt (PSK); TC-13 đã thử (cho phần RADIUS, nếu có) |
 | **Procedure** | 1. Kết nối bằng PSK sai → phải bị từ chối. 2. Nếu đã tới TC-13, kết nối bằng tài khoản RADIUS sai → phải bị từ chối. |
 | **Expected result** | Sai PSK bị từ chối, không nhận IP nội bộ (bắt buộc); sai tài khoản RADIUS bị từ chối (nếu đã triển khai RADIUS) |
-| **Actual result** | _Not Tested_ |
-| **Evidence filename** | `evidence/tc-14-invalid-psk.png`, `evidence/tc-14-invalid-radius.png` (dự kiến, chưa có; file RADIUS chỉ cần khi TC-13 được thử) |
+| **Actual result** | _Not Tested — final build không chạy thử PSK sai / tài khoản sai_ |
+| **Evidence filename** | không có |
 | **Status** | Not Tested |
 
 > Research-only (không có test case): WPA3, EAP-TLS/PEAP, roaming, nhiễu RF, đo throughput — chỉ làm nền báo cáo.

@@ -4,25 +4,34 @@ Thư mục chứa file mô phỏng Cisco Packet Tracer (`.pkt`) của dự án, 
 
 ## Hiện trạng
 
-> **Đã có `enterprise-wifi-wlc-lab-v1.pkt`** (cập nhật 2026-10-19) — khung có dây P1 gồm Router `2911` (`R1`), Switch `2960-24TT` (`SW1`), Server-PT (`SRV1`), WLC `WLC-PT` (`WLC2`), LAP-PT (`LAP1`) và ba wireless client `STAFF1`, `STAFF2` + `GUEST1` (`Laptop-PT`) — 9 thiết bị; đã cấu hình VLAN 10/20/99, trunk Switch↔WLC, DHCP relay và **hai WLAN `STAFF-WIFI` (VLAN 10) + `GUEST-WIFI` (VLAN 20), WPA2-PSK — TC-04 + TC-05 + TC-06 + TC-07 `Passed` (TC-06: `STAFF1` + `STAFF2` associate thật vào `STAFF-WIFI`; TC-07: `GUEST1` + `GUEST2` associate `GUEST-WIFI` trên phiên WIP — `GUEST2` chưa lưu vào file deliverable; file `.pkt` không bị ghi đè)**. Ảnh canvas kèm tại [../evidence/p1-wired-skeleton-topology.png](../evidence/p1-wired-skeleton-topology.png) (trạng thái P1 ban đầu; chưa gồm client/WLAN).
+> **Deliverable cuối cùng: `final.pkt`** (2026-11-07, 100.297 bytes, SHA-256 `5AA9ADCA…B5CEF`) — topology **enterprise 18 thiết bị / 21 link**:
 >
-> **TC-01, TC-02, TC-03, TC-04, TC-05, TC-06 và TC-07 đã `Passed`** (TC-01, TC-02 `2026-10-18`; TC-03 `2026-10-19` — `LAP1` join `WLC2`, `Status: Online`; TC-04 `2026-10-19` — WLAN `STAFF-WIFI` phát sóng, quét thấy từ `STAFF1`, minh chứng [../evidence/tc-04-staff-wlan.png](../evidence/tc-04-staff-wlan.png) + [../evidence/tc-04-wlc-staff-wlan-config.png](../evidence/tc-04-wlc-staff-wlan-config.png) — PSK đã che; TC-05 `2026-10-19` — WLAN `GUEST-WIFI` phát sóng **đồng thời**, quét thấy cả hai SSID từ `GUEST1`, minh chứng [../evidence/tc-05-guest-wlan.png](../evidence/tc-05-guest-wlan.png) + [../evidence/tc-05-wlc-guest-wlan-config.png](../evidence/tc-05-wlc-guest-wlan-config.png) — PSK đã che; TC-06 `2026-10-19` — `STAFF1` + `STAFF2` associate thành công vào `STAFF-WIFI` bằng WPA2-PSK, minh chứng [../evidence/tc-06-staff-associate.png](../evidence/tc-06-staff-associate.png); TC-07 `2026-10-19` — `GUEST1` + `GUEST2` associate `GUEST-WIFI` bằng WPA2-PSK trên phiên WIP (file deliverable không đổi), minh chứng [../evidence/tc-07-guest1-associate-live.png](../evidence/tc-07-guest1-associate-live.png) + [../evidence/tc-07-guest2-associate-live.png](../evidence/tc-07-guest2-associate-live.png)).
+> - **ISP** (Router-PT, Lo0 `8.8.8.8/32`) ↔ **R1** + **R2** (2901, edge + PAT overload, hai path `/30` `203.0.113.0/30` và `203.0.113.4/30`);
+> - **R1/R2 ↔ CORE-SW** (3560-24PS, `ip routing`, SVI VLAN 10/20/99, DHCP relay, ACL Guest, default AD 1 + backup AD 254) qua `/30` `10.0.0.0/30` và `10.0.1.0/30`;
+> - **CORE-SW ↔ ACCESS-SW** (2960, trunk Fa0/1) ↔ **WLC1** (WLC-3504, mgmt `192.168.99.10`, dynamic interfaces staff/guest) + **LAP-STAFF**, **LAP-GUEST** (LAP-PT);
+> - VLAN 99: **DHCP-SRV** (`.20`, 2 pool), **RADIUS-SRV** (`.22`, AAA port 1645, client `WLC1`, users staff1/2/3), **Web-SRV** (`.21`), **ADMIN-PC** (`.10`);
+> - Client wireless: **S-LAP1/2/3** (`STAFF-WIFI`, WPA2-Enterprise/802.1X) và **G-LAP1/2 + G-PHONE** (`GUEST-WIFI`, WPA2-PSK).
 >
-> **Lưu ý khi mở file (re-audit 2026-10-19):** `WLC-PT` giữ `192.168.99.10/24` và **hai WLAN `STAFF-WIFI`/`GUEST-WIFI` lưu trong `.pkt`** (mở lại vẫn còn — đã kiểm chứng), nhưng **`LAP-PT` không lưu IP tĩnh** — mở lại file, `LAP1` trở về DHCP và AP hiện `Offline`. Cần **đặt lại tĩnh `192.168.99.30/24` (gw `192.168.99.1`) cho `LAP1`** thì AP mới rejoin (`Status: Online`) và phát lại SSID.
+> Trạng thái chi tiết + kết quả kiểm thử: [../docs/final-implementation.md](../docs/final-implementation.md). Canvas: [../evidence/Final.jpg](../evidence/Final.jpg).
 >
-> **Đã thay controller:** file nay dùng **`WLC-PT`** (`WLC2`) — model có trang `Wireless LANs` (khác `WLC-3504` cũ, **không có giao diện cấu hình vô tuyến** trong bản 9.0.1.0858). **TC-01 đã chạy lại và `Passed`** (xem [../docs/device-selection-decision.md](../docs/device-selection-decision.md)).
+> **Kiểm thử final (ping thật qua bridge, 2026-11-05 → 2026-11-07):** 6 client gateway 4/4; Staff → `8.8.8.8` 4/4; G-LAP1 → `8.8.8.8` 4/4; G-LAP1 → `.10.1` và `.99.22` bị ACL chặn 0/4 (đúng design); Staff leases `.104/.103/.106`, Guest `.142/.144/.141`.
 >
-> **Đã có 03 wireless client trong file deliverable (`STAFF1`, `STAFF2`, `GUEST1`, `Laptop-PT`)** dùng để quét SSID và associate (`GUEST1` phục vụ TC-05; `STAFF2` phục vụ TC-06); **phiên WIP TC-07 có thêm `GUEST2`** (`Laptop-PT`, chưa lưu vào file deliverable); các bản `test.pkt` trên máy là bản nháp, đã chặn trong `.gitignore`.
->
-> **Lưu ý bảo mật:** PT lưu passphrase WPA2-PSK **dạng rõ** trong XML của `.pkt` (`<WEP_KEY>`) — không chia sẻ file ra ngoài nhóm; khi chụp minh chứng phải che vùng passphrase.
+> **Bỏ `enterprise-wifi-wlc-lab-v1.pkt` (2026-11-07):** file v1 (9 thiết bị, `WLC-PT`, P1 khung có dây) đã bị xoá khỏi repo trong đợt chốt final — lịch sử giai đoạn v1 nằm trong Git history (`git log -- packet-tracer/`) và các docs được đánh dấu "lịch sử v1". Bản `V5.2.pts` không được theo dõi trong Git (xem `.gitignore`).
+
+## Lưu ý khi mở `final.pkt`
+
+1. **DHCP lease không giữ sau khi reopen** — chạy `ipconfig /renew` trên từng client (đặc tính PT).
+2. **Association wireless đôi lúc rớt sau khi thao tác nhiều** (limi hạn chế PT 9.0.1.0858, chứng kiến 2026-11-06, `../evidence/Final but error.png`): power-cycle AP rồi client, đặt lại DHCP (`0.0.0.0` → dhcp), đợi 10–20 s, `/renew`.
+3. **`show ip interface` của PT không hiển thị ACL named** trên `Vlan20` — xem Running Config hoặc `configs/switch/core-sw-running-config.txt`.
+4. **Bảo mật:** PSK/secret lưu dạng rõ trong XML `.pkt` — không chia sẻ file ra ngoài nhóm; ảnh chụp phải che passphrase.
 
 ## Quy định khi bổ sung file `.pkt`
 
 1. Chỉ commit file `.pkt` đã mở và kiểm thử được trên đúng bản 9.0.1.0858 (xem [../docs/implementation-notes.md](../docs/implementation-notes.md)).
-2. Bắt đầu với **01 LAP-PT**; chỉ thêm AP khi TC-03 và TC-06 đã `Passed` (xem [../tests/test-cases.md](../tests/test-cases.md)).
-3. Tên file rõ ràng, tiếng Anh, ví dụ: `enterprise-wifi-wlc-lab-v1.pkt`; hạn chế nhiều bản nháp.
-4. Mọi thay đổi topology phải đồng bộ với [../docs/topology.md](../docs/topology.md) và địa chỉ chuẩn tại [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md), sau khi cả 3 thành viên thống nhất.
-5. Không commit file tạm (`*.pkttmp`, `*.bak.pkt`) — đã loại trừ trong `.gitignore`.
+2. Tên file rõ ràng, tiếng Anh — bản deliverable final là `final.pkt`; hạn chế nhiều bản nháp (`test.pkt*` bị chặn trong `.gitignore`).
+3. Mọi thay đổi topology phải đồng bộ với [../docs/topology.md](../docs/topology.md), [../docs/final-implementation.md](../docs/final-implementation.md) và địa chỉ chuẩn tại [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md), sau khi cả 3 thành viên thống nhất.
+4. Không commit file tạm (`*.pkttmp`, `*.bak.pkt`) — đã loại trừ trong `.gitignore`.
+5. Cập nhật trạng thái kiểm thử vào [../tests/test-cases.md](../tests/test-cases.md) kèm minh chứng thật.
 
 ## Cách mở
 

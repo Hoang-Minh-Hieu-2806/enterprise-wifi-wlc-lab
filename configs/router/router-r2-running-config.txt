@@ -1,0 +1,69 @@
+! ============================================================
+! Thiet bi: R2
+! Model: 2901
+! Phien ban Packet Tracer: Cisco Packet Tracer 9.0.1.0858
+! Vai tro: Edge router-path B — NAT/PAT ra ISP (du phong ISP), static route ve LAN
+! Interface thuc dung: GigabitEthernet0/0 (203.0.113.6/30, to ISP, ip nat outside);
+!   GigabitEthernet0/1 (10.0.1.1/30, to CORE-SW Gi0/2, ip nat inside)
+! Ngay xuat: 2026-11-07 (startup-config doc tu live PT, prior final.pkt)
+! Nguoi thuc hien: Hoang Minh Hieu (nhom truong)
+! Trang thai: final build final audit — cau hinh ky thuat xong, failover
+!   qua R2 chua duoc kiem chung end-to-end (TC failover ghi Not Tested)
+! Secret: khong co enable secret / password trong file nay (lab network minh bach)
+! Ghi chu: giong R1 ve cau truc NAT/static route, khac dia chi /30 path B
+! ============================================================
+
+! --- show startup-config (as deployed in final.pkt) ---
+!
+version 15.1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname R2
+!
+ip cef
+no ipv6 cef
+!
+license udi pid CISCO2901/K9 sn FTX15244TEA-
+!
+spanning-tree mode pvst
+!
+interface GigabitEthernet0/0
+ ip address 203.0.113.6 255.255.255.252
+ ip nat outside
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ ip address 10.0.1.1 255.255.255.252
+ ip nat inside
+ duplex auto
+ speed auto
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+ip nat inside source list 1 interface GigabitEthernet0/0 overload
+ip classless
+ip route 0.0.0.0 0.0.0.0 203.0.113.5
+ip route 192.168.10.0 255.255.255.0 10.0.1.2
+ip route 192.168.20.0 255.255.255.0 10.0.1.2
+ip route 192.168.99.0 255.255.255.0 10.0.1.2
+!
+ip flow-export version 9
+!
+access-list 1 permit 192.168.10.0 0.0.0.255
+access-list 1 permit 192.168.20.0 0.0.0.255
+access-list 1 permit 192.168.99.0 0.0.0.255
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+end

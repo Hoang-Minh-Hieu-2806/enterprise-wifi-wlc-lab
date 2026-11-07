@@ -1,5 +1,7 @@
 # Phân công nhóm (chia đều 33 / 33 / 34)
 
+> **⚠ Cập nhật final build (2026-11-07):** bản deliverable cuối là `packet-tracer/final.pkt` (topology enterprise 18 thiết bị — thay cho `v1.pkt`). Trong giai đoạn final (2026-11-01 → 2026-11-07), phần lớn công việc kỹ thuật và kiểm thử (dựng topology routed, PAT, SVI/DHCP relay, WLC-3504 + 2 AP, RADIUS, ACL Guest, chạy ping final) do **Hoàng Minh Hiếu** thực hiện để lấp chỗ nghẽn — nhóm cần ghi nhận/xác nhận tỷ lệ đóng góp này trong bảng §5 trước khi nộp báo cáo. Các phân công dưới đây kế thừa từ giai đoạn v1.
+
 > Ba thành viên chia khối lượng tương đương: Hoàng Minh Hiếu 33%, Đặng Văn Hoàng 33%, Huỳnh Như Hoàng 34%. Hiếu là nhóm trưởng, vừa điều phối vừa trực tiếp tham gia kỹ thuật: quản lý Git/tiến độ, rà soát thiết kế, hỗ trợ linh hoạt các mảng theo tiến độ, tham gia kiểm thử, tổng hợp báo cáo. Không đánh giá công việc chỉ bằng commit count — theo dõi cả triển khai, tài liệu, evidence và kiểm thử.
 
 ## 1. Hoàng Minh Hiếu — Nhóm trưởng / Điều phối / Hỗ trợ kỹ thuật linh hoạt (33%)

@@ -1,0 +1,143 @@
+! ============================================================
+! Thiet bi: CORE-SW
+! Model: 3560-24PS (Layer 3 switch)
+! Phien ban Packet Tracer: Cisco Packet Tracer 9.0.1.0858
+! Vai tro: Aggregation va inter-VLAN routing (SVI), DHCP relay ve DHCP-SRV,
+!   ACL cach ly GUEST, static default route (primary via R1 + backup AD 254 via R2)
+! Interface thuc dung:
+!   FastEthernet0/1 (trunk dot1Q, to ACCESS-SW Fa0/1)
+!   GigabitEthernet0/1 (no switchport, 10.0.0.2/30, to R1 Gi0/1)
+!   GigabitEthernet0/2 (no switchport, 10.0.1.2/30, to R2 Gi0/1)
+!   Vlan10 192.168.10.1/24  — SVI STAFF  (ip helper-address 192.168.99.20)
+!   Vlan20 192.168.20.1/24  — SVI GUEST  (ip helper-address + ACCESS-IN in)
+!   Vlan99 192.168.99.1/24  — SVI MGMT
+! MAC SVI: Vlan10 00d0.5877.bd01, Vlan20 00d0.5877.bd02, Vlan99 00d0.5877.bd03
+!   (dat thu cong de on dinh ARP bang cho WLC/replication DHCP)
+! Ngay xuat: 2026-11-07 (startup-config doc tu live PT, prior final.pkt)
+! Nguoi thuc hien: Hoang Minh Hieu (nhom truong)
+! Trang thai: final build final audit — ACL ACCESS-IN trong startup-config,
+!   da kiem chung chuc nang (G-LAP1 -> 192.168.10.1 va -> 192.168.99.22 bi chan 0/4)
+! Ghi chu PT: show ip interface van thuong in "access-group ... not set"
+!   (hien thi PT khong dong bo voi access-list extended) — kiem chung bang chuc nang
+! Secret: khong co enable secret / password trong file nay (lab network minh bach)
+! ============================================================
+
+! --- show startup-config (as deployed in final.pkt) ---
+!
+version 12.2(37)SE1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname CORE-SW
+!
+no profinet
+!
+ip routing
+!
+spanning-tree mode pvst
+!
+interface FastEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+ no switchport
+ ip address 10.0.0.2 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/2
+ no switchport
+ ip address 10.0.1.2 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan10
+ mac-address 00d0.5877.bd01
+ ip address 192.168.10.1 255.255.255.0
+ ip helper-address 192.168.99.20
+!
+interface Vlan20
+ mac-address 00d0.5877.bd02
+ ip address 192.168.20.1 255.255.255.0
+ ip helper-address 192.168.99.20
+ ip access-group GUEST-ACL in
+!
+interface Vlan99
+ mac-address 00d0.5877.bd03
+ ip address 192.168.99.1 255.255.255.0
+!
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.0.0.1
+ip route 0.0.0.0 0.0.0.0 10.0.1.1 254
+!
+ip flow-export version 9
+!
+ip access-list extended GUEST-ACL
+ permit udp any any eq bootps
+ deny ip any 192.168.10.0 0.0.0.255
+ deny ip any 192.168.99.0 0.0.0.255
+ permit ip any any
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end

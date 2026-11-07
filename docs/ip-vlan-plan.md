@@ -1,5 +1,7 @@
 # Kế hoạch địa chỉ IP và VLAN (tài liệu chuẩn)
 
+> **⚠ LỊCH SỬ v1 + bản final:** tài liệu này tiếp tục là **chuẩn cho các VLAN 10/20/99** — bản final giữ nguyên 3 subnet `192.168.10/20/99` như bảng §1. **Điểm thay đổi trong final (2026-11-07):** inter-VLAN chuyển từ router-on-a-stick (Gi0/0.10/.20 của v1) sang **SVI trên CORE-SW 3560** (các gateway `192.168.10.1/20.1/99.1` giữ nguyên giá trị); bổ sung các liên kết routed `/30`: ISP↔R1 `203.0.113.0/30`, ISP↔R2 `203.0.113.4/30`, R1↔CORE `10.0.0.0/30`, R2↔CORE `10.0.1.0/30`. Bảng địa chỉ **final đầy đủ tại [final-implementation.md](final-implementation.md) §2** — đó là tài liệu authoritative cho bản deliverable. Các mục §2, §3 dưới đây là lịch sử giai đoạn P1.
+
 > Đây là tài liệu **authoritative cho mọi địa chỉ** trong dự án: README, topology, security, test case và configs đều tham chiếu tới đây. Địa chỉ hạ tầng của **khung có dây P1 đã được cấu hình** (§2); DHCP cho client đã được kiểm chứng trong **TC-08** (2026-10-20), cấu hình đã lưu vào official `.pkt` 2026-10-21, với các giới hạn ghi tại §3. Kế hoạch cuối cùng phụ thuộc topology được chốt và model thiết bị trong Packet Tracer 9.0.1.0858.
 
 ## 1. Bảng VLAN và subnet đề xuất

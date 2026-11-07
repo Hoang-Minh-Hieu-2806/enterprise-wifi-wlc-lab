@@ -1,5 +1,7 @@
 # Thiết kế bảo mật (WPA2-PSK trước, RADIUS có điều kiện)
 
+> **⚠ Cập nhật final (2026-11-07):** bản final triển khai đúng nguyên tắc của tài liệu này và **vượt scope v1**: `GUEST-WIFI` = WPA2-PSK ✓; `STAFF-WIFI` = **WPA2-Enterprise/802.1X với RADIUS** (đã cấu hình: server `.99.22` port 1645, client `WLC1`, users staff1/2/3 — chưa có minh chứng EAP exchange); **ACL đã triển khai thật** trên `Vlan20` (CORE-SW): `GUEST-ACL` (permit bootps / deny →192.168.10.0 / deny →192.168.99.0 / permit any) và **đã kiểm chứng chức năng** (G-LAP1 → Staff/Mgmt bị chặn 0/4, DHCP vẫn đạt). Luật PAT + Internet đã test 4/4. Chi tiết: [final-implementation.md](final-implementation.md) §3–§6. Ý định thiết kế dưới đây được giữ làm nền.
+
 > Tài liệu này trình bày **ý định thiết kế**, không phải kết quả đã kiểm chứng. Không khẳng định cơ chế mã hóa hay kiểm soát truy cập có hiệu quả khi chưa có kết quả kiểm thử tại [testing-plan.md](testing-plan.md) và [../tests/test-cases.md](../tests/test-cases.md). Sự tồn tại của các trường WPA2/RADIUS trong GUI Packet Tracer không chứng minh giao thức đã chạy được.
 
 ## 1. Nguyên tắc phân tách

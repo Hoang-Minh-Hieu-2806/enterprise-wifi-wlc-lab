@@ -1,5 +1,7 @@
 # Tổng quan dự án
 
+> **Quan trọng (2026-11-07):** tổng quan này mô tả phạm vi của toàn dự án và vẫn đúng về mục tiêu; đối với deliverable final, trạng thái thực tế đã vượt phạm vi v1 (kiến trúc 18 thiết bị, PAT, RADIUS, ACL được triển khai) — xem [final-implementation.md](final-implementation.md). Những đoạn dưới đây về `WLC-PT`/v1 là giai đoạn lịch sử.
+
 ## 1. Phát biểu vấn đề
 
 Các doanh nghiệp vừa và nhỏ cần mạng Wi-Fi tập trung, dễ quản lý, phân tách được lưu lượng nhân viên và khách, đồng thời kiểm soát truy cập cơ bản giữa các vùng mạng. Tuy nhiên, việc thử nghiệm trực tiếp trên thiết bị thật tốn kém và rủi ro. Dự án này sử dụng **Cisco Packet Tracer 9.0.1.0858** để mô phỏng một mạng WLAN doanh nghiệp thu nhỏ, giúp sinh viên luyện tập thiết kế, cấu hình và đánh giá bảo mật trong môi trường an toàn.

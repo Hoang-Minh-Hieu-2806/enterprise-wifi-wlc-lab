@@ -2,6 +2,8 @@
 
 Thư mục quản lý dàn ý và nội dung báo cáo tổng hợp trong giai đoạn hiện tại. **Chưa cần tạo DOCX/PDF.** Huỳnh Như Hoàng viết nháp kết quả/limitation kỹ thuật; Hoàng Minh Hiếu tổng hợp báo cáo cuối và chuẩn bị dàn ý thuyết trình.
 
+> **⚠ Cập nhật final (2026-11-07):** deliverable cuối là `packet-tracer/final.pkt` (topology enterprise 18 thiết bị). Trạng thái và kết quả kiểm thử cuối kỳ tại **[../docs/final-implementation.md](../docs/final-implementation.md)** — đây là nguồn chính thức cho báo cáo cuối kỳ; các đoạn dưới đây giữ làm trạng thái giai đoạn giữa kỳ (v1).
+
 ## Hiện trạng
 
 > **Đã có báo cáo giữa kỳ:** [midterm-report.md](midterm-report.md) — theo đúng 4 mục yêu cầu của buổi báo cáo giữa kỳ (tóm tắt ý tưởng + công việc dự định, tính năng chính, mô hình triển khai, kịch bản demo). Nội dung là **ý tưởng và dự định**, chưa có kết quả kiểm thử.

@@ -1,41 +1,30 @@
 # Evidence
 
-Thư mục lưu minh chứng kiểm thử trên bản 9.0.1.0858: ảnh chụp màn hình, kết quả lệnh, export cấu hình đã che secret. Huỳnh Như Hoàng duy trì; Đặng Văn Hoàng bổ sung phần WLC/AP; Hoàng Minh Hiếu ghi evidence cho phần mình kiểm thử.
+Thư mục lưu minh chứng kiểm thử trên bản Cisco Packet Tracer **9.0.1.0858**: ảnh chụp canvas, ảnh cửa sổ Command Prompt / kết quả lệnh. Người duy trì: Hoàng Minh Hiếu (nhóm trưởng).
 
-## Hiện trạng
+> **Lưu ý 2026-11-07 (final build):** phiên v1 (`enterprise-wifi-wlc-lab-v1.pkt`, controller `WLC-PT`) đã được thay bằng **`final.pkt`** (topology enterprise 18 thiết bị: ISP + R1/R2 + CORE-SW + ACCESS-SW + WLC1 + 2 AP + 3 server + 6 wireless client + ADMIN-PC). Toàn bộ ảnh minh chứng từng bước v1 (cũ: `p1-wired-skeleton-topology.png`, `tc-01-*` → `tc-08-*`, các ảnh `audit-*`) đã bị **xóa khỏi repo cùng file v1 trong lần dọn dẹp cuối** — vẫn tồn tại trong lịch sử Git nếu cần đối chiếu. Minh chứng final dùng tên không theo mã TC (xem dưới).
 
-> **Đã có minh chứng bring-up P1:** [`p1-wired-skeleton-topology.png`](p1-wired-skeleton-topology.png) — ảnh canvas Packet Tracer chụp ngày 2026-10-18, thể hiện 4 thiết bị (`WLC1` WLC-3504, `R1` 2911, `SW1` 2960-24TT, `SRV1` Server-PT) và 3 liên kết đều up. Đây **không phải kết quả test case** — tên file cố ý không theo mã TC.
->
-> **Đã có minh chứng test case:** [`tc-01-wlc-reachability.png`](tc-01-wlc-reachability.png) — cửa sổ Command Prompt của `SRV1` ngày 2026-10-18, thấy rõ chuỗi `ping 192.168.99.10` đi từ `100% loss` (khi uplink WLC còn là access VLAN 1) → `25% loss` (ARP lần đầu) → **`0% loss`** sau khi sửa. TC-01 `Passed` (trên model `WLC-3504`, lịch sử P1).
-> **Chạy lại TC-01 trên `WLC-PT` (bản test copy, 2026-10-18):** [`tc-01-wlc-pt-reachability-canvas.png`](tc-01-wlc-pt-reachability-canvas.png) — management `192.168.99.10/24`: `SRV1 → .10` `0% loss` (4/4) và `R1 → .10` `5/5`. (Bộ ảnh giao diện từng được viện dẫn dưới tên `wlc-pt-feasibility-*.png` **hiện chưa có trong repo** — cần chụp bổ sung.)
->
-> [`tc-02-lap-ip.png`](tc-02-lap-ip.png), [`tc-02-lap-ping-gateway.png`](tc-02-lap-ping-gateway.png), [`tc-02-lap-arp-r1.png`](tc-02-lap-arp-r1.png), [`tc-02-sw1-mac-fa03.png`](tc-02-sw1-mac-fa03.png) — minh chứng TC-02 `Passed`: cấu hình IP tĩnh của `LAP1`, kết quả ping tới gateway, bảng ARP trên `R1` và MAC-table `SW1 Fa0/3` (VLAN 99, MAC `0001.968e.6b01`).
->
-> [`tc-03-lap-wlc-join.png`](tc-03-lap-wlc-join.png) — minh chứng TC-03 `Passed` (2026-10-19, chụp lại từ file deliverable `enterprise-wifi-wlc-lab-v1.pkt` sau khi đặt lại IP tĩnh `192.168.99.30` cho `LAP1`): `WLC2 → Config → AP Groups` liệt kê `LAP1` (MAC `0001.968E.6B01`) với `Status: Online` trong nhóm `default-group` — LAP-PT đã đăng ký/chịu quản lý bởi `WLC-PT`. **Giới hạn:** trạng thái `Online` là **runtime** (không lưu trong `.pkt`; mở lại file AP hiện `Offline` cho tới khi đặt IP cho `LAP1`); không có minh chứng bắt tay CAPWAP; `CAPWAP.PRIMARY_AC = 0.0.0.0` ở cả hai model (PT auto-discovery) và **không** được đọc là bằng chứng theo hướng nào.
->
-> [`tc-04-staff-wlan.png`](tc-04-staff-wlan.png), [`tc-04-wlc-staff-wlan-config.png`](tc-04-wlc-staff-wlan-config.png) — minh chứng TC-04 `Passed` (2026-10-19, `.pkt` deliverable): ảnh `PC Wireless` trên client `STAFF1` quét thấy SSID `STAFF-WIFI` (channel 1, 59%, `WPA2-PSK`) và trang `Wireless LANs` của `WLC2` với WLAN `STAFF-WIFI` (WLAN ID 1, VLAN 10, WPA2-PSK/AES) — **vùng passphrase đã che**. Tại thời điểm TC-04 chưa associate; TC-06 và map VLAN cho client (TC-08, bản test copy) được kiểm chứng sau.
->
-> [`tc-05-guest-wlan.png`](tc-05-guest-wlan.png), [`tc-05-wlc-guest-wlan-config.png`](tc-05-wlc-guest-wlan-config.png) — minh chứng TC-05 `Passed` (2026-10-19, `.pkt` deliverable): ảnh `PC Wireless` trên client `GUEST1` quét thấy **đồng thời hai SSID** `STAFF-WIFI` và `GUEST-WIFI` (channel 1, 63%, `WPA2-PSK`) và trang `Wireless LANs` của `WLC2` với WLAN `GUEST-WIFI` (WLAN ID 2, VLAN 20, WPA2-PSK/AES) — **vùng `PSK Pass Phrase` đã che**. Tại thời điểm TC-05 chưa associate; TC-06/TC-07 và map VLAN cho client (TC-08, bản test copy) được kiểm chứng sau.
->
-> [`tc-06-staff-associate.png`](tc-06-staff-associate.png), [`tc-06-staff2-noassoc-control.png`](tc-06-staff2-noassoc-control.png) — minh chứng TC-06 `Passed` (2026-10-19, `.pkt` deliverable, nay đã thêm client `STAFF2`): ảnh chính là **một ảnh chụp màn hình thật** với hai cửa sổ `STAFF1` + `STAFF2` đặt cạnh nhau, cùng mở trang live `Wireless Network Status` của `PC Wireless` — cả hai hiển thị `Wireless Network Name: STAFF-WIFI`, `Mac Address 0001.968E.6B02` (BSSID radio `LAP1`), `Security: WPA2-Personal`, `Standard Channel: 1 - 2.412GHz`; IPv4 APIPA khác nhau `169.254.50.223` / `169.254.58.5` (chưa có DHCP trên WLAN — DHCP/subnet là phạm vi TC-08). **PSK không xuất hiện** trên trang này. Ảnh đối chứng chụp `STAFF2` **trước khi nối**: `no association with access point` / `Adapter is Inactive`. Lưu ý: trang `Link Information` của applet là minh họa **tĩnh** (giống hệt trước/sau khi nối) — không dùng làm bằng chứng; thay vào đó là trang live `Wireless Network Status`.
->
-> **Minh chứng audit lựa chọn thiết bị (2026-10-18) — cảnh báo: các file dưới đây được viện dẫn trong [../docs/device-selection-decision.md](../docs/device-selection-decision.md) nhưng hiện KHÔNG có trong repo; cần chụp bổ sung:**
-> `audit-wlc-3504-config-menu.png` (model cũ **không** có trang WLAN) · `audit-wlc-pt-wireless-lans.png` (trang `Wireless LANs` có SSID + VLAN + WPA2) · `audit-wlc-pt-management-ip.png` (địa chỉ quản trị trên cổng GUI `Management` / API port `Vlan1`) · `audit-lap-pt-radio.png` (radio của LAP không có trường xác thực) · `audit-ap-pt-port1-security.png` (AP standalone có SSID/xác thực nhưng không có trường VLAN).
->
-> [`tc-07-guest1-associate-live.png`](tc-07-guest1-associate-live.png), [`tc-07-guest2-associate-live.png`](tc-07-guest2-associate-live.png) — minh chứng TC-07 `Passed` (2026-10-19, **phiên WIP TC-07**; file deliverable `.pkt` không đổi): ảnh chụp thật từng client trên trang live `Wireless Network Status` của `PC Wireless` — `GUEST1` và `GUEST2` đều hiển thị `Wireless Network Name: GUEST-WIFI`, `Security: WPA2-Personal`, `MAC Address 0001.968E.6B02` (BSSID radio `LAP1`), `Standard Channel: 1 - 2.412GHz`, `Adapter is Active` và adapter `WPC300N`; IPv4 APIPA `169.254.215.157` / `169.254.146.42` (chưa có DHCP trên WLAN — DHCP/subnet là phạm vi TC-08). **PSK không xuất hiện** trên trang này và không được ghi ở bất kỳ đâu. Hai client đã associated sẵn trong phiên WIP chuẩn bị; lần chạy này không nhập lại PSK. `GUEST2` chỉ có trong phiên WIP, chưa lưu vào `.pkt` deliverable. **Không kết luận** DHCP/gateway/map VLAN/Guest isolation.
->
-> [`tc-08-staff-ipconfig.png`](tc-08-staff-ipconfig.png), [`tc-08-guest-ipconfig.png`](tc-08-guest-ipconfig.png), [`tc-08-trunk.png`](tc-08-trunk.png), [`tc-08-mac-vlan.png`](tc-08-mac-vlan.png), [`tc-08-dhcp-pools.png`](tc-08-dhcp-pools.png), [`tc-08-ap-online.png`](tc-08-ap-online.png), [`tc-08-guest-associate.png`](tc-08-guest-associate.png) — minh chứng TC-08 `Passed` (2026-10-20, **chụp trên bản test copy** `enterprise-wifi-wlc-lab-v1_TC08_TEST_20261020.pkt`, SHA-256 `9D787E30…`); cấu hình đã được **lưu vào official `.pkt`** ngày 2026-10-21 (SHA-256 `EEA60292…`, 68.796 bytes); mở lại và `/renew` cho `STAFF1` `192.168.10.101/24`, `GUEST1` `192.168.20.100/24`. Trên test copy, `STAFF1` nhận DHCP `192.168.10.102/24`, gateway `192.168.10.1`, server `192.168.99.20`; `GUEST1` nhận DHCP `192.168.20.102/24`, gateway `192.168.20.1`, server `192.168.99.20`; `SW1 Fa0/3` (nối `LAP1`), `Fa0/4` (nối `WLC2`) và `Gi0/1` (nối `R1`) đều là trunk 802.1Q native VLAN `99`, allowed `10,20,99`; MAC-table có `0060.2f4c.32db` ở VLAN 10 và `0050.0fc8.d794` ở VLAN 20, cùng học qua `Fa0/3`; `Fa0/4` chỉ có MAC management VLAN 99. Do đó đường dữ liệu client là **local switching tại AP qua uplink `Fa0/3`**, không chứng minh central switching của WLC. `LAP1` `Status: Online`; Guest đã kết nối AP. Ảnh `tc-08-guest-ipconfig.png` có **PSK đã che**; ảnh `tc-08-ap-online.png` chỉ chứng minh trạng thái `Online`, không hiển thị địa chỉ `.30` (địa chỉ này đến từ kết quả chạy).
->
-> **Giới hạn TC-08:** `serverPool` của PT **không xoá vĩnh viễn được** — PT tạo lại sau save/reopen; pool được giới hạn còn `192.168.99.30–.30`, gateway `.99.1`, DNS `.99.20`, tối đa 1 user. `LAP-PT` không có cấu hình tĩnh trong tab Config; `LAP1` nhận `.30` qua DHCP, **chưa xác nhận tĩnh lưu bền**. Lease DHCP **không được giữ sau khi mở lại official** — phải chạy `/renew`; ảnh minh chứng được chụp trên test copy, còn official được kiểm chứng lại bằng CLI/`ipconfig`. **Central switching của WLC chưa kiểm chứng** — client MAC VLAN 10/20 nằm trên uplink AP `Fa0/3`, không có trên uplink WLC `Fa0/4`.
->
-> **TC-01 → TC-08 đã `Passed`** kèm minh chứng ở trên. Các test case còn lại (TC-09 → TC-14) vẫn `Not Tested`. Không tạo screenshot giả.
+## Minh chứng final (hiện có trong repo)
+
+| File | Nội dung | Tham chiếu |
+| --- | --- | --- |
+| [`Final.jpg`](Final.jpg) | **Canvas Packet Tracer** chụp 2026-11-06: **topology final 18 thiết bị đầy đủ link, mọi liên kết up** (ISP, R1, R2, CORE-SW, ACCESS-SW, WLC1, LAP-STAFF, LAP-GUEST, RADIUS-SRV, DHCP-SRV, ADMIN-PC, Web-SRV, S-LAP1/2/3, G-LAP1/2, G-PHONE) | [../docs/final-implementation.md](../docs/final-implementation.md) |
+| [`Final 2.png`](Final%202.png) | **Canvas Packet Tracer** — bản chụp lại của topology final, trạng thái ổn định | same as above |
+| [`Final but error.png`](Final%20but%20error.png) | Bản chụp tại thời điểm **bất ổn mô phỏng**: một wireless association tạm rớt — lưu để **ghi nhận limitation của PT với wireless**; trạng thái đã hồi phục trên `Final.jpg` / `Final 2.png` sau recovery | Mục *Limitations* của [../docs/final-implementation.md](../docs/final-implementation.md) |
+
+## Kết quả kiểm thử final (2026-11-05 → 2026-11-07)
+
+Trình bày chi tiết tại [../tests/test-cases.md](../tests/test-cases.md) và [../docs/final-implementation.md](../docs/final-implementation.md). Tóm tắt:
+
+- **Gateway**: cả 6 wireless client + ADMIN-PC ping gateway riêng của mình, 4/4 (0% loss).
+- **Internet (PAT)**: Staff (S-LAP1/2/3) → `8.8.8.8` 4/4; Guest G-LAP1 → `8.8.8.8` 4/4 (đạt sau một lần retry — thỉnh thoảng PT đổi 50% loss khi wireless stack bất ổn; xem limitations).
+- **ACL cô lập Guest**: G-LAP1 → `192.168.10.1` **0/4** (blocked) ✓; G-LAP1 → `192.168.99.22` **0/4** (blocked) ✓; DHCP vẫn permit qua `bootps`.
+- Không tạo screenshot giả; canvas dùng làm minh chứng hiện trường, kết quả ping nêu bằng số trong tài liệu (đã chạy thật qua PT bridge).
 
 ## Quy định
 
-1. Tên file tiếng Anh, gắn với test ID:
-   `tc-01-wlc-reachability.png`, `tc-02-lap-ip.png`, `tc-03-lap-wlc-join.png`, `tc-04-staff-wlan.png`, `tc-05-guest-wlan.png`, `tc-06-staff-associate.png`, `tc-07-guest1-associate-live.png` / `tc-07-guest2-associate-live.png`, `tc-08-staff-ipconfig.png` / `tc-08-guest-ipconfig.png`, `tc-09-ping-gateway.png`, `tc-10-guest-to-staff.png`, `tc-11-guest-to-mgmt.png`, `tc-12-show-vlan.png`, `tc-13-radius.png` (chỉ khi thử RADIUS), `tc-14-invalid-psk.png` / `tc-14-invalid-radius.png`.
-2. Ảnh đọc được: thấy rõ lệnh, kết quả, SSID/IP liên quan; che PSK/password/tài khoản thật.
-3. Chỉ commit minh chứng của lần test thật trên đúng topology và đúng bản 9.0.1.0858.
+1. Tên file tiếng Anh, gắn với nội dung (`final-*`, `audit-*` cho ảnh quan sát); không dùng mã TC cho ảnh canvas hiện trường.
+2. Ảnh đọc được: thấy rõ thiết bị/link liên quan và kết quả chính; che PSK/password/tài khoản thật.
+3. Chỉ commit minh chứng của lần test thật trên đúng bản 9.0.1.0858.
 4. Không dùng ảnh minh họa ngoài đồ án, không chỉnh sửa kết quả.
-5. Mỗi file phải được tham chiếu từ [../tests/test-cases.md](../tests/test-cases.md) hoặc [../docs/testing-plan.md](../docs/testing-plan.md); `Passed` nào cũng phải có file tương ứng tồn tại.
-6. Ảnh **quan sát giao diện thiết bị** (không phải kết quả test) dùng tiền tố `audit-`, ví dụ `audit-wlc-pt-wireless-lans.png`; ảnh này **không** được dùng để chuyển TC nào sang `Passed` và phải được tham chiếu từ [../docs/testing-plan.md](../docs/testing-plan.md) §6.1 hoặc [../docs/device-selection-decision.md](../docs/device-selection-decision.md).
+5. Mỗi file phải được tham chiếu từ [../tests/test-cases.md](../tests/test-cases.md), [../docs/final-implementation.md](../docs/final-implementation.md) hoặc [../docs/testing-plan.md](../docs/testing-plan.md).
