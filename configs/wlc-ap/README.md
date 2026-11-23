@@ -11,16 +11,16 @@ Lưu bản sao cấu hình/ghi chú cấu hình của WLC và LAP-PT (screenshot
 > | Hạng mục | Giá trị | Ghi chú |
 > | --- | --- | --- |
 > | Controller | `WLC1`, `WLC-3504` | Management `192.168.99.10/24` (VLAN 99); web GUI truy cập từ ADMIN-PC |
-> | Dynamic interface | **staff** `192.168.10.2` / **guest** `192.168.20.2` | mỗi WLAN ứng một interface; Primary DHCP Server = `.99.10` (management của WLC) cho cả hai |
+> | Dynamic interface | **staff** `192.168.10.2` / **guest** `192.168.20.2` | mỗi WLAN ứng một interface; DHCP do `DHCP-SRV .99.20` đảm nhận (trường Primary DHCP Server vẫn hiện `.99.10` do PT thiếu API đổi, nhưng vô tác dụng) |
 > | WLAN 1 | `STAFF-WIFI`, VLAN 10 | WPA2 + **Auth 802.1X (RADIUS)** + AES; AAA server `192.168.99.22`, port **1645** |
 > | WLAN 2 | `GUEST-WIFI`, VLAN 20 | WPA2-PSK |
-> | AP | LAP-STAFF, LAP-GUEST (`LAP-PT`) | join WLC1 (`Status: Online`) |
-> | Clients (leases final) | S-LAP1 `.104`, S-LAP2 `.103`, S-LAP3 `.106` / G-LAP1 `.142`, G-LAP2 `.144`, G-PHONE `.141` | gateway ping 4/4 (final audit) |
+> | AP | LAP-STAFF `.99.31`, LAP-GUEST `.99.30` (`LAP-PT`) | join WLC1; `CAPWAP.PRIMARY_AC = 192.168.99.10` đặt tường minh |
+> | Clients (lease hiện tại) | S-LAP1 `.104`, S-LAP2 `.101`, S-LAP3 `.102` / G-LAP1 `.141`, G-LAP2 `.142`, G-PHONE `.144` | do DHCP-SRV `.99.20` cấp (Server Identifier xác nhận) |
 > | RADIUS secret | `<RADIUS-SECRET-REDACTED>` (client `WLC1` tại RADIUS-SRV `.22`) | giá trị thật chỉ tồn tại trong `.pkt` |
 >
 > Cấu hình chi tiết + kết quả kiểm chứng final: [../../docs/final-implementation.md](../../docs/final-implementation.md) mục 3 và 5.
 >
-> **DHCP trên final:** vì Primary DHCP Server của cả hai dynamic interface trỏ về **management `.99.10` của chính WLC**, client vô tuyến nhận lease từ **pool nội bộ WLC** (STAFF-LOCAL từ `.10.101`, GUEST-LOCAL từ `.20.141`) — lease bảng trên khớp dải này. `DHCP-SRV .99.20` chỉ là dự phòng; chi tiết [../../docs/ip-vlan-plan.md](../../docs/ip-vlan-plan.md) §4.
+> **DHCP trên final (cập nhật 2026-11-23):** client vô tuyến nhận lease từ **DHCP-SRV `.99.20`** (`STAFF-POOL .101–.200`, `GUEST-POOL .141–.240`); WLC chỉ còn pool factory `day0-dhcp-mgmt`. Chi tiết [../../docs/ip-vlan-plan.md](../../docs/ip-vlan-plan.md) §4.
 > *(Các bảng WLC-PT / WLC-3504-P1 bên dưới giữ nguyên như lịch sử giai đoạn v1 — controller WLC-PT không còn nằm trong final.)*
 
 ## Hiện trạng (lịch sử — giai đoạn v1, trước 2026-11-01)

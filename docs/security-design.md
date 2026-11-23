@@ -51,8 +51,8 @@ Kết quả kiểm chứng (G-LAP1, `192.168.20.142`):
 
 ## 4. Bảo vệ mạng quản trị (VLAN 99)
 
-- Thiết bị hạ tầng + ADMIN-PC tĩnh trong VLAN 99, tách khỏi client vô tuyến (WLC `.10`, Web `.21`, DHCP `.20`, RADIUS `.22`, ADMIN-PC `.50`, gateway SVI `.1`).
-- Truy cập quản trị WLC (web GUI `https://192.168.99.10`) chỉ từ trong nội bộ — đối chứng hướng ngược: `ADMIN-PC → RADIUS-SRV` 4/4 (mạng quản trị hoạt động bình thường, chỉ Guest bị chặn vào).
+- Thiết bị hạ tầng + ADMIN-PC tĩnh trong VLAN 99, tách khỏi client vô tuyến (WLC `.10`, DHCP `.20`, RADIUS `.22`, ADMIN-PC `.50`, gateway SVI `.1`). Không có `Web-SRV .21` trong topology.
+- Truy cập quản trị WLC (web GUI `http://192.168.99.10`) chỉ từ trong nội bộ — đối chứng hướng ngược: `ADMIN-PC → RADIUS-SRV` 4/4 (mạng quản trị hoạt động bình thường, chỉ Guest bị chặn vào).
 - DHCP dành cho client vô tuyến; VLAN 99 dùng địa chỉ tĩnh (không cấp DHCP cho hạ tầng).
 
 ## 5. Internet / PAT qua biên (đã kiểm chứng)

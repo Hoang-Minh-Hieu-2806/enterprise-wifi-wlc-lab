@@ -8,7 +8,7 @@ Thư mục lưu minh chứng kiểm thử trên bản Cisco Packet Tracer **9.0.
 
 | File | Nội dung | Tham chiếu |
 | --- | --- | --- |
-| [`Final.jpg`](Final.jpg) | **Canvas Packet Tracer** chụp 2026-11-06: **topology final 18 thiết bị đầy đủ link, mọi liên kết up** (ISP, R1, R2, CORE-SW, ACCESS-SW, WLC1, LAP-STAFF, LAP-GUEST, RADIUS-SRV, DHCP-SRV, ADMIN-PC, Web-SRV, S-LAP1/2/3, G-LAP1/2, G-PHONE) | [../docs/final-implementation.md](../docs/final-implementation.md) |
+| [`Final.jpg`](Final.jpg) | **Canvas Packet Tracer** chụp 2026-11-06: **topology final 18 thiết bị đầy đủ link, mọi liên kết up** (ISP, R1, R2, CORE-SW, ACCESS-SW, WLC1, LAP-STAFF, LAP-GUEST, RADIUS-SRV, DHCP-SRV, ADMIN-PC, `Power Distribution Device0`, S-LAP1/2/3, G-LAP1/2, G-PHONE). Không có `Web-SRV` trong topology | [../docs/final-implementation.md](../docs/final-implementation.md) |
 | [`Final 2.png`](Final%202.png) | **Canvas Packet Tracer** — bản chụp lại của topology final, trạng thái ổn định | same as above |
 | [`Final but error.png`](Final%20but%20error.png) | Bản chụp tại thời điểm **bất ổn mô phỏng**: một wireless association tạm rớt — lưu để **ghi nhận limitation của PT với wireless**; trạng thái đã hồi phục trên `Final.jpg` / `Final 2.png` sau recovery | Mục *Limitations* của [../docs/final-implementation.md](../docs/final-implementation.md) |
 

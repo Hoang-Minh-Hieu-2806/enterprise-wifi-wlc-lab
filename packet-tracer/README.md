@@ -4,17 +4,17 @@ Thư mục chứa file mô phỏng Cisco Packet Tracer (`.pkt`) của dự án, 
 
 ## Hiện trạng
 
-> **Deliverable cuối cùng: `final.pkt`** (2026-11-07, 100.297 bytes, SHA-256 `5AA9ADCA…B5CEF`) — topology **enterprise 18 thiết bị / 21 link**:
+> **Deliverable cuối cùng: `final.pkt`** (99.916 bytes, SHA-256 `704D04CA…01CA8`) — topology **enterprise 18 thiết bị / 21 link (11 cáp + 10 radio)**:
 >
-> - **ISP** (Router-PT, Lo0 `8.8.8.8/32`) ↔ **R1** + **R2** (2901, edge + PAT overload, hai path `/30` `203.0.113.0/30` và `203.0.113.4/30`);
+> - **ISP** (2901, `Gi0/0` `.1/30` + `Gi0/1` `.5/30`, Lo0 `8.8.8.8/32`) ↔ **R1** + **R2** (2901, edge + PAT overload, hai path `/30` `203.0.113.0/30` và `203.0.113.4/30`);
 > - **R1/R2 ↔ CORE-SW** (3560-24PS, `ip routing`, SVI VLAN 10/20/99, DHCP relay, ACL Guest, default AD 1 + backup AD 254) qua `/30` `10.0.0.0/30` và `10.0.1.0/30`;
 > - **CORE-SW ↔ ACCESS-SW** (2960, trunk Fa0/1) ↔ **WLC1** (WLC-3504, mgmt `192.168.99.10`, dynamic interfaces staff/guest) + **LAP-STAFF**, **LAP-GUEST** (LAP-PT);
-> - VLAN 99: **DHCP-SRV** (`.20`, service DHCP — dự phòng; client vô tuyến được cấp bởi WLC, xem [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) §4), **RADIUS-SRV** (`.22`, AAA port 1645, client `WLC1`, users staff1/2/3), **Web-SRV** (`.21`), **ADMIN-PC** (`.99.50`, tĩnh);
+> - VLAN 99: **DHCP-SRV** (`.20`, service DHCP — **nguồn cấp chính** cho mọi client vô tuyến, xem [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) §4), **RADIUS-SRV** (`.22`, AAA port 1645, client `WLC1`, users staff1/2/3), **ADMIN-PC** (`.99.50`, tĩnh);
 > - Client wireless: **S-LAP1/2/3** (`STAFF-WIFI`, WPA2-Enterprise/802.1X) và **G-LAP1/2 + G-PHONE** (`GUEST-WIFI`, WPA2-PSK).
 >
 > Trạng thái chi tiết + kết quả kiểm thử: [../docs/final-implementation.md](../docs/final-implementation.md). Canvas: [../evidence/Final.jpg](../evidence/Final.jpg).
 >
-> **Kiểm thử final (ping thật qua bridge, 2026-11-05 → 2026-11-07):** 6 client gateway 4/4; Staff → `8.8.8.8` 4/4; G-LAP1 → `8.8.8.8` 4/4; G-LAP1 → `.10.1` và `.99.22` bị ACL chặn 0/4 (đúng design); Staff leases `.104/.103/.106`, Guest `.142/.144/.141`.
+> **Kiểm thử final (ping thật qua bridge):** 6 client gateway 4/4; Staff → `8.8.8.8` 4/4; G-LAP1 → `8.8.8.8` 4/4; G-LAP1 → `.10.1` và `.99.22` bị ACL chặn 0/4 (đúng design). Lease hiện tại do DHCP-SRV cấp: Staff `.101/.102/.104`, Guest `.141/.142/.144` (Server Identifier `192.168.99.20`).
 >
 > **Bỏ `enterprise-wifi-wlc-lab-v1.pkt` (2026-11-07):** file v1 (9 thiết bị, `WLC-PT`, P1 khung có dây) đã bị xoá khỏi repo trong đợt chốt final — lịch sử giai đoạn v1 nằm trong Git history (`git log -- packet-tracer/`) và các docs được đánh dấu "lịch sử v1". Bản `V5.2.pts` không được theo dõi trong Git (xem `.gitignore`).
 

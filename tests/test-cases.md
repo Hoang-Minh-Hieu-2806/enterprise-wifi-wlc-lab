@@ -1,6 +1,6 @@
 # Danh sách ca kiểm thử (Test Cases)
 
-> Cột `Actual result` chỉ điền khi có kiểm thử thật trên Packet Tracer 9.0.1.0858. Hiện **TC-01 → TC-08 đã `Passed`** (TC-08 kiểm chứng 2026-10-20 trên bản test copy, cấu hình đã lưu vào official `.pkt` ngày 2026-10-21, kèm giới hạn); các test case còn lại (TC-09 → TC-14) vẫn **Not Tested**. Kế hoạch tổng thể và phân loại Core/Conditional xem tại [../docs/testing-plan.md](../docs/testing-plan.md). RADIUS (TC-13) là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
+> Cột `Actual result` chỉ điền khi có kiểm thử thật trên Packet Tracer 9.0.1.0858. **TC-01 → TC-08 là kết quả giai đoạn v1** (`WLC-PT`, xem mục ⚠ bên dưới); trên bản final **TC-09 → TC-12 `Passed`**, **TC-13 "đã cấu hình, chưa chứng minh exchange"**, **TC-14 `Not Tested`**. Kế hoạch tổng thể và phân loại Core/Conditional xem tại [../docs/testing-plan.md](../docs/testing-plan.md). RADIUS (TC-13) là Conditional: `Blocked` ở đó không làm mất trạng thái hoàn thành của luồng Core.
 >
 > **Lưu ý sau audit lựa chọn thiết bị (2026-10-18):** quyết định đổi controller từ `WLC-3504` sang **`WLC-PT`**. **TC-01 đã chạy lại và `Passed` trên `WLC-PT`** (bản test copy) — Management IPv4 `192.168.99.10/24`, gw `192.168.99.1`, đặt trên cổng GUI hiển thị là `Management` (API/mô phỏng đặt tên `Vlan1`), **đặt được bằng API, không cần raw JS**. **TC-03 đã kiểm chứng và `Passed`**: `WLC2 → Config → AP Groups` hiển thị `LAP1` (`0001.968E.6B01`) `Status: Online` trong nhóm `default-group`; `CAPWAP.PRIMARY_AC` của cả `LAP-PT` và `WLC-PT` là `0.0.0.0` (PT dùng auto-discovery, không có trường đặt IP controller trong GUI). **`.pkt` deliverable đã được thay sang `WLC-PT` (2026-10-19)** — hết chờ. Xem [../docs/device-selection-decision.md](../docs/device-selection-decision.md). `Expected result` **không** sửa theo kết quả thực tế.
 >
@@ -25,7 +25,7 @@
 | **Expected result** | Ping tới WLC thành công (reply) |
 | **Actual result** | **Đã chạy lại trên `WLC-PT` — Passed.** Model `WLC-PT` (device type 41), cổng thật đọc từ mô phỏng: **`Vlan1`** (mang IP quản trị; GUI hiển thị tên `Management`) + **`GigabitEthernet0`** (uplink). Management IPv4 `192.168.99.10/24`, gateway `192.168.99.1`, đặt bằng API đặt IP (`pt_host_ip_config`) — **không cần raw JS**. Uplink `WLC-PT GigabitEthernet0` → `SW1 FastEthernet0/4` **trunk** native VLAN 99, allowed 10,20,99 (frame untagged của `Vlan1` rơi vào native 99 của switch). Nguồn ping: `SRV1` (`192.168.99.20`) `Sent = 4, Received = 4, Lost = 0 (0% loss)`; `R1` (`192.168.99.1`) `Success rate is 100 percent (5/5)`. Bản `WLC-3504` cũ giữ kết quả `Passed` làm lịch sử P1. **Lưu ý model:** khác `WLC-3504`, `WLC-PT` **không có** cổng API tên `management` riêng; GUI gọi cổng quản trị là `Management`, API gọi là `Vlan1`. Xem [../docs/device-selection-decision.md](../docs/device-selection-decision.md) và [../docs/implementation-notes.md](../docs/implementation-notes.md) §5. |
 | **Evidence filename** | `evidence/tc-01-wlc-pt-reachability-canvas.png` (chạy lại trên `WLC-PT`); `evidence/tc-01-wlc-reachability.png` (bản `WLC-3504`, lịch sử) |
-| **Status** | Passed (chạy lại trên `WLC-PT`; nay là controller trong `.pkt` deliverable) |
+| **Status** | Passed (giai đoạn v1 trên `WLC-PT`; controller của bản final là `WLC-3504`) |
 
 ## TC-02 — LAP-PT nhận IP quản trị hợp lệ (Core)
 
@@ -137,7 +137,7 @@
 | --- | --- |
 | **Loại** | Core |
 | **Requirement** | REQ-11 |
-| **Preconditions** | TC-08 đạt; ACL đã áp trên router (explicit deny Guest→Staff + permit tối thiểu) |
+| **Preconditions** | TC-08 đạt; ACL `GUEST-ACL` đã áp inbound trên `Vlan20` của CORE-SW (explicit deny Guest→Staff + permit tối thiểu) |
 | **Procedure** | 1. Từ Guest (`192.168.20.0/24`) `ping` tới IP Staff client và `192.168.10.1`. 2. Ghi kết quả trước/sau ACL. |
 | **Expected result** | Ping từ Guest tới Staff thất bại sau ACL (Request timed out / Destination unreachable) |
 | **Actual result** | **[Final build 2026-11-07]** G-LAP1 (`.142`) `ping 192.168.10.1` → **0/4 reply (Request timed out)** — bị ACL `GUEST-ACL` chặn trên `Vlan20` của CORE-SW. G-LAP2/G-PHONE đã associate + có lease nhưng ping matrix riêng **chưa chạy riêng** (ghi limitation) |
@@ -153,7 +153,7 @@
 | **Preconditions** | TC-08 đạt (Guest đã nhận IP qua DHCP — chứng minh ngoại lệ DHCP đang hiệu lực); ACL đã áp; địa chỉ quản trị chốt theo [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) |
 | **Procedure** | 1. Từ Guest `ping` tới địa chỉ quản trị (ví dụ RADIUS-SRV `192.168.99.22`) → phải thất bại. 2. Từ Guest `ping` tới switch/router trong VLAN 99 → phải thất bại. 3. Xác nhận Guest **vẫn nhận được IP** qua DHCP (`ipconfig`, đối chiếu TC-08). 4. Chạy `show access-lists` / `show running-config` trên switch. |
 | **Expected result** | Guest không tới được **thiết bị quản trị** (WLC, switch, router, dải VLAN 99), nhưng **vẫn nhận được IP** qua DHCP (permit `bootps` — ngoại lệ có chủ đích, không phải lỗi); ACL hiển thị khớp [../docs/security-design.md](../docs/security-design.md) |
-| **Actual result** | **[Final build 2026-11-07]** G-LAP1 `ping 192.168.99.22` (RADIUS-SRV trong VLAN 99) → **0/4 reply** — bị chặn. Đồng thời G-LAP1 vẫn có lease `192.168.20.142` (lease nằm trong dải pool nội bộ của WLC — Primary DHCP Server = management `.99.10` của WLC, **không phải** từ `DHCP-SRV .99.20`; chi tiết [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) §4) ⇒ ngoại lệ DHCP (`bootps`) hiệu lực. `show running-config` của CORE-SW (output thật, 2026-11-07) chứa `ip access-group GUEST-ACL in` trên `Vlan20`; lưu ý lỗi `show ip interface` của PT vẫn in "not set" (xem final doc mục 6). Đối chứng hướng ngược: `ADMIN-PC → 192.168.99.22` (RADIUS-SRV) **4/4 reply** ⇒ thiết bị quản trị nội bộ bình thường hoạt động, chỉ Guest bị chặn |
+| **Actual result** | **[Final build]** G-LAP1 `ping 192.168.99.22` (RADIUS-SRV trong VLAN 99) → **0/4 reply** — bị chặn. Đồng thời G-LAP1 vẫn có lease `192.168.20.141` (cấp bởi **DHCP-SRV `.99.20`**, Server Identifier xác nhận; chi tiết [../docs/ip-vlan-plan.md](../docs/ip-vlan-plan.md) §4) ⇒ ngoại lệ DHCP (`bootps`) hiệu lực. `show running-config` của CORE-SW (output thật, 2026-11-07) chứa `ip access-group GUEST-ACL in` trên `Vlan20`; lưu ý lỗi `show ip interface` của PT vẫn in "not set" (xem final doc mục 6). Đối chứng hướng ngược: `ADMIN-PC → 192.168.99.22` (RADIUS-SRV) **4/4 reply** ⇒ thiết bị quản trị nội bộ bình thường hoạt động, chỉ Guest bị chặn |
 | **Evidence filename** | `configs/switch/core-sw-running-config.txt` (xuất thật ngày 2026-11-07), final doc mục 6; không có screenshot riêng |
 | **Status** | **Passed (G-LAP1 + config-level); hạn chế: chỉ 1/3 guest chạy bài kiểm thử** |
 
@@ -163,7 +163,7 @@
 | --- | --- |
 | **Loại** | Core |
 | **Requirement** | REQ-07, REQ-11 |
-| **Preconditions** | Switch đã cấu hình VLAN; router đã áp ACL |
+| **Preconditions** | CORE-SW đã cấu hình VLAN; ACL `GUEST-ACL` đã áp inbound trên `Vlan20` của CORE-SW |
 | **Procedure** | 1. Chạy `show vlan brief` (hoặc lệnh tương đương đúng model). 2. Kiểm tra cổng theo [../docs/topology.md](../docs/topology.md). 3. Từ Staff kiểm tra chỉ còn đúng truy cập nội bộ cho phép theo phạm vi đã chốt trước trong [../docs/implementation-notes.md](../docs/implementation-notes.md) (§4). |
 | **Expected result** | VLAN 10/20/99 tồn tại, cổng đúng thiết kế đã chốt; Staff không vượt phạm vi cho phép |
 | **Actual result** | **[Final build 2026-11-07]** Config-level: `show running-config` thật của CORE-SW (mục `configs/switch/core-sw-running-config.txt`) hiển thị SVI 10/20/99, trunk Fa0/1, helper-address, ACL binding — khớp [../docs/final-implementation.md](../docs/final-implementation.md). Staff giữ đúng phạm vi cho phép: S-LAP1/2/3 → Internet 4/4 và truy cập nội bộ không bị chặn. Screenshot `show vlan brief` riêng **chưa chụp** |

@@ -7,14 +7,14 @@
 
 > ## ✅ TRẠNG THÁI FINAL (2026-11-07)
 >
-> Deliverable chính thức: **`packet-tracer/final.pkt`** (18 thiết bị / 21 link; SHA-256 `5AA9ADCA…B5CEF`, 100.297 bytes). Kiến trúc: **ISP (Router-PT, Lo0 `8.8.8.8`) → R1/R2 (2901, PAT overload, 2 path /30) → CORE-SW (3560-24PS L3, SVI VLAN 10/20/99) → ACCESS-SW (2960, trunk) → WLC1 (WLC-3504, mgmt `192.168.99.10`) + LAP-STAFF / LAP-GUEST**, kèm **RADIUS-SRV (`.99.22`, AAA 1645)**, **DHCP-SRV (`.99.20`)**, **Web-SRV (`.99.21`)**, **ADMIN-PC (`.99.50`, tĩnh)**, **6 wireless client** (3 Staff qua `STAFF-WIFI` WPA2-Enterprise/802.1X; 3 Guest qua `GUEST-WIFI` WPA2-PSK).
+> Deliverable chính thức: **`packet-tracer/final.pkt`** (18 thiết bị / 21 link = 11 cáp + 10 tín hiệu radio; SHA-256 `704D04CA…01CA8`, 99.916 bytes). Kiến trúc: **ISP (2901, Gi0/0 `.1/30` + Gi0/1 `.5/30`, Lo0 `8.8.8.8`) → R1/R2 (2901, PAT overload, 2 path /30) → CORE-SW (3560-24PS L3, SVI VLAN 10/20/99) → ACCESS-SW (2960, trunk) → WLC1 (WLC-3504, mgmt `192.168.99.10`) + LAP-STAFF / LAP-GUEST**, kèm **RADIUS-SRV (`.99.22`, AAA 1645)**, **DHCP-SRV (`.99.20`, nguồn DHCP chính)**, **ADMIN-PC (`.99.50`, tĩnh)**, **6 wireless client** (3 Staff qua `STAFF-WIFI` WPA2-Enterprise/802.1X; 3 Guest qua `GUEST-WIFI` WPA2-PSK). Topology có `Power Distribution Device0`, không có `Web-SRV`.
 >
 > **Đã kiểm chứng bằng ping thật (bridge, 2026-11-05 → 2026-11-07):**
 >
 > - Gateway: cả 6 wireless client + ADMIN-PC `ping` **4/4** (0% loss).
 > - Internet (PAT): Staff → `8.8.8.8` **4/4**; Guest G-LAP1 → `8.8.8.8` **4/4** (đạt sau một lần retry — bất ổn sim wireless).
 > - Cách ly Guest: G-LAP1 → `192.168.10.1` **0/4** (bị chặn); → `192.168.99.22` **0/4** (bị chặn); DHCP vẫn đạt qua permit `bootps` (lease `.20.142`).
-> - Staff leases `.103/.104/.106`, Guest leases `.141/.142/.144` — đúng design.
+> - Staff leases `.101/.102/.104`, Guest leases `.141/.142/.144` — do **DHCP-SRV `.99.20`** cấp (Server Identifier xác nhận), đúng design mới.
 >
 > **Chưa kiểm chứng end-to-end** (ghi trong limitations): RADIUS 802.1X exchange client↔server (đã cấu hình chuẩn hai đầu nhưng PT không log được EAP), failover R1→R2 (đã cấu hình AD 254, chưa test power-off), sai PSK bị từ chối (TC-14).
 >
@@ -39,7 +39,7 @@
 | Định tuyến | `ISP` + `R1`/`R2` (Router 2901): static routes + PAT overload, 2 đường p2p `/30` |
 | Chuyển mạch | `CORE-SW` — Switch **L3 3560-24PS** (`ip routing`, SVI 3 VLAN, DHCP relay, ACL, default ×2 AD); `ACCESS-SW` — Switch L2 2960-24TT (trunk) |
 | Wireless | `WLC1` (`WLC-3504`, web GUI qua `ADMIN-PC`) + `LAP-STAFF` / `LAP-GUEST` (`LAP-PT`) |
-| Server | Server-PT ×3: `DHCP-SRV` (`.99.20`), `RADIUS-SRV` (`.99.22`, AAA 1645), `Web-SRV` (`.99.21`); DNS khách `8.8.8.8` sử dụng được qua PAT |
+| Server | Server-PT ×2: `DHCP-SRV` (`.99.20`, nguồn DHCP chính), `RADIUS-SRV` (`.99.22`, AAA 1645); DNS khách `8.8.8.8` sử dụng được qua PAT |
 | Client | `ADMIN-PC` (PC-PT, `.99.50` tĩnh), 3 Laptop-PT Staff, 2 Laptop-PT + 1 Smartphone-PT Guest |
 | Ngôn ngữ tài liệu | Tiếng Việt (tài liệu, test case); định danh kỹ thuật tiếng Anh |
 
@@ -49,13 +49,13 @@ Ghi chú model/limitation chi tiết: [docs/implementation-notes.md](docs/implem
 
 | Nhóm | Thiết bị | Model | Vai trò |
 | --- | --- | --- | --- |
-| WAN | ISP | Router-PT | 2 path `/30` tới R1/R2; Lo0 `8.8.8.8/32` |
+| WAN | ISP | 2901 | 2 path `/30` tới R1/R2 (`Gi0/0`, `Gi0/1`); Lo0 `8.8.8.8/32` |
 | WAN | R1, R2 | 2901 | Edge + PAT overload + static route vế về LAN |
 | L2/L3 | CORE-SW | 3560-24PS | L3 core: SVI 10/20/99, DHCP relay, ACL Guest, default AD 1 + backup AD 254 |
 | L2 | ACCESS-SW | 2960-24TT | Access/trunk cho WLC + AP |
 | Wireless | WLC1 | WLC-3504 | Controller; mgmt `.99.10`; dynamic interfaces staff/guest; WLANs |
 | Wireless | LAP-STAFF, LAP-GUEST | LAP-PT | AP join WLC1 |
-| Server | DHCP-SRV / RADIUS-SRV / Web-SRV | Server-PT | DHCP `.20` / AAA 1645 `.22` / HTTP `.21` |
+| Server | DHCP-SRV / RADIUS-SRV | Server-PT | DHCP chính `.20` / AAA 1645 `.22` |
 | Mgmt | ADMIN-PC | PC-PT | Quản trị VLAN 99 (`.99.50`, tĩnh; web GUI WLC từ đây) |
 | Client | S-LAP1/2/3 | Laptop-PT | Staff — `STAFF-WIFI` (802.1X) |
 | Client | G-LAP1/2, G-PHONE | Laptop-PT / Smartphone-PT | Guest — `GUEST-WIFI` (PSK) |
@@ -66,11 +66,11 @@ Canvas minh chứng: [evidence/Final.jpg](evidence/Final.jpg), [evidence/Final 2
 
 | SSID | VLAN | Subnet | Gateway (SVI) | Xác thực | DHCP |
 | --- | --- | --- | --- | --- | --- |
-| `STAFF-WIFI` | 10 | `192.168.10.0/24` | `.1` | WPA2-Enterprise + 802.1X + RADIUS | WLC pool STAFF-LOCAL (từ `.101`) |
-| `GUEST-WIFI` | 20 | `192.168.20.0/24` | `.1` + ACL `GUEST-ACL` in | WPA2-PSK | WLC pool GUEST-LOCAL (từ `.141`) |
+| `STAFF-WIFI` | 10 | `192.168.10.0/24` | `.1` | WPA2-Enterprise + 802.1X + RADIUS | DHCP-SRV `STAFF-POOL` `.101–.200` |
+| `GUEST-WIFI` | 20 | `192.168.20.0/24` | `.1` + ACL `GUEST-ACL` in | WPA2-PSK | DHCP-SRV `GUEST-POOL` `.141–.240` |
 | — (có dây quản trị) | 99 | `192.168.99.0/24` | `.1` | — | Địa chỉ tĩnh cho hạ tầng |
 
-> **DHCP thực tế:** client vô tuyến được WLC1 cấp từ các pool nội bộ (Primary DHCP Server = management `.99.10` của chính WLC — lease quan sát khớp dải `.101+`/`.141+`). `DHCP-SRV` `.99.20` bật Service DHCP nhưng là **dự phòng**, không quan sát được hành động cấp phát cho client trong audit final; `ip helper-address` trên SVI giữ lại cho các DHCP request không đi qua WLC. Chi tiết: [docs/ip-vlan-plan.md](docs/ip-vlan-plan.md) §4.
+> **DHCP thực tế:** **DHCP-SRV `.99.20` là nguồn cấp duy nhất** cho mọi client vô tuyến (Server Identifier đọc được là `192.168.99.20`). WLC1 chỉ còn pool factory `day0-dhcp-mgmt`; các pool `STAFF-LOCAL`/`GUEST-LOCAL` đã được gỡ. `ip helper-address 192.168.99.20` trên `Vlan10`/`Vlan20` của CORE-SW là đường relay thật. Lưu ý: trường `Primary DHCP Server` trên dynamic interface vẫn hiện `.99.10` do PT không có API đổi, nhưng vô tác dụng vì WLC không còn pool. Chi tiết: [docs/ip-vlan-plan.md](docs/ip-vlan-plan.md) §4.
 
 ## 5. Xác thực và kiểm soát truy cập (đã triển khai)
 

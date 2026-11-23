@@ -19,7 +19,7 @@
 | Link | Subnet | Bên A | Bên B |
 | --- | --- | --- | --- |
 | ISP ↔ R1 | `203.0.113.0/30` | ISP `Gi0/0` → `203.0.113.1` | R1 `Gi0/0` → `203.0.113.2` |
-| ISP ↔ R2 | `203.0.113.4/30` | ISP `Gi0/0` → `203.0.113.5` | R2 `Gi0/0` → `203.0.113.6` |
+| ISP ↔ R2 | `203.0.113.4/30` | ISP `Gi0/1` → `203.0.113.5` | R2 `Gi0/0` → `203.0.113.6` |
 | R1 ↔ CORE-SW | `10.0.0.0/30` | R1 `Gi0/1` → `10.0.0.1` | CORE-SW `Gi0/1` (no switchport) → `10.0.0.2` |
 | R2 ↔ CORE-SW | `10.0.1.0/30` | R2 `Gi0/1` → `10.0.1.1` | CORE-SW `Gi0/2` (no switchport) → `10.0.1.2` |
 
@@ -31,35 +31,34 @@
 | Thiết bị | Địa chỉ | Ghi chú |
 | --- | --- | --- |
 | CORE-SW (SVI) | `192.168.99.1` | Gateway quản trị |
-| WLC1 (`WLC-3504`) management | `192.168.99.10/24`, gw `.1` | Web GUI quản trị; đồng thời là **Primary DHCP Server** cho wireless (xem §4) |
-| DHCP-SRV (Server-PT) | `192.168.99.20` | Service DHCP bật; **không phải nguồn lease chính cho wireless** (xem §4) |
-| Web-SRV (Server-PT) | `192.168.99.21` | HTTP |
+| WLC1 (`WLC-3504`) management | `192.168.99.10/24`, gw `.1` | Web GUI quản trị; **không còn giữ pool DHCP cho wireless** (xem §4) |
+| DHCP-SRV (Server-PT) | `192.168.99.20` | Service DHCP bật; **nguồn lease chính cho mọi client vô tuyến** (xem §4) |
 | RADIUS-SRV (Server-PT) | `192.168.99.22` | AAA, port **1645** |
-| **ADMIN-PC (PC-PT)** | **`192.168.99.50/24`** | **Tĩnh** (đặt từ phiên 2026-11-01, truy cập web GUI `https://192.168.99.10`) |
+| **ADMIN-PC (PC-PT)** | **`192.168.99.50/24`** | **Tĩnh** (đặt từ phiên 2026-11-01, truy cập web GUI `http://192.168.99.10`) |
 
 ## 4. DHCP thực tế — ai cấp IP cho ai
 
-Đây là điểm dễ nhầm nhất của bản final; phân vai rõ:
+**DHCP-SRV `.99.20` là nguồn duy nhất** cho mọi client vô tuyến. Server Identifier đọc từ `ipconfig /all` trên cả Staff và Guest đều là `192.168.99.20`.
 
 | Nguồn DHCP | Địa chỉ | Đối tượng phục vụ | Trạng thái |
 | --- | --- | --- | --- |
-| **WLC1 (WLC-3504) — nguồn thực tế cho wireless** | Primary DHCP Server = `192.168.99.10` (management của chính nó) trên 2 dynamic interface **staff** (`192.168.10.2`) và **guest** (`192.168.20.2`) | Client vô tuyến `STAFF-WIFI` / `GUEST-WIFI` (FlexConnect local switching) | **Đang hiệu lực** — lease quan sát nằm trong dải pool nội bộ WLC: STAFF-LOCAL bắt đầu `192.168.10.101` (leases `.103/.104/.106`), GUEST-LOCAL bắt đầu `192.168.20.141` (leases `.141/.142/.144`) |
-| DHCP-SRV (`192.168.99.20`) | Service DHCP bật, có pools STAFF/GUEST | Không quan sát thấy client nào nhận lease từ nguồn này trong audit final | **Dự phòng** — giữ theo kế hoạch ban đầu |
-| `ip helper-address 192.168.99.20` trên `Vlan10`/`Vlan20` (CORE-SW) | — | Đường relay cho client DHCP trong VLAN 10/20 | Cấu hình có thật; thực tế các request của wireless được WLC phục vụ trước (xem lưu ý) |
+| **DHCP-SRV (Server-PT)** | `192.168.99.20` | `STAFF-WIFI` và `GUEST-WIFI` | **Đang hiệu lực** — `STAFF-POOL .101–.200`, `GUEST-POOL .141–.240`, `MGMT-POOL .99.30–.49` |
+| `ip helper-address 192.168.99.20` trên `Vlan10`/`Vlan20` (CORE-SW) | — | Relay DHCP cho VLAN 10/20 | Cấu hình có thật, là đường cấp phát thật |
+| WLC1 (`WLC-3504`) | — | — | Chỉ còn pool factory `day0-dhcp-mgmt` (`192.168.1.0/28`); `STAFF-LOCAL`/`GUEST-LOCAL` đã gỡ |
 
 Lưu ý vận hành:
 
-- **Fact quét thấy:** client Staff nhận `.10.103/.104/.106`, Guest nhận `.20.141/.142/.144` — khớp dải pool nội bộ WLC (start `.101` / `.141`), **không** khớp luồng cấp từ `192.168.99.20` (dải bắt đầu `.100` và sẽ cấp tuần tự .100/.101/.102 trước).
-- PT đặc thù: khi **Primary DHCP Server của dynamic interface trỏ lại chính management**, WLC xử lý DHCP cho client bằng pool nội bộ của nó — đây là cấu hình đã chốt trên final (đặt 2026-11-05).
-- `serverPool` factory của Server-PT **không xoá vĩnh viễn được** (PT tạo lại sau save/reopen), giới hạn `.99.30–.30`, max 1 user.
-- **Lease không giữ sau khi mở lại file `.pkt`** — cần `ipconfig /renew` trên từng client.
+- PT không có API đổi trường `Primary DHCP Server` trên dynamic interface; trường này vẫn hiện `.99.10` trong GUI/XML nhưng **vô tác dụng** vì WLC không còn pool.
+- `serverPool` factory của Server-PT **không xoá vĩnh viễn được** (PT tạo lại sau save/reopen).
+- **Lease không giữ sau khi mở lại file `.pkt`** — cần `ipconfig /renew` trên từng client; có thể cần power-cycle AP/client do bất ổn wireless PT 9.0.1.0858.
 - Thiết bị VLAN 99 (WLC, servers, ADMIN-PC) dùng **địa chỉ tĩnh**, không phụ thuộc DHCP.
 
 ## 5. Dải cấp phát chốt (trạng thái final)
 
-| Pool | Địa chỉ WLC | Dải bắt đầu | Gateway cấp cho client |
+| Pool | Nguồn | Dải | Gateway cấp cho client |
 | --- | --- | --- | --- |
-| STAFF-LOCAL (trên WLC1) | dynamic interface `staff` `192.168.10.2` | `192.168.10.101` | `192.168.10.1` |
-| GUEST-LOCAL (trên WLC1) | dynamic interface `guest` `192.168.20.2` | `192.168.20.141` | `192.168.20.1` |
+| STAFF-POOL | DHCP-SRV `192.168.99.20` | `192.168.10.101–.200` | `192.168.10.1` |
+| GUEST-POOL | DHCP-SRV `192.168.99.20` | `192.168.20.141–.240` | `192.168.20.1` |
+| MGMT-POOL | DHCP-SRV `192.168.99.20` | `192.168.99.30–.49` | `192.168.99.1` |
 
 > Muốn đổi bất kỳ địa chỉ nào: sửa tại đây trước, rồi cập nhật `final.pkt` + `../configs/` + [final-implementation.md](final-implementation.md). Lịch sử thay đổi địa chỉ giai đoạn v1: [v1-history.md](v1-history.md).

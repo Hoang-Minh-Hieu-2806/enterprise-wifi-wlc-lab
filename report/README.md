@@ -8,7 +8,7 @@ Thư mục quản lý dàn ý và nội dung báo cáo tổng hợp trong giai �
 
 > **Đã có báo cáo giữa kỳ:** [midterm-report.md](midterm-report.md) — theo đúng 4 mục yêu cầu của buổi báo cáo giữa kỳ (tóm tắt ý tưởng + công việc dự định, tính năng chính, mô hình triển khai, kịch bản demo). Nội dung là **ý tưởng và dự định**, chưa có kết quả kiểm thử.
 >
-> **Chưa có báo cáo cuối kỳ** — hiện đã dựng xong khung có dây P1 (model đã chốt, cấu hình đã kiểm chứng) và **TC-01 → TC-08 đã `Passed`** (TC-03: LAP-PT join `WLC-PT`, `Status: Online`, 2026-10-19; TC-04: WLAN `STAFF-WIFI` tạo + phát sóng, 2026-10-19; TC-05: WLAN `GUEST-WIFI` tạo độc lập + phát sóng đồng thời, 2026-10-19; TC-06: hai Staff client associate vào `STAFF-WIFI` bằng WPA2-PSK, 2026-10-19; TC-07: hai Guest client associate vào `GUEST-WIFI` bằng WPA2-PSK, 2026-10-19; TC-08: client nhận IP đúng subnet, kèm giới hạn, 2026-10-20; cấu hình đã lưu vào official `.pkt` 2026-10-21); các test case còn lại (TC-09 → TC-14) vẫn `Not Tested`. **TC-01 đã chạy lại trên `WLC-PT`** (bản test copy). Official `.pkt` đã được cập nhật cấu hình TC-08.
+> **Báo cáo cuối kỳ đã hoàn thành** (file DOCX `Bao-cao-cuoi-ky-Nhom-11-ban-hoan-chinh.docx` lưu tại thư mục `Đồ án`, không nằm trong repo). Kết quả cuối kỳ tại **[../docs/final-implementation.md](../docs/final-implementation.md)**: TC-01→TC-08 là lịch sử giai đoạn v1 (`WLC-PT`); TC-09→TC-12 Passed trên bản final, TC-13 "đã cấu hình, chưa chứng minh exchange", TC-14 Not Tested. Đoạn mô tả v1 dưới đây chỉ giữ làm đối chiếu giai đoạn giữa kỳ.
 
 ## Dàn ý báo cáo cuối kỳ (dự kiến)
 
